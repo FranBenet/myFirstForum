@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -30,9 +31,12 @@ type User struct {
 }
 
 type Post struct {
-	UserId  int
-	Created string
+	Created time.Time
 	Content string
+}
+
+type Category struct {
+	Name string
 }
 
 var createStatements = []string{
@@ -40,7 +44,7 @@ var createStatements = []string{
 id integer primary key,
 email varchar(30) not null unique,
 username varchar(20) not null unique,
-password varchar(40) not null
+password varchar(30) not null
 );`,
 	`create table if not exists user_profile (
 id integer primary key,
@@ -50,7 +54,7 @@ content text
 	`create table if not exists posts(
 id integer primary key,
 user_id integer references users(id),
-created datetime,
+created datetime not null default current_timestamp,
 content text not null
 );`,
 	`create table if not exists comments (
@@ -72,6 +76,11 @@ liked boolean
 	`create table if not exists categories (
 id integer primary key,
 label varchar(15) unique not null
+);`,
+	`create table if not exists post_categs (
+categ_id integer not null,
+post_id integer not null,
+primary key (categ_id, post_id)
 );`,
 }
 
@@ -107,44 +116,39 @@ func PopulateDb() {
 		log.Fatal("Error opening database file")
 	}
 	defer db.Close()
-	for _, user := range users {
-		stmt, err := db.Prepare("insert into users(email, username, password) values (?, ?, ?)")
-		if err != nil {
-			log.Fatal("Error preparing insert statement: ", stmt)
-		}
-		defer stmt.Close()
-		res, err := stmt.Exec(user.Email, user.Name, user.Password)
-		if err != nil {
-			log.Fatal("Error inserting into database: ", err)
-		}
-		id, _ := res.LastInsertId()
-		log.Println("Successfully inserted into table users: ", id, user.Email, user.Name)
+	stmt, err := db.Prepare(insertUsers)
+	if err != nil {
+		log.Fatal("Error preparing (user) insert statement: ", stmt)
 	}
-	for _, post := range posts {
-		stmt, err := db.Prepare("insert into posts(user_id, created, content) values (?, ?, ?)")
-		if err != nil {
-			log.Fatal("Error preparing insert statement: ", stmt)
-		}
-		defer stmt.Close()
-		res, err := stmt.Exec(post.UserId, post.Created, post.Content)
-		if err != nil {
-			log.Fatal("Error inserting into database: ", err)
-		}
-		id, _ := res.LastInsertId()
-		log.Println("Successfully inserted into table posts: ", id, post.Created, post.Content)
+	res, err := stmt.Exec()
+	if err != nil {
+		log.Fatal("Error inserting into database: ", err)
 	}
+	nrow, _ := res.RowsAffected()
+	log.Println("Number of rows inserted into table users: ", nrow)
+
+	stmt, err = db.Prepare(insertPosts)
+	if err != nil {
+		log.Fatal("Error preparing (posts) insert statement: ", stmt)
+	}
+	res, err = stmt.Exec()
+	if err != nil {
+		log.Fatal("Error inserting into database: ", err)
+	}
+	nrow, _ = res.RowsAffected()
+	log.Println("Number of rows inserted into table posts: ", nrow)
 }
 
-func GetUser(email string) User {
+func PostsByUser(email string) Post {
 	db, err := sql.Open("sqlite3", "./forum.db")
 	if err != nil {
 		log.Fatal("Error opening database file")
 	}
 	defer db.Close()
-	var usr User
-	row := db.QueryRow("select email, username from users where username=?", email)
-	if err := row.Scan(&usr.Email, &usr.Name); err != nil {
+	var post Post
+	row := db.QueryRow("select content, created from posts join users on user_id=users.id where users.email=?", email)
+	if err := row.Scan(&post.Content, &post.Created); err != nil {
 		log.Fatal("Error querying database: ", err)
 	}
-	return usr
+	return post
 }

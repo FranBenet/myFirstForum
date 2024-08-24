@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
+
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
 )
 
 func main() {
-	dbaser.InitDb()
-	dbaser.PopulateDb()
-	// fmt.Println(dbaser.GetUser("jmadsen@uef.fi"))
+	// dbaser.InitDb()
+	// dbaser.PopulateDb()
+	fmt.Println(dbaser.PostsByUser("jmadsen@uef.fi"))
 }
