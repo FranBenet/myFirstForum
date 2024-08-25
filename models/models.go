@@ -14,6 +14,7 @@ type Post struct {
 }
 
 type Category struct {
+	Id   int
 	Name string
 }
 

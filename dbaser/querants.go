@@ -28,7 +28,7 @@ func PostsByUser(email string) (models.Post, error) {
 	return post, nil
 }
 
-func AllPosts() ([]models.Post, error) {
+func Posts() ([]models.Post, error) {
 	db, err := sql.Open("sqlite3", "./forum.db")
 	if err != nil {
 		return []models.Post{}, err
@@ -49,6 +49,53 @@ func AllPosts() ([]models.Post, error) {
 		}
 		post.Created = timeCreated.Format("02/01/2006 15:04")
 		result = append(result, post)
+	}
+	return result, nil
+}
+
+func PostsByCategory(category int) ([]models.Post, error) {
+	db, err := sql.Open("sqlite3", "./forum.db")
+	if err != nil {
+		return []models.Post{}, err
+	}
+	defer db.Close()
+	var result []models.Post
+	row, err := db.Query("select content, created from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category)
+	if err != nil {
+		return []models.Post{}, err
+	}
+	for row.Next() {
+		var created string
+		var post models.Post
+		err := row.Scan(&post.Content, &created)
+		timeCreated, err := time.Parse(time.RFC3339, created)
+		if err != nil {
+			return []models.Post{}, err
+		}
+		post.Created = timeCreated.Format("02/01/2006 15:04")
+		result = append(result, post)
+	}
+	return result, nil
+}
+
+func Categories() ([]models.Category, error) {
+	db, err := sql.Open("sqlite3", "./forum.db")
+	if err != nil {
+		return []models.Category{}, err
+	}
+	defer db.Close()
+	var result []models.Category
+	row, err := db.Query("select * from categories")
+	if err != nil {
+		return []models.Category{}, err
+	}
+	for row.Next() {
+		var cat models.Category
+		err := row.Scan(&cat.Id, &cat.Name)
+		if err != nil {
+			return []models.Category{}, err
+		}
+		result = append(result, cat)
 	}
 	return result, nil
 }

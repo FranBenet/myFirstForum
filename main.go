@@ -9,5 +9,5 @@ import (
 func main() {
 	// dbaser.InitDb()
 	// dbaser.PopulateDb()
-	fmt.Println(dbaser.AllPosts())
+	fmt.Println(dbaser.Categories())
 }

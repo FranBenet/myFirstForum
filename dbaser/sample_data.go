@@ -12,7 +12,7 @@ var insertPosts = `insert into posts (user_id, created, content) values
 (2, "2024-01-03 20:07", "Jamie Oliver's latest book is a must for single men!"),
 (3, "2024-01-11 17:57", "A must read for every stoic out there, Meditations by Marcus Aurelius");`
 
-var insertCategs = `insert into categories (name) values
+var insertCategs = `insert into categories (label) values
 ("fiction"),
 ("sci-fi"),
 ("novel"),

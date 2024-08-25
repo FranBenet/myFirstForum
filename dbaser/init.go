@@ -100,17 +100,19 @@ func PopulateDb() {
 		log.Fatal("Error opening database file")
 	}
 	defer db.Close()
+	// Insert users.
 	stmt, err := db.Prepare(insertUsers)
 	if err != nil {
 		log.Fatal("Error preparing (user) insert statement: ", stmt)
 	}
+	defer stmt.Close()
 	res, err := stmt.Exec()
 	if err != nil {
 		log.Fatal("Error inserting into database: ", err)
 	}
 	nrow, _ := res.RowsAffected()
 	log.Println("Number of rows inserted into table users: ", nrow)
-
+	// Insert posts.
 	stmt, err = db.Prepare(insertPosts)
 	if err != nil {
 		log.Fatal("Error preparing (posts) insert statement: ", stmt)
@@ -121,4 +123,26 @@ func PopulateDb() {
 	}
 	nrow, _ = res.RowsAffected()
 	log.Println("Number of rows inserted into table posts: ", nrow)
+	// Insert categories.
+	stmt, err = db.Prepare(insertCategs)
+	if err != nil {
+		log.Fatal("Error preparing (categories) insert statement: ", stmt)
+	}
+	res, err = stmt.Exec()
+	if err != nil {
+		log.Fatal("Error inserting into database: ", err)
+	}
+	nrow, _ = res.RowsAffected()
+	log.Println("Number of rows inserted into table categories: ", nrow)
+	// Insert post categories.
+	stmt, err = db.Prepare(postCategories)
+	if err != nil {
+		log.Fatal("Error preparing (post categories) insert statement: ", stmt)
+	}
+	res, err = stmt.Exec()
+	if err != nil {
+		log.Fatal("Error inserting into database: ", err)
+	}
+	nrow, _ = res.RowsAffected()
+	log.Println("Number of rows inserted into table post_categs: ", nrow)
 }
