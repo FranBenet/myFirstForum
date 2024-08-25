@@ -9,5 +9,5 @@ import (
 func main() {
 	// dbaser.InitDb()
 	// dbaser.PopulateDb()
-	fmt.Println(dbaser.PostsByUser("jmadsen@uef.fi"))
+	fmt.Println(dbaser.AllPosts())
 }

@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"log"
 	"os"
-	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -23,21 +22,6 @@ Behaviour:
    separate functions for each piece of information needed and I concatenate them for the handler function, which I
    guess is a more modular approach.
 */
-
-type User struct {
-	Email    string
-	Name     string
-	Password string
-}
-
-type Post struct {
-	Created time.Time
-	Content string
-}
-
-type Category struct {
-	Name string
-}
 
 var createStatements = []string{
 	`create table if not exists users (
@@ -137,18 +121,4 @@ func PopulateDb() {
 	}
 	nrow, _ = res.RowsAffected()
 	log.Println("Number of rows inserted into table posts: ", nrow)
-}
-
-func PostsByUser(email string) Post {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		log.Fatal("Error opening database file")
-	}
-	defer db.Close()
-	var post Post
-	row := db.QueryRow("select content, created from posts join users on user_id=users.id where users.email=?", email)
-	if err := row.Scan(&post.Content, &post.Created); err != nil {
-		log.Fatal("Error querying database: ", err)
-	}
-	return post
 }
