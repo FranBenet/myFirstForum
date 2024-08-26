@@ -5,8 +5,23 @@ import (
 	"log"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
+
+/* TODO
+   - Filter posts by category. OK
+   - Filter posts by reaction (likes).
+   - Display all posts. OK
+   - Filter posts by user? OK
+
+Behaviour:
+   When a post is requested from the DB, the idea is that the post will be displayed along with its tags, username,
+   comments, likes/dislikes, etc. Should I create a function that will return all this? The other option is to have
+   separate functions for each piece of information needed and I concatenate them for the handler function, which I
+   guess is a more modular approach.
+*/
 
 func PostsByUser(email string) (models.Post, error) {
 	db, err := sql.Open("sqlite3", "./forum.db")
@@ -98,4 +113,56 @@ func Categories() ([]models.Category, error) {
 		result = append(result, cat)
 	}
 	return result, nil
+}
+
+func AddUser(user models.User) (int, error) {
+	db, err := sql.Open("sqlite3", "./forum.db")
+	if err != nil {
+		return 0, err
+	}
+	defer db.Close()
+	passHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 6)
+	if err != nil {
+		return 0, err
+	}
+	stmt, err := db.Prepare("insert into users (email, username, password) values (?, ?, ?)")
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+	res, err := stmt.Exec(user.Email, user.Name, string(passHash))
+	if err != nil {
+		return 0, err
+	}
+	var id int64
+	if id, err = res.LastInsertId(); err != nil {
+		return 0, err
+	}
+	return int(id), nil
+}
+
+func UserEmailExists(user models.User) (bool, error) {
+	db, err := sql.Open("sqlite3", "./forum.db")
+	if err != nil {
+		return true, err
+	}
+	defer db.Close()
+	row := db.QueryRow("select * from users where email=?", user.Email)
+	if err := row.Scan(); err == sql.ErrNoRows {
+		return false, nil
+	}
+	return true, nil
+}
+
+func UsernameExists(user models.User) (bool, error) {
+	db, err := sql.Open("sqlite3", "./forum.db")
+	if err != nil {
+		return true, err
+	}
+	defer db.Close()
+	row := db.QueryRow("select * from users where username=?", user.Name)
+	if err := row.Scan(); err == sql.ErrNoRows {
+		return false, nil
+	}
+	return true, nil
 }

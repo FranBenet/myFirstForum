@@ -10,25 +10,12 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-/* TODO
-   - Filter posts by category.
-   - Filter posts by reaction (likes).
-   - Display all posts.
-   - Filter posts by user?
-
-Behaviour:
-   When a post is requested from the DB, the idea is that the post will be displayed along with its tags, username,
-   comments, likes/dislikes, etc. Should I create a function that will return all this? The other option is to have
-   separate functions for each piece of information needed and I concatenate them for the handler function, which I
-   guess is a more modular approach.
-*/
-
 var createStatements = []string{
 	`create table if not exists users (
 id integer primary key,
 email varchar(30) not null unique,
 username varchar(20) not null unique,
-password varchar(30) not null
+password text not null
 );`,
 	`create table if not exists user_profile (
 id integer primary key,
