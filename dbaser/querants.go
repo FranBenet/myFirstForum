@@ -2,6 +2,7 @@ package dbaser
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"time"
 
@@ -162,6 +163,23 @@ func UsernameExists(user models.User) (bool, error) {
 	defer db.Close()
 	row := db.QueryRow("select * from users where username=?", user.Name)
 	if err := row.Scan(); err == sql.ErrNoRows {
+		return false, nil
+	}
+	return true, nil
+}
+
+func CheckPassword(user models.User) (bool, error) {
+	db, err := sql.Open("sqlite3", "./forum.db")
+	if err != nil {
+		return false, err
+	}
+	defer db.Close()
+	var pass string
+	row := db.QueryRow("select password from users where email=?", user.Email)
+	if err := row.Scan(&pass); err == sql.ErrNoRows {
+		return false, errors.New("User not found")
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(pass), []byte(user.Password)); err != nil {
 		return false, nil
 	}
 	return true, nil

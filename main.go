@@ -11,5 +11,5 @@ func main() {
 	// dbaser.InitDb()
 	// dbaser.PopulateDb()
 	user := models.User{"madrabbit@matrix.com", "whiterabbit", "Rz_;*$78)"}
-	fmt.Println(dbaser.UsernameExists((user)))
+	fmt.Println(dbaser.CheckPassword((user)))
 }
