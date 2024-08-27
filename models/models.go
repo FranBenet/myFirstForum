@@ -9,6 +9,7 @@ type User struct {
 }
 
 type Post struct {
+	Id      int
 	Created string
 	Title   string
 	Content string
