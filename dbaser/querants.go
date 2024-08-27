@@ -24,24 +24,60 @@ Behaviour:
    guess is a more modular approach.
 */
 
-func PostsByUser(email string) (models.Post, error) {
+func PostsByUser(user models.User) ([]models.Post, error) {
 	db, err := sql.Open("sqlite3", "./forum.db")
 	if err != nil {
 		log.Fatal("Error opening database file")
 	}
 	defer db.Close()
-	var post models.Post
-	var created string
-	row := db.QueryRow("select content, created from posts join users on user_id=users.id where users.email=?", email)
-	if err := row.Scan(&post.Content, &created); err != nil {
-		return models.Post{}, err
-	}
-	timeCreated, err := time.Parse(time.RFC3339, created)
+	row, err := db.Query("select title, content, created from posts join users on user_id=users.id where users.email=?", user.Email)
 	if err != nil {
-		return models.Post{}, err
+		return []models.Post{}, err
 	}
-	post.Created = timeCreated.Format("02/01/2006 15:04")
-	return post, nil
+	var result []models.Post
+	for row.Next() {
+		var post models.Post
+		var created string
+		err = row.Scan(&post.Title, &post.Content, &created)
+		if err != nil {
+			return []models.Post{}, err
+		}
+		timeCreated, err := time.Parse(time.RFC3339, created)
+		if err != nil {
+			return []models.Post{}, err
+		}
+		post.Created = timeCreated.Format("02/01/2006 15:04")
+		result = append(result, post)
+	}
+	return result, nil
+}
+
+func UserLikedPosts(user models.User) ([]models.Post, error) {
+	db, err := sql.Open("sqlite3", "./forum.db")
+	if err != nil {
+		log.Fatal("Error opening database file")
+	}
+	defer db.Close()
+	row, err := db.Query("select title, content, created from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.email=?", user.Email)
+	if err != nil {
+		return []models.Post{}, err
+	}
+	var result []models.Post
+	for row.Next() {
+		var post models.Post
+		var created string
+		err = row.Scan(&post.Title, &post.Content, &created)
+		if err != nil {
+			return []models.Post{}, err
+		}
+		timeCreated, err := time.Parse(time.RFC3339, created)
+		if err != nil {
+			return []models.Post{}, err
+		}
+		post.Created = timeCreated.Format("02/01/2006 15:04")
+		result = append(result, post)
+	}
+	return result, nil
 }
 
 func Posts() ([]models.Post, error) {
@@ -51,14 +87,14 @@ func Posts() ([]models.Post, error) {
 	}
 	defer db.Close()
 	var result []models.Post
-	row, err := db.Query("select content, created from posts order by created desc")
+	row, err := db.Query("select title, content, created from posts order by created desc")
 	if err != nil {
 		return []models.Post{}, err
 	}
 	for row.Next() {
 		var created string
 		var post models.Post
-		err := row.Scan(&post.Content, &created)
+		err := row.Scan(&post.Title, &post.Content, &created)
 		timeCreated, err := time.Parse(time.RFC3339, created)
 		if err != nil {
 			log.Fatal("Error parsing post creation time")
@@ -69,21 +105,21 @@ func Posts() ([]models.Post, error) {
 	return result, nil
 }
 
-func PostsByCategory(category int) ([]models.Post, error) {
+func PostsByCategory(category models.Category) ([]models.Post, error) {
 	db, err := sql.Open("sqlite3", "./forum.db")
 	if err != nil {
 		return []models.Post{}, err
 	}
 	defer db.Close()
 	var result []models.Post
-	row, err := db.Query("select content, created from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category)
+	row, err := db.Query("select title, content, created from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category.Id)
 	if err != nil {
 		return []models.Post{}, err
 	}
 	for row.Next() {
 		var created string
 		var post models.Post
-		err := row.Scan(&post.Content, &created)
+		err := row.Scan(&post.Title, &post.Content, &created)
 		timeCreated, err := time.Parse(time.RFC3339, created)
 		if err != nil {
 			return []models.Post{}, err

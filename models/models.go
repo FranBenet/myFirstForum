@@ -10,6 +10,7 @@ type User struct {
 
 type Post struct {
 	Created string
+	Title   string
 	Content string
 }
 
@@ -19,5 +20,5 @@ type Category struct {
 }
 
 func (p Post) String() string {
-	return fmt.Sprintf("%s\n%s\n", p.Content, p.Created)
+	return fmt.Sprintf("** %s **\n%s\n%s\n", p.Title, p.Content, p.Created)
 }
