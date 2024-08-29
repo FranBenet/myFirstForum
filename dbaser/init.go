@@ -25,9 +25,9 @@ content text
 	`create table if not exists posts(
 id integer primary key,
 user_id integer references users(id),
-created datetime not null default current_timestamp,
 title varchar(60) not null,
-content text not null
+content text not null,
+created datetime not null default current_timestamp
 );`,
 	`create table if not exists comments (
 id integer primary key,

@@ -87,14 +87,14 @@ func Posts() ([]models.Post, error) {
 	}
 	defer db.Close()
 	var result []models.Post
-	row, err := db.Query("select title, content, created from posts order by created desc")
+	row, err := db.Query("select * from posts order by created desc")
 	if err != nil {
 		return []models.Post{}, err
 	}
 	for row.Next() {
 		var created string
 		var post models.Post
-		err := row.Scan(&post.Title, &post.Content, &created)
+		err := row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &created)
 		timeCreated, err := time.Parse(time.RFC3339, created)
 		if err != nil {
 			log.Fatal("Error parsing post creation time")
@@ -112,14 +112,14 @@ func PostsByCategory(category models.Category) ([]models.Post, error) {
 	}
 	defer db.Close()
 	var result []models.Post
-	row, err := db.Query("select title, content, created from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category.Id)
+	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category.Id)
 	if err != nil {
 		return []models.Post{}, err
 	}
 	for row.Next() {
 		var created string
 		var post models.Post
-		err := row.Scan(&post.Title, &post.Content, &created)
+		err := row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &created)
 		timeCreated, err := time.Parse(time.RFC3339, created)
 		if err != nil {
 			return []models.Post{}, err

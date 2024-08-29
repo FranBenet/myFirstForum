@@ -3,6 +3,7 @@ package models
 import "fmt"
 
 type User struct {
+	Id       int
 	Email    string
 	Name     string
 	Password string
@@ -10,9 +11,10 @@ type User struct {
 
 type Post struct {
 	Id      int
-	Created string
+	UserId  int
 	Title   string
 	Content string
+	Created string
 }
 
 type Category struct {
