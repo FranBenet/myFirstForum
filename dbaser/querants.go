@@ -16,6 +16,10 @@ import (
    - Filter posts by reaction (likes).
    - Display all posts. OK
    - Filter posts by user? OK
+   - Number of comments of a post.
+   - Trending posts (number of likes and dislikes).
+   - User-liked posts.
+   - Keep track of registered users.
 
 Behaviour:
    When a post is requested from the DB, the idea is that the post will be displayed along with its tags, username,
@@ -24,12 +28,16 @@ Behaviour:
    guess is a more modular approach.
 */
 
-func PostsByUser(user models.User) ([]models.Post, error) {
+func DbHandle(path string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "./forum.db")
 	if err != nil {
-		log.Fatal("Error opening database file")
+		log.Println("Error opening database file")
+		return nil, err
 	}
-	defer db.Close()
+	return db, nil
+}
+
+func PostsByUser(db *sql.DB, user models.User) ([]models.Post, error) {
 	row, err := db.Query("select title, content, created from posts join users on user_id=users.id where users.email=?", user.Email)
 	if err != nil {
 		return []models.Post{}, err
@@ -49,15 +57,14 @@ func PostsByUser(user models.User) ([]models.Post, error) {
 		post.Created = timeCreated.Format("02/01/2006 15:04")
 		result = append(result, post)
 	}
+	err = row.Err()
+	if err != nil {
+		return []models.Post{}, err
+	}
 	return result, nil
 }
 
-func UserLikedPosts(user models.User) ([]models.Post, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		log.Fatal("Error opening database file")
-	}
-	defer db.Close()
+func UserLikedPosts(db *sql.DB, user models.User) ([]models.Post, error) {
 	row, err := db.Query("select title, content, created from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.email=?", user.Email)
 	if err != nil {
 		return []models.Post{}, err
@@ -77,15 +84,14 @@ func UserLikedPosts(user models.User) ([]models.Post, error) {
 		post.Created = timeCreated.Format("02/01/2006 15:04")
 		result = append(result, post)
 	}
-	return result, nil
-}
-
-func Posts() ([]models.Post, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
+	err = row.Err()
 	if err != nil {
 		return []models.Post{}, err
 	}
-	defer db.Close()
+	return result, nil
+}
+
+func Posts(db *sql.DB) ([]models.Post, error) {
 	var result []models.Post
 	row, err := db.Query("select * from posts order by created desc")
 	if err != nil {
@@ -102,15 +108,14 @@ func Posts() ([]models.Post, error) {
 		post.Created = timeCreated.Format("02/01/2006 15:04")
 		result = append(result, post)
 	}
-	return result, nil
-}
-
-func PostsByCategory(category models.Category) ([]models.Post, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
+	err = row.Err()
 	if err != nil {
 		return []models.Post{}, err
 	}
-	defer db.Close()
+	return result, nil
+}
+
+func PostsByCategory(db *sql.DB, category models.Category) ([]models.Post, error) {
 	var result []models.Post
 	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category.Id)
 	if err != nil {
@@ -127,15 +132,14 @@ func PostsByCategory(category models.Category) ([]models.Post, error) {
 		post.Created = timeCreated.Format("02/01/2006 15:04")
 		result = append(result, post)
 	}
+	err = row.Err()
+	if err != nil {
+		return []models.Post{}, err
+	}
 	return result, nil
 }
 
-func Categories() ([]models.Category, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return []models.Category{}, err
-	}
-	defer db.Close()
+func Categories(db *sql.DB) ([]models.Category, error) {
 	var result []models.Category
 	row, err := db.Query("select * from categories")
 	if err != nil {
@@ -149,15 +153,14 @@ func Categories() ([]models.Category, error) {
 		}
 		result = append(result, cat)
 	}
+	err = row.Err()
+	if err != nil {
+		return []models.Category{}, err
+	}
 	return result, nil
 }
 
-func AddUser(user models.User) (int, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return 0, err
-	}
-	defer db.Close()
+func AddUser(db *sql.DB, user models.User) (int, error) {
 	passHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 6)
 	if err != nil {
 		return 0, err
@@ -178,12 +181,7 @@ func AddUser(user models.User) (int, error) {
 	return int(id), nil
 }
 
-func UserEmailExists(user models.User) (bool, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return true, err
-	}
-	defer db.Close()
+func UserEmailExists(db *sql.DB, user models.User) (bool, error) {
 	row := db.QueryRow("select * from users where email=?", user.Email)
 	if err := row.Scan(); err == sql.ErrNoRows {
 		return false, nil
@@ -191,12 +189,7 @@ func UserEmailExists(user models.User) (bool, error) {
 	return true, nil
 }
 
-func UsernameExists(user models.User) (bool, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return true, err
-	}
-	defer db.Close()
+func UsernameExists(db *sql.DB, user models.User) (bool, error) {
 	row := db.QueryRow("select * from users where username=?", user.Name)
 	if err := row.Scan(); err == sql.ErrNoRows {
 		return false, nil
@@ -204,12 +197,7 @@ func UsernameExists(user models.User) (bool, error) {
 	return true, nil
 }
 
-func CheckPassword(user models.User) (bool, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return false, err
-	}
-	defer db.Close()
+func CheckPassword(db *sql.DB, user models.User) (bool, error) {
 	var pass string
 	row := db.QueryRow("select password from users where email=?", user.Email)
 	if err := row.Scan(&pass); err == sql.ErrNoRows {
@@ -221,12 +209,7 @@ func CheckPassword(user models.User) (bool, error) {
 	return true, nil
 }
 
-func PostReactions(post models.Post) (int, int, error) {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		return 0, 0, err
-	}
-	defer db.Close()
+func PostReactions(db *sql.DB, post models.Post) (int, int, error) {
 	var likes, dislikes int
 	row := db.QueryRow("select count(*) from post_reactions where post_id=? and liked=?", post.Id, 1)
 	if err := row.Scan(&likes); err != nil {

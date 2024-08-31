@@ -32,7 +32,11 @@ func main() {
 	// dbaser.InitDb()
 	// dbaser.PopulateDb()
 	// user := models.User{"madrabbit@matrix.com", "whiterabbit", "Rz_;*$78)"}
-	fmt.Println(dbaser.Posts())
+	db, err := dbaser.DbHandle("forum.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dbaser.Posts(db))
 
 	//	PROVISIONAL STARTING WEB SERVER CODE
 	mux := routes()
