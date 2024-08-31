@@ -1,0 +1,92 @@
+.posts-section {
+    grid-area: gallery;
+    background-color: var(--secondary-color);
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+/* Filter by Category Menu */
+.filter-menu{
+    box-sizing:border-box;
+    border-radius: 10px;
+    box-shadow: 2px 2px 6px 1px var(--primary-color-op);
+    padding: 1em;
+    width: 95%;
+    align-self: start;
+    background-color: var(--secondary-color);
+    cursor: pointer;
+    position:relative;
+}
+
+.filter-selector{
+    width: 96%;
+    height: 100%;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    top:0px;
+    margin:auto;
+}
+
+/* Gallery - Post Overview */
+.gallery{
+    width: 95%;
+    border-radius: 40px;
+    margin-top: 40px;
+    align-self: start;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+
+/* Pagination  */
+.page-navigation{
+    align-self: center;
+}
+
+.paginations {
+    display: inline-flex;
+    list-style-type: none; /* To get rid of the bullet points assigned to lists by default */
+    padding: 0;
+    margin: 20px 0;
+    border: 2px none var(--primary-color);
+    border-radius: 15px;
+    align-items: center;
+    padding: 2px;
+}
+
+.page-link {
+    display: block;
+    padding: 8px 16px;
+    text-decoration: none; /* To get rid of the link underlined */
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: var(--primary-color-op);
+}
+
+/* Style for a disabled button. For previous/next buttons in specific situations. */
+.page-item.disabled .page-link {
+    color: var(--primary-color-op);
+    pointer-events: none;
+}
+
+/* Style for the current active page button. */
+/* .page-item :hover:not(.active) {
+    background-color: var(--primary-color-op);
+    border-radius: 5px;
+} */
+
+.page-item.active .page-link {
+    color: var(--secondary-color);
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}

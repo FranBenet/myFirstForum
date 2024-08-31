@@ -1,0 +1,26 @@
+{{define "main-bar"}}
+<header class="header">
+    <div class="logo">
+        <img class= "img-logo" src="./static/img/literary_lions_logo.png" alt="Logo literary lions club">
+    </div>
+    <form class="search-bar" action="/search">
+        <label for="search_bar"></label>
+        <textarea name="search_bar" id="search_bar" class="search" placeholder="Search"></textarea>
+    </form>
+    <div class="icons-menu">
+        <a href="/create-post" class="createPost-page-button page-button">
+            <span class="main-icons createPost-icon material-symbols-outlined" style="font-size: 36px;" >post_add</span>
+            <p class="text-icons">Create Post</p>
+        </a>
+        <a href="/notifications" class="notifications-page-button page-button">
+            <span class="main-icons notifications-icon material-symbols-outlined" style="font-size: 36px;">notifications</span>
+            <p class="text-icons">Notifications</p>
+        </a>
+        <a href="/profile" class="profile-page-button page-button">
+            <span class="main-icons profile-icon material-symbols-outlined" style="font-size: 36px;" >person</span>
+            <p class="text-icons">Profile</p>
+        </a>
+    </div>
+    
+</header>
+{{end}} 

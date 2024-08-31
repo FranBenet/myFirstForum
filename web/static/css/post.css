@@ -1,0 +1,134 @@
+/* POST-OVERVIEW STYLE  */
+
+.post-container {
+    background-color: var(--secondary-color);
+    box-shadow: 2px 2px 10px 1px var(--primary-color-op);
+    width: 100%;
+    border-radius: 30px;
+    display: flex;
+    flex-flow: column nowrap;
+    box-sizing: border-box;
+    padding: 40px 110px 30px 110px;
+    cursor: pointer;
+}
+
+.post-header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+
+.post-content {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: start;
+}
+
+.post-data {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 0px 20px;
+    text-transform: capitalize ;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 300 ;
+    font-size: 14px;
+    line-height: 1.61;
+}
+
+.post-username{
+    margin: 0px;
+    margin-bottom: 30px;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 400 ;
+    font-size: 14px;
+    line-height: 1.61;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    font-weight: 700;
+    padding: 8px 10px;
+    border-radius: 5px;
+}
+.post-category{
+    margin:0px;
+    margin-bottom: 30px;
+
+    text-transform: uppercase;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 500 ;
+    font-size: 14px;
+    line-height: 1.61;
+    /* text-decoration: underline; */
+    color: black;
+}
+
+.post-title{
+    margin:0px;
+    margin-bottom: 32px;
+
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 700 ;
+    font-size: 48px;
+    line-height: 1.2em;
+    max-width: 40ch;
+}
+.post-description{
+    margin:0px;
+    margin-bottom: 35px;
+
+    text-transform: capitalize ;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 400 ;
+    font-size: 16px;
+    line-height: 2em;
+    max-width: 100ch;
+
+    /* Limit of lines for the box. After the limit, it shows ... */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;   /* Limit the text to 3 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 5.5em; /*  Control max height based on font size and line count */
+}
+
+.data{
+    margin:0px;
+    
+    text-transform: capitalize ;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 300 ;
+    font-size: 14px;
+    line-height: 1.61;
+}
+
+
+/* POST-MINIATURE STYLE */
+
+.miniature-post-container {
+    background-color: var(--secondary-color);
+    box-shadow: 2px 2px 10px 1px var(--primary-color-op);   
+    width: 70%;
+    border-radius: 20px;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: start;
+    padding: 18px;
+    gap: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;    
+}
+
+.miniature-post-title{
+    margin:0px;
+    box-sizing: border-box;
+    text-align: start;
+    font-size: 18px;
+}
+
+.miniature-post-username {
+    margin:0px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+/* POST-EXTENDED STYLE */

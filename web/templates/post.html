@@ -1,0 +1,197 @@
+{{define "post-overview"}}
+    <div class="post-container">
+        <section class="post-header">
+            <p class="post-username">username</p>
+            <p class="post-category">category</p>
+        </section>
+        <section class="post-content">
+            <h1 class="post-title">title</h1>
+            <p class="post-description">Description about the post. </p>
+        </section>
+        <section class="post-data">
+            <p class="date">
+                <time datetime="2026-02-03"> 3 February 2026</time>
+            </p>
+            <p class="date">
+                |
+            </p>
+            <p class="date">
+                6 Likes
+            </p>
+            <p class="date">
+                |
+            </p>
+            <p class="date">
+                10 Comments
+            </p>
+        </section> 
+    </div>
+{{end}}
+
+
+{{define "post-miniature"}}
+    <div class="miniature-post-container">
+        <h1 class="miniature-post-title">Exploring the Depths of Character Development in 'To Kill a Mockingbird</h1>
+        <p class="miniature-post-username">BookLover92</p>              
+    </div>
+{{end}}
+
+
+{{define "post-extended"}}
+    <div class="post-id-container">
+        <section class="post-id-header">
+            <div class="post-id-user-info">
+                <div class="user-info-image">
+                    <img src="../static/img/meerkat.png" alt="Profile Img" class="image">
+                </div>
+                <div class="user-info-text">
+                    <p class="info-username">BookLover92</p>
+                    <p class="info-date">Created on <time datetime="2026-02-03"> 3 February 2026</time></p>
+                </div>
+            </div>
+            <a href="/category-id" class="post-id-category">> Romance Books</a>
+            <!-- <p class="post-id-category"> > Romance Books</p> -->
+        </section>
+        <section class="post-id-content">
+            <h1 class="post-id-title">Exploring the Depths of Character Development in 'To Kill a Mockingbird</h1>
+            <p class="post-id-description">I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!
+                /n I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!</p>
+        </section>
+        <section class="post-id-data">
+            <p class="date">
+                6 Likes
+            </p>
+            <p class="date">
+                |
+            </p>
+            <p class="date">
+                10 Comments
+            </p>
+            
+        </section>
+
+        <hr class="separator">
+
+        <section class="post-id-comments">
+           {{template "comment".}}
+           <div class="comment-id">
+            <section class="comment-id-header">
+                <div class="comment-id-user-info">
+                    <div class="user-info-image">
+                        <img src="../static/img/rabbit.png" alt="Profile Img" class="image">
+                    </div>
+                    <div class="user-info-text">
+                        <p class="info-username">BookLover92</p>
+                        <p class="info-date">Created on <time datetime="2026-02-03"> 3 February 2026</time></p>
+                    </div>
+                </div>
+            </section>
+            <section class="comment-id-content">
+                <p class="comment-id-description">I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!
+                    /n I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!</p>
+            </section>
+            <section class="comment-id-data">
+                <p class="date">
+                    6 Likes
+                </p>
+                <p class="date">
+                    |
+                </p>
+                <p class="date">
+                    10 Comments
+                </p>
+            </section>
+        </div>
+        <div class="comment-id">
+            <section class="comment-id-header">
+                <div class="comment-id-user-info">
+                    <div class="user-info-image">
+                        <img src="../static/img/dog2.png" alt="Profile Img" class="image">
+                    </div>
+                    <div class="user-info-text">
+                        <p class="info-username">BookLover92</p>
+                        <p class="info-date">Created on <time datetime="2026-02-03"> 3 February 2026</time></p>
+                    </div>
+                </div>
+            </section>
+            <section class="comment-id-content">
+                <p class="comment-id-description">I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!
+                    /n I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!</p>
+            </section>
+            <section class="comment-id-data">
+                <p class="date">
+                    6 Likes
+                </p>
+                <p class="date">
+                    |
+                </p>
+                <p class="date">
+                    10 Comments
+                </p>
+            </section>
+        </div>
+        <div class="comment-id">
+            <section class="comment-id-header">
+                <div class="comment-id-user-info">
+                    <div class="user-info-image">
+                        <img src="../static/img/bear.png" alt="Profile Img" class="image">
+                    </div>
+                    <div class="user-info-text">
+                        <p class="info-username">BookLover92</p>
+                        <p class="info-date">Created on <time datetime="2026-02-03"> 3 February 2026</time></p>
+                    </div>
+                </div>
+            </section>
+            <section class="comment-id-content">
+                <p class="comment-id-description">I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!
+                    /n I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!</p>
+            </section>
+            <section class="comment-id-data">
+                <p class="date">
+                    6 Likes
+                </p>
+                <p class="date">
+                    |
+                </p>
+                <p class="date">
+                    10 Comments
+                </p>
+            </section>
+        </div>
+        <form method="post" action="/post-comment" class="comment-form">
+            <textarea class="comment-area" name="new-comment" id="" placeholder="What do you think?" cols="100" rows="2"></textarea>
+            <button class="submit">Comment</button>
+        </form>  
+    </div>
+{{end}}
+
+{{ define "comment"}}
+    <div class="comment-id">
+        <section class="comment-id-header">
+            <div class="comment-id-user-info">
+                <div class="user-info-image">
+                    <img src="../static/img/dog.png" alt="Profile Img" class="image">
+                </div>
+                <div class="user-info-text">
+                    <p class="info-username">BookLover92</p>
+                    <p class="info-date">Created on <time datetime="2026-02-03"> 3 February 2026</time></p>
+                </div>
+            </div>
+        </section>
+        <section class="comment-id-content">
+            <p class="comment-id-description">I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!
+                /n I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!</p>
+        </section>
+        <section class="comment-id-data">
+            <p class="date">
+                6 Likes
+            </p>
+            <p class="date">
+                |
+            </p>
+            <p class="date">
+                10 Comments
+            </p>
+        </section>
+    </div>
+{{end}}

@@ -1,0 +1,83 @@
+/* Definition of the color palette for the whole project */
+:root {
+    --primary-color: #3c2532;
+    --primary-color-op: #3c253221;
+    /* --primary-color: #dd1b89; */
+    /* --secondary-color: #FFEEDB; */
+    --secondary-color: #ffffff;
+    --third-color: #f7f0de;
+    --typography-family: "Ubuntu", sans-serif;
+    --typography-large: 26px;
+    --typography-medium: 16px;
+}
+
+body {
+    margin: 0px ;
+    display: grid;
+    grid-template-rows: 200px 1fr;
+    grid-template-columns: 2fr 6fr 3fr;
+    grid-template-areas: 
+        "header header header"
+        "empty gallery miniatures";
+    background-color: var(--secondary-color);
+    height: 100vh;
+    font-family: var(--typography-family);
+}
+
+.white{
+    grid-area: empty;
+    /* background-color: #ffffff; */
+    /* border: 2px solid black; */
+    border-radius: 10px;
+}
+
+
+/* Style for Google Font: Ubuntu */
+.ubuntu-light {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  .ubuntu-regular {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .ubuntu-medium {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+  }
+  
+  .ubuntu-bold {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .ubuntu-light-italic {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 300;
+    font-style: italic;
+  }
+  
+  .ubuntu-regular-italic {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+  
+  .ubuntu-medium-italic {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 500;
+    font-style: italic;
+  }
+  
+  .ubuntu-bold-italic {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+  }
+  

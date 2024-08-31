@@ -1,0 +1,238 @@
+.post-id-section {
+    grid-area: gallery;
+    background-color: var(--secondary-color);
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+/* .post-id-container {
+    width: 95%;
+    border-radius: 40px;
+    margin-top: 40px;
+    align-self: start;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+} */
+
+
+.post-id-container{
+    background-color: var(--secondary-color);
+    box-shadow: 2px 2px 10px 1px var(--primary-color-op);
+    width: 100%;
+    border-radius: 30px;
+    display: flex;
+    flex-flow: column nowrap;
+    box-sizing: border-box;
+    padding: 40px 110px 30px 110px;
+    margin-bottom: 30px;
+}
+    .post-id-header{
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+        .post-id-user-info{
+            display: flex;
+            flex-flow: row nowrap;
+            gap: 10px;
+
+        }
+            .user-info-image{
+                width: 60px;
+                height: 60px;
+                /* border: 2px solid black; */
+                border-radius: 50px;
+            }
+                .image{
+                    width: 60px;
+                    height:60px;
+                }
+            .user-info-text{
+                /* border: 2px solid red; */
+                /* box-sizing: border-box; */
+
+                display: flex;
+                flex-flow: column nowrap;
+                justify-content: space-between;
+                padding: 2px;
+            }
+                .info-username{
+                    margin: 0px;
+                    background-color: var(--primary-color);
+                    color: white;
+                    font-weight: 700;
+                    align-self: start;
+                    padding: 6px 8px;
+                    border-radius: 8px;
+                }
+                .info-date{
+                    margin: 0px;
+                    color: rgb(85, 85, 85);
+                    font-weight: 400;
+                }
+        .post-id-category{
+            margin:0px;
+            margin-bottom: 30px;
+
+            text-transform: uppercase;
+            font-family: "Ubuntu", sans-serif;
+            font-weight: 500 ;
+            font-size: 14px;
+            line-height: 1.61;
+            /* text-decoration: underline; */
+            color: black;
+        }
+    .post-id-content {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: start;
+        margin-bottom: 16px;
+    }
+        .post-id-title{
+            margin:0px;
+            margin-bottom: 32px;
+        
+            font-family: "Ubuntu", sans-serif;
+            font-weight: 700 ;
+            font-size: 48px;
+            line-height: 1.2em;
+            max-width: 40ch;
+        }
+        .post-id-description{
+            margin:0px;
+            text-transform: capitalize ;
+            font-family: "Ubuntu", sans-serif;
+            font-weight: 400 ;
+            font-size: 16px;
+            line-height: 2em;
+            max-width: 100ch;
+        }
+    .post-id-data {
+        display: flex;
+        flex-flow: row nowrap;
+        gap: 0px 20px;
+        text-transform: capitalize ;
+        font-family: "Ubuntu", sans-serif;
+        font-weight: 300 ;
+        font-size: 14px;
+        line-height: 1.61;
+    }
+
+.separator {
+    background-color: black;
+    width: 100px;
+    height: 2px;
+}
+
+
+.post-id-comments{
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    box-sizing: border-box;
+    padding: 40px 60px 30px 60px;
+    gap: 32px;
+}
+.comment-id{
+
+}
+.comment-id-header{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+    .comment-id-user-info{
+        display: flex;
+        flex-flow: row nowrap;
+        gap: 10px;
+
+    }
+        .user-info-image{
+            width: 60px;
+            height: 60px;
+            /* border: 2px solid black; */
+            border-radius: 50px;
+        }
+        .user-info-text{
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: space-between;
+            padding: 2px;
+        }
+            .info-username{
+                margin: 0px;
+                background-color: var(--primary-color);
+                color: white;
+                font-weight: 700;
+                align-self: start;
+                padding: 6px 8px;
+                border-radius: 8px;
+            }
+            .info-date{
+                margin: 0px;
+            }
+
+.comment-id-content {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: start;
+    margin-left: 80px;
+    margin-bottom: 8px;
+}
+
+    .comment-id-description{
+        margin:0px;
+       
+        text-transform: capitalize ;
+        font-family: "Ubuntu", sans-serif;
+        font-weight: 400 ;
+        font-size: 16px;
+        line-height: 2em;
+        max-width: 100ch;
+    }
+
+.comment-id-data {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 0px 20px;
+    text-transform: capitalize ;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 300 ;
+    font-size: 14px;
+    line-height: 1.61;
+    margin-left: 80px;
+}
+
+.comment-form{
+    
+    margin-left: 80px;
+    position:relative;
+    border-radius: 16px;
+    border: 2px solid var(--primary-color);
+    width: 850px;
+    
+}
+.comment-area{
+    border-radius: 16px;
+    padding: 10px 10px;
+    overflow: hidden;
+    resize: none;
+    field-sizing: content;
+    border: none;
+    margin: auto;
+    outline: none;
+}
+.submit {
+    position: absolute;
+    right:10px;
+    top:28%;
+    border:none;
+    background-color: var(--secondary-color);
+    font-size: var(--typography-medium);
+    font-weight: 700;
+    color: var(--primary-color);
+    cursor: pointer;
+}
