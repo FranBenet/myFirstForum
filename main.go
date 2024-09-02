@@ -38,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	fmt.Println(dbaser.CommentNumber(db, models.Post{Id: 4}))
+	fmt.Println(dbaser.UserLikedPosts(db, models.User{Email: "robkay@kood.fi"}))
 
 	//	PROVISIONAL STARTING WEB SERVER CODE
 	//mux := routes()

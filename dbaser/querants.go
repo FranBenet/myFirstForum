@@ -66,7 +66,7 @@ func PostsByUser(db *sql.DB, user models.User) ([]models.Post, error) {
 }
 
 func UserLikedPosts(db *sql.DB, user models.User) ([]models.Post, error) {
-	row, err := db.Query("select title, content, created from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.email=?", user.Email)
+	row, err := db.Query("select title, content, created from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.email=? and liked=?", user.Email, 1)
 	if err != nil {
 		return []models.Post{}, err
 	}
@@ -210,7 +210,7 @@ func CheckPassword(db *sql.DB, user models.User) (bool, error) {
 		return false, errors.New("User not found")
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(pass), []byte(user.Password)); err != nil {
-		return false, nil
+		return false, err
 	}
 	return true, nil
 }
