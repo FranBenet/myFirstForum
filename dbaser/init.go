@@ -33,7 +33,8 @@ created datetime not null default current_timestamp
 id integer primary key,
 post_id integer references posts(id),
 user_id integer references users(id),
-content text not null
+content text not null,
+created datetime not null default current_timestamp
 );`,
 	`create table if not exists post_reactions (
 post_id integer references posts(id),
@@ -92,7 +93,7 @@ func PopulateDb() {
 	}
 	defer db.Close()
 	// Insert data.
-	for _, statement := range insertStatements {
+	for table, statement := range insertStatements {
 		stmt, err := db.Prepare(statement)
 		if err != nil {
 			log.Fatal("Error preparing DB statement: ", statement)
@@ -103,6 +104,6 @@ func PopulateDb() {
 			log.Fatal("Error inserting data: ", err)
 		}
 		nrow, _ := res.RowsAffected()
-		log.Println("Number of rows inserted: ", nrow)
+		log.Printf("Number of rows inserted into table %s: %d\n", table, nrow)
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
 func routes() *http.ServeMux {
@@ -36,21 +37,22 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(dbaser.Posts(db))
+	defer db.Close()
+	fmt.Println(dbaser.CommentNumber(db, models.Post{Id: 4}))
 
 	//	PROVISIONAL STARTING WEB SERVER CODE
-	mux := routes()
+	//mux := routes()
 	//Creating a server
-	server := &http.Server{
-		Addr:    ":8080",
-		Handler: mux,
-		// Errorlog: ,
-	}
-	fmt.Println("Server Running in port 8080...")
+	// server := &http.Server{
+	// 	Addr:    ":8080",
+	// 	Handler: mux,
+	// 	// Errorlog: ,
+	// }
+	// fmt.Println("Server Running in port 8080...")
 	//Listen and Serve the server. If error, Fatal error.
-	if err := server.ListenAndServe(); err != nil {
-		log.Fatal(err)
-	}
+	// if err := server.ListenAndServe(); err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func homepage(w http.ResponseWriter, r *http.Request) {

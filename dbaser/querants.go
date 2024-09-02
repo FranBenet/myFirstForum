@@ -16,9 +16,10 @@ import (
    - Filter posts by reaction (likes).
    - Display all posts. OK
    - Filter posts by user? OK
-   - Number of comments of a post.
+   - Number of comments of a post. OK
    - Trending posts (number of likes and dislikes).
    - User-liked posts.
+   - Get categories associated with a post.
    - Keep track of registered users.
 
 Behaviour:
@@ -38,7 +39,7 @@ func DbHandle(path string) (*sql.DB, error) {
 }
 
 func PostsByUser(db *sql.DB, user models.User) ([]models.Post, error) {
-	row, err := db.Query("select title, content, created from posts join users on user_id=users.id where users.email=?", user.Email)
+	row, err := db.Query("select posts.id, user_id, title, content, created from posts join users on user_id=users.id where users.email=?", user.Email)
 	if err != nil {
 		return []models.Post{}, err
 	}
@@ -46,7 +47,7 @@ func PostsByUser(db *sql.DB, user models.User) ([]models.Post, error) {
 	for row.Next() {
 		var post models.Post
 		var created string
-		err = row.Scan(&post.Title, &post.Content, &created)
+		err = row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &created)
 		if err != nil {
 			return []models.Post{}, err
 		}
@@ -220,4 +221,13 @@ func PostReactions(db *sql.DB, post models.Post) (int, int, error) {
 		return 0, 0, err
 	}
 	return likes, dislikes, nil
+}
+
+func CommentNumber(db *sql.DB, post models.Post) (int, error) {
+	var result int
+	row := db.QueryRow("select count(*) from comments where post_id=?", post.Id)
+	if err := row.Scan(&result); err != nil {
+		return 0, err
+	}
+	return result, nil
 }
