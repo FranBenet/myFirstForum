@@ -162,6 +162,11 @@ func Categories(db *sql.DB) ([]models.Category, error) {
 }
 
 func AddUser(db *sql.DB, user models.User) (int, error) {
+	if ok := UserEmailExists(db, user); !ok {
+		return 0, errors.New("User e-mail already registered.")
+	} else if ok = UsernameExists(db, user); !ok {
+		return 0, errors.New("Username already registered.")
+	}
 	passHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 6)
 	if err != nil {
 		return 0, err
@@ -182,20 +187,20 @@ func AddUser(db *sql.DB, user models.User) (int, error) {
 	return int(id), nil
 }
 
-func UserEmailExists(db *sql.DB, user models.User) (bool, error) {
+func UserEmailExists(db *sql.DB, user models.User) bool {
 	row := db.QueryRow("select * from users where email=?", user.Email)
 	if err := row.Scan(); err == sql.ErrNoRows {
-		return false, nil
+		return false
 	}
-	return true, nil
+	return true
 }
 
-func UsernameExists(db *sql.DB, user models.User) (bool, error) {
+func UsernameExists(db *sql.DB, user models.User) bool {
 	row := db.QueryRow("select * from users where username=?", user.Name)
 	if err := row.Scan(); err == sql.ErrNoRows {
-		return false, nil
+		return false
 	}
-	return true, nil
+	return true
 }
 
 func CheckPassword(db *sql.DB, user models.User) (bool, error) {
