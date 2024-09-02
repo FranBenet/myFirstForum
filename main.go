@@ -38,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	fmt.Println(dbaser.UserLikedPosts(db, models.User{Email: "robkay@kood.fi"}))
+	fmt.Println(dbaser.PostCategories(db, models.Post{Id: 1}))
 
 	//	PROVISIONAL STARTING WEB SERVER CODE
 	//mux := routes()

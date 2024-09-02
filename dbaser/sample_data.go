@@ -20,10 +20,10 @@ var insertStatements = map[string]string{
 ("science"),
 ("cooking");`,
 	"post_categs": `insert into post_categs values
-(2, 1),
-(4, 2),
-(7, 3),
-(5, 4);`,
+(1, 2),
+(2, 4),
+(3, 7),
+(4, 5);`,
 	"post_reactions": `insert into post_reactions values
 (1, 1, 1),
 (1, 2, 1),

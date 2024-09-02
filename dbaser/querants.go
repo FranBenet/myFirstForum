@@ -18,9 +18,8 @@ import (
    - Filter posts by user? OK
    - Number of comments of a post. OK
    - Trending posts (number of likes and dislikes).
-   - User-liked posts.
-   - Get categories associated with a post.
-   - Keep track of registered users.
+   - User-liked posts. OK
+   - Get categories associated with a post. OK
 
 Behaviour:
    When a post is requested from the DB, the idea is that the post will be displayed along with its tags, username,
@@ -235,4 +234,25 @@ func CommentNumber(db *sql.DB, post models.Post) (int, error) {
 		return 0, err
 	}
 	return result, nil
+}
+
+func PostCategories(db *sql.DB, post models.Post) ([]models.Category, error) {
+	var categories []models.Category
+	row, err := db.Query("select categories.id, label from categories join post_categs on categories.id=categ_id where post_id=?", post.Id)
+	if err != nil {
+		return []models.Category{}, err
+	}
+	for row.Next() {
+		var cat models.Category
+		err := row.Scan(&cat.Id, &cat.Name)
+		if err != nil {
+			return []models.Category{}, err
+		}
+		categories = append(categories, cat)
+	}
+	err = row.Err()
+	if err != nil {
+		return []models.Category{}, err
+	}
+	return categories, nil
 }
