@@ -2,7 +2,7 @@ package helpers
 
 import (
 	"html/template"
-	"literary-lions/pkg/model"
+	"literary-lions/model"
 	"log"
 	"net/http"
 )

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"literary-lions/pkg/helpers"
+	"literary-lions/helpers"
 	"log"
 	"net/http"
 )
