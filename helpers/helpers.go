@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 
-	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/model"
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
-func RenderTemplate(w http.ResponseWriter, name string, data *model.Data) {
+func RenderTemplate(w http.ResponseWriter, name string, data *models.Data) {
 	htmlTemplates := []string{
 		"web/templates/base.html",
 		"web/templates/header.html",
@@ -43,61 +43,61 @@ func RenderTemplate(w http.ResponseWriter, name string, data *model.Data) {
 }
 
 // THIS FUNCTIONS HAS TO BE DELETED. IT'S JUST TO CREATE A SIMPLE DATA FOR DEVELOPING
-func GetData() *model.Data {
+func GetData() *models.Data {
 
-	post01 := &model.Post{
+	post01 := &models.Post{
 		Id:            1,
 		UserId:        1,
 		Username:      "HistoricalFictionBuff",
 		Category:      "Fantasy",
 		Title:         "Lord Of the rings, everything about the trilogy that changed the world",
 		Content:       "flksjadogaj ogsalj goaigj aog jaogj oajsgj aoligjao jgiodsja ogja jgoajo jgdsa ogjaoj",
-		PostCreated:   "16 March 2024",
+		Created:       "16 March 2024",
 		LikesCount:    5,
 		CommentsCount: 3,
 		LikeState:     false,
 		DislikeState:  false,
 	}
 
-	post02 := &model.Post{
+	post02 := &models.Post{
 		Id:            2,
 		UserId:        2,
 		Username:      "BookEater",
 		Category:      "War",
 		Title:         "The Impact of Setting on 'All the Light We Cannot See",
 		Content:       "The settings in All the Light We Cannot See—particularly the war-torn cities of France—play such a crucial role in shaping the narrative. The way Anthony Doerr describes Saint-Malo almost makes it feel like a character itself.",
-		PostCreated:   "21 November 2022",
+		Created:       "21 November 2022",
 		LikesCount:    9,
 		CommentsCount: 9,
 		LikeState:     true,
 		DislikeState:  false,
 	}
 
-	minipost01 := &model.MiniPost{
+	minipost01 := &models.MiniPost{
 		Id:         1,
 		Username:   "BookLover90",
 		Title:      "Exploring the Depths of Character Development in 'To Kill a Mockingbird",
 		LikesCount: 10,
 	}
 
-	minipost02 := &model.MiniPost{
+	minipost02 := &models.MiniPost{
 		Id:         2,
 		Username:   "FantasyFantastic",
 		Title:      "Comparing Magic Systems: Sanderson vs. Rowling",
 		LikesCount: 7,
 	}
 
-	var postsCollection []model.Post
+	var postsCollection []models.Post
 	postsCollection = append(postsCollection, *post01)
 	postsCollection = append(postsCollection, *post02)
 
-	var minipostsCollection []model.MiniPost
+	var minipostsCollection []models.MiniPost
 	minipostsCollection = append(minipostsCollection, *minipost01)
 	minipostsCollection = append(minipostsCollection, *minipost02)
 
 	categories := []string{"Fantasy", "War", "Fiction", "Non-fiction", "Romance", "Crime"}
 
-	data := &model.Data{
+	data := &models.Data{
 		Categories: categories,
 		Posts:      postsCollection,
 		MiniPosts:  minipostsCollection,
@@ -107,15 +107,15 @@ func GetData() *model.Data {
 }
 
 // THIS FUNCTIONS HAS TO BE DELETED. IT'S JUST TO CREATE A SIMPLE DATA FOR DEVELOPING
-func getPostId() *model.Data {
-	post01 := &model.Post{
+func getPostId() *models.Data {
+	post01 := &models.Post{
 		Id:            1,
 		UserId:        1,
 		Username:      "HistoricalFictionBuff",
 		Category:      "Fantasy",
 		Title:         "Lord Of the rings, everything about the trilogy that changed the world",
 		Content:       "flksjadogaj ogsalj goaigj aog jaogj oajsgj aoligjao jgiodsja ogja jgoajo jgdsa ogjaoj",
-		PostCreated:   "16 March 2024",
+		Created:       "16 March 2024",
 		LikesCount:    5,
 		CommentsCount: 3,
 		LikeState:     false,
@@ -123,10 +123,10 @@ func getPostId() *model.Data {
 		Avatar:        "meerkat.png",
 	}
 
-	var postsCollection []model.Post
+	var postsCollection []models.Post
 	postsCollection = append(postsCollection, *post01)
 
-	data := &model.Data{
+	data := &models.Data{
 		Posts: postsCollection,
 	}
 	return data
