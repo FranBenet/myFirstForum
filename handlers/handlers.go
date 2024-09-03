@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"literary-lions/helpers"
 	"log"
 	"net/http"
+
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
 )
 
 // To handle "/"

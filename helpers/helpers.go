@@ -2,9 +2,10 @@ package helpers
 
 import (
 	"html/template"
-	"literary-lions/model"
 	"log"
 	"net/http"
+
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/model"
 )
 
 func RenderTemplate(w http.ResponseWriter, name string, data *model.Data) {
