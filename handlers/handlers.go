@@ -92,14 +92,24 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
+		return
+	} else if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
 		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	data := helpers.GetData()
-	helpers.RenderTemplate(w, "register.html", data)
+	if r.Method == http.MethodGet {
+		data := helpers.GetData()
+		helpers.RenderTemplate(w, "register.html", data)
+	} else if r.Method == http.MethodPost {
+		//	func CreateNewUser()
+		// data := helpers.GetData()
+		helpers.RenderTemplate(w, "registerSuccesful.html", nil)
+	}
 }
 
 // To handle "/post/create"
