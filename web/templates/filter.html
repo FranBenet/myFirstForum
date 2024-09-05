@@ -1,0 +1,11 @@
+{{define "filter"}}
+    <form method="post" action="/" class="filter-menu">  
+        <select class="filter-selector">
+        <option value="" disabled selected > <p>Filter by Category:</p></option>
+        {{range .Categories}}
+        <option value="{{.}}">{{.}}</option>
+        
+        {{end}}
+        </select>
+    </form>
+{{end}}

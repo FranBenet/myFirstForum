@@ -1,0 +1,183 @@
+.main-gallery{
+    width: 95%;
+    border-radius: 40px;
+    margin-top: 40px;
+    /* align-self: start; */
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    gap: 30px;
+    /* background-color: green; */
+
+}
+
+/* POST - OVERVIEW STYLE */
+.post-section{
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.header-container{
+    position: absolute;
+    left: 110px;
+    top: 40px;
+    right: 110px;
+    
+    display: flex;
+    flex-flow: row nowrap;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    width: 740px;
+}
+
+.post-username{
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    font-family: "Ubuntu", sans-serif;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.61;
+
+    margin: 0px;
+    margin-bottom: 0px;
+    padding: 8px 10px;
+    border-radius: 5px;
+}
+.post-category-container{
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 0px 30px;
+}
+.post-category{
+    margin:0px;
+    text-transform: uppercase;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 500 ;
+    font-size: 14px;
+    line-height: 1.61;
+    color: black;
+
+}
+
+.post-container {
+    background-color: var(--secondary-color);
+    box-shadow: 2px 2px 10px 1px var(--primary-color-op);
+    width: 100%;
+    border-radius: 30px;
+    display: flex;
+    flex-flow: column nowrap;
+    box-sizing: border-box;
+    padding: 40px 110px 30px 110px;
+    text-decoration: none;
+    outline: none;
+    color: black;
+}
+
+.like-container{
+    position: absolute;
+    left: 770px;
+    top:375px;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 30px;
+}
+
+.post-content {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: start;
+    margin-top: 68px;
+}
+
+.post-title{
+    margin:0px;
+    margin-bottom: 32px;
+
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 700 ;
+    font-size: 48px;
+    line-height: 1.2em;
+    max-width: 40ch;
+}
+
+.post-description{
+    margin:0px;
+    margin-bottom: 35px;
+
+    text-transform: capitalize ;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 400 ;
+    font-size: 16px;
+    line-height: 2em;
+    max-width: 100ch;
+
+    /* Limit of lines for the box. After the limit, it shows ... */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;   /* Limit the text to 3 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 5.5em; /*  Control max height based on font size and line count */
+}
+
+.post-data {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+
+.data{
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 0px 20px;
+    text-transform: capitalize ;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 300 ;
+    font-size: 14px;
+    line-height: 1.61;
+}
+
+.data-info{
+    margin:0px;
+    text-transform: capitalize ;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 300 ;
+    font-size: 14px;
+    line-height: 1.61;
+}
+
+.thumbs-icon {
+    color: black;
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 200,
+    'GRAD' 0,
+    'opsz' 40;
+}
+.like-button{
+    background-color: var(--secondary-color);
+    color:none;
+    border: none;
+    cursor: pointer;
+}
+.like-icon, .dislike-icon {
+    color: var(--primary-color);
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 200,
+    'GRAD' 0,
+    'opsz' 40;
+}
+
+.active-like-icon, .active-dislike-icon {
+    color: var(--primary-color);
+    font-variation-settings:
+    'FILL' 1,
+    'wght' 200,
+    'GRAD' 0,
+    'opsz' 40;
+}

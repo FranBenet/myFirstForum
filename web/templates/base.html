@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="author" content="Bernardo and Fran">
+        <meta name="Description" content="This is a web forum about literature">
+        <meta name="viewport" content="initial-scale=1, width=device-width, user-scalable=no">
+        <title>Literary Lions Web Forum</title>
+        
+        <!-- <link rel="icon" href="../static/icons/f.png" type="image/x-icon"> -->
+        <link rel="stylesheet" href="/static/css/base.css" type="text/css">
+        <link rel="stylesheet" href="/static/css/header.css" type="text/css">
+        <link rel="stylesheet" href="/static/css/sidebar.css" type="text/css">
+        <link rel="stylesheet" href="/static/css/breadcrumbs.css" type="text/css">
+        <link rel="stylesheet" href="/static/css/filter.css" type="text/css">
+        <link rel="stylesheet" href="/static/css/main-gallery.css" type="text/css">
+        <link rel="stylesheet" href="/static/css/pagination.css" type="text/css">
+
+        <link rel="stylesheet" href="/static/css/posts-section.css" type="text/css">
+        
+        <link rel="stylesheet" href="/static/css/home.css" type="text/css">
+        <link rel="stylesheet" href="/static/css/post-id.css" type="text/css">
+        
+       
+        <!-- Import Font from Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+        
+        <!-- Import Icons from Google Icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    </head>
+    <body>
+        {{template "header".}}
+        <div class="white"></div>
+        <!-- Block will render the page that contains a template with the name "page". To work, our program needs to add in the parsing htmlTemplates the correspondent page. -->
+        {{block "page" .}} PAGE NOT FOUND{{end}}       
+    </body>
+</html>

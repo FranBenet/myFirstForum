@@ -1,0 +1,24 @@
+.filter-menu{
+    box-sizing:border-box;
+    border-radius: 10px;
+    box-shadow: 2px 2px 6px 1px var(--primary-color-op);
+    padding: 1em;
+    width: 95%;
+
+    background-color: var(--secondary-color);
+    cursor: pointer;
+    position:relative;
+}
+
+.filter-selector{
+    width: 96%;
+    height: 100%;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    top:0px;
+    margin:auto;
+}

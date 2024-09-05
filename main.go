@@ -18,15 +18,15 @@ func routes() *http.ServeMux {
 
 	mux.HandleFunc("/", handlers.Homepage)
 	mux.HandleFunc("/post/{id}", handlers.GetPost)
-	mux.HandleFunc("/search", handlers.Search)
-	mux.HandleFunc("/login", handlers.Login)
-	mux.HandleFunc("/register", handlers.Register)
-	mux.HandleFunc("/post/create", handlers.NewPost)
-	mux.HandleFunc("/profile", handlers.Profile)
-	mux.HandleFunc("/users/{username}/profile", handlers.Profile)
-	mux.HandleFunc("/notifications", handlers.Notifications)
-	mux.HandleFunc("/posts/liked", handlers.LikedPosts)
-	mux.HandleFunc("/posts/mined", handlers.MyPosts)
+	// mux.HandleFunc("/search", handlers.Search)
+	// mux.HandleFunc("/login", handlers.Login)
+	// mux.HandleFunc("/register", handlers.Register)
+	// mux.HandleFunc("/post/create", handlers.NewPost)
+	// mux.HandleFunc("/profile", handlers.Profile)
+	// mux.HandleFunc("/users/{username}/profile", handlers.Profile)
+	// mux.HandleFunc("/notifications", handlers.Notifications)
+	// mux.HandleFunc("/posts/liked", handlers.LikedPosts)
+	// mux.HandleFunc("/posts/mined", handlers.MyPosts)
 	return mux
 }
 
