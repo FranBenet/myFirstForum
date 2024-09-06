@@ -1,6 +1,9 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type User struct {
 	Id       int
@@ -38,6 +41,12 @@ type Comment struct {
 type Category struct {
 	Id   int
 	Name string
+}
+
+type Session struct {
+	Id        string
+	UserID    int
+	ExpiresAt time.Time
 }
 
 func (p Post) String() string {
