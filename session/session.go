@@ -3,7 +3,7 @@ package session
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"literary-lions-fran/models"
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 	"log"
 	"net/http"
 	"time"
