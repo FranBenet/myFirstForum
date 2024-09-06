@@ -100,7 +100,7 @@ func Posts(db *sql.DB) ([]models.Post, error) {
 	for row.Next() {
 		var created string
 		var post models.Post
-		err := row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &created)
+		err := row.Scan(&post.Id, &post.User.Id, &post.Title, &post.Content, &created)
 		timeCreated, err := time.Parse(time.RFC3339, created)
 		if err != nil {
 			log.Fatal("Error parsing post creation time")
@@ -255,4 +255,36 @@ func PostCategories(db *sql.DB, post models.Post) ([]models.Category, error) {
 		return []models.Category{}, err
 	}
 	return categories, nil
+}
+
+func AddPost(db *sql.DB, post models.Post, user models.User) (int, error) {
+	stmt, err := db.Prepare("insert into posts (title, content, user_id) values (?, ?, ?)")
+	if err != nil {
+		return 0, err
+	}
+	res, err := stmt.Exec(post.Title, post.Content, user.Id)
+	if err != nil {
+		return 0, err
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return int(id), nil
+}
+
+func AddComment(db *sql.DB, comment models.Comment, post models.Post, user models.User) (int, error) {
+	stmt, err := db.Prepare("insert into comments (post_id, user_id, content) values (?, ?, ?)")
+	if err != nil {
+		return 0, err
+	}
+	res, err := stmt.Exec(post.Id, user.Id, comment.Content)
+	if err != nil {
+		return 0, err
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return int(id), nil
 }
