@@ -6,8 +6,6 @@ import (
 	"net/http"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
-	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/handlers"
-	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
 func routes() *http.ServeMux {
@@ -16,8 +14,8 @@ func routes() *http.ServeMux {
 	fileServer := http.FileServer(http.Dir("./web/static"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-	mux.HandleFunc("/", handlers.Homepage)
-	mux.HandleFunc("/post/{id}", handlers.GetPost)
+	// mux.HandleFunc("/", handlers.Homepage)
+	// mux.HandleFunc("/post/{id}", handlers.GetPost)
 	// mux.HandleFunc("/login", handlers.Login)
 	// mux.HandleFunc("/register", handlers.Register)
 	// mux.HandleFunc("/search", handlers.Search)
@@ -40,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	fmt.Println(dbaser.PostCategories(db, models.Post{Id: 1}))
+	fmt.Println(dbaser.TrendingPosts(db, 2))
 
 	//	PROVISIONAL STARTING WEB SERVER CODE
 	//mux := routes()

@@ -15,7 +15,9 @@ var createStatements = []string{
 id integer primary key,
 email varchar(30) not null unique,
 username varchar(20) not null unique,
-password text not null
+password varchar(60) not null,
+created datetime not null default (datetime('now', 'localtime')),
+avatar varchar(30)
 );`,
 	`create table if not exists user_profile (
 id integer primary key,
@@ -27,14 +29,14 @@ id integer primary key,
 user_id integer references users(id),
 title varchar(60) not null,
 content text not null,
-created datetime not null default current_timestamp
+created datetime not null default (datetime('now', 'localtime'))
 );`,
 	`create table if not exists comments (
 id integer primary key,
 post_id integer references posts(id),
 user_id integer references users(id),
 content text not null,
-created datetime not null default current_timestamp
+created datetime not null default (datetime('now', 'localtime'))
 );`,
 	`create table if not exists post_reactions (
 post_id integer references posts(id),
@@ -56,6 +58,12 @@ label varchar(15) unique not null
 post_id integer not null,
 categ_id integer not null,
 primary key (post_id, categ_id)
+);`,
+	`create table if not exists sessions (
+id integer primary key,
+user_id integer references users(id),
+uuid varchar(40) not null,
+expires datetime
 );`,
 }
 

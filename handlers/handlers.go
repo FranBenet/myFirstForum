@@ -1,63 +1,53 @@
 package handlers
 
-import (
-	"fmt"
-	"log"
-	"net/http"
-	"strconv"
-	"strings"
-
-	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
-)
-
 // To handle "/".
-func Homepage(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		log.Println("Homepage")
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
-		return
-	}
+// func Homepage(w http.ResponseWriter, r *http.Request) {
+// 	if r.URL.Path != "/" {
+// 		log.Println("Homepage")
+// 		log.Println("Error. Path Not Allowed.")
+// 		http.Error(w, "Page Not Found", http.StatusNotFound)
+// 		return
+// 	}
 
-	if r.Method != http.MethodGet {
-		w.Header().Set("Allow", http.MethodGet)
-		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+// 	if r.Method != http.MethodGet {
+// 		w.Header().Set("Allow", http.MethodGet)
+// 		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
+// 		return
+// 	}
 
-	data := helpers.GetDataExample()
-	helpers.RenderTemplate(w, "home", data)
-}
+// 	data := helpers.GetDataExample()
+// 	helpers.RenderTemplate(w, "home", data)
+// }
 
-// To handle "/post/{id}"
-func GetPost(w http.ResponseWriter, r *http.Request) {
+// // To handle "/post/{id}"
+// func GetPost(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method != http.MethodGet {
-		w.Header().Set("Allow", http.MethodGet)
-		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+// 	if r.Method != http.MethodGet {
+// 		w.Header().Set("Allow", http.MethodGet)
+// 		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
+// 		return
+// 	}
 
-	path := r.URL.Path
-	pathDivide := strings.Split(path, "/")
+// 	path := r.URL.Path
+// 	pathDivide := strings.Split(path, "/")
 
-	if len(pathDivide) == 3 && pathDivide[1] == "post" && pathDivide[0] == "" {
-		id, err := strconv.Atoi(pathDivide[2])
-		if err != nil {
-			http.Error(w, "Invalid post ID", http.StatusBadRequest)
-		}
-		fmt.Println(id)
-		data := helpers.GetPostIdExample()
-		helpers.RenderTemplate(w, "post-id", data)
+// 	if len(pathDivide) == 3 && pathDivide[1] == "post" && pathDivide[0] == "" {
+// 		id, err := strconv.Atoi(pathDivide[2])
+// 		if err != nil {
+// 			http.Error(w, "Invalid post ID", http.StatusBadRequest)
+// 		}
+// 		fmt.Println(id)
+// 		data := helpers.GetPostIdExample()
+// 		helpers.RenderTemplate(w, "post-id", data)
 
-	} else {
-		log.Println("Post ID")
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
-		return
-	}
+// 	} else {
+// 		log.Println("Post ID")
+// 		log.Println("Error. Path Not Allowed.")
+// 		http.Error(w, "Page Not Found", http.StatusNotFound)
+// 		return
+// 	}
 
-}
+// }
 
 // To handle "/search"
 // func Search(w http.ResponseWriter, r *http.Request) {
