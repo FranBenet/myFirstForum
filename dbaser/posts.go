@@ -167,3 +167,18 @@ func TrendingPosts(db *sql.DB, n int) ([]models.Post, error) {
 	}
 	return result, nil
 }
+func PostById(db *sql.DB, id int) (models.Post, error) {
+	var result models.Post
+	row := db.QueryRow("select * from posts where id=?", id)
+	var created string
+	err := row.Scan(&result.Id, &result.UserId, &result.Title, &result.Content, &created)
+	if err != nil {
+		return models.Post{}, err
+	}
+	timeCreated, err := time.Parse(time.RFC3339, created)
+	if err != nil {
+		return models.Post{}, err
+	}
+	result.Created = timeCreated
+	return result, nil
+}

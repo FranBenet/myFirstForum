@@ -38,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	fmt.Println(dbaser.TrendingPosts(db, 2))
+	fmt.Println(dbaser.PostById(db, 2))
 
 	//	PROVISIONAL STARTING WEB SERVER CODE
 	//mux := routes()
