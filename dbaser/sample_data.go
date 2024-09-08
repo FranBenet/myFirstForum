@@ -22,6 +22,7 @@ var insertStatements = map[string]string{
 	"post_categs": `insert into post_categs values
 (1, 2),
 (2, 4),
+(2, 5),
 (3, 7),
 (4, 5);`,
 	"post_reactions": `insert into post_reactions values

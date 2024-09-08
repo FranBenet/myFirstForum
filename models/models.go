@@ -22,6 +22,12 @@ type Post struct {
 	Created time.Time
 }
 
+type PostReaction struct {
+	PostId int
+	UserId int
+	Liked  bool
+}
+
 // PostData holds the metadata for a particular post.
 type PostData struct {
 	Post         Post
@@ -40,6 +46,12 @@ type Comment struct {
 	UserId  int
 	Content string
 	Created time.Time
+}
+
+type CommentReaction struct {
+	CommentId int
+	UserId    int
+	Liked     bool
 }
 
 type CommentData struct {

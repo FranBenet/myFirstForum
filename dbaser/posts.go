@@ -9,14 +9,17 @@ import (
 )
 
 /* TODO
+   - Add a post. OK
    - Filter posts by category. OK
    - Filter posts by reaction (likes).
    - Display all posts. OK
-   - Filter posts by user? OK
+   - Filter posts by user. OK
    - Number of comments of a post. OK
-   - Trending posts (number of likes and dislikes).
+   - Trending posts (most likes).
    - User-liked posts. OK
    - Get categories associated with a post. OK
+   - Get user ID from session ID.
+   -
 
 Behaviour:
    When a post is requested from the DB, the idea is that the post will be displayed along with its tags, username,
@@ -25,6 +28,7 @@ Behaviour:
    guess is a more modular approach.
 */
 
+// Posts created by a specific user.
 func PostsByUser(db *sql.DB, user models.User) ([]models.Post, error) {
 	row, err := db.Query("select posts.id, user_id, title, content, posts.created from posts join users on user_id=users.id where users.id=?", user.Id)
 	if err != nil {
@@ -52,6 +56,7 @@ func PostsByUser(db *sql.DB, user models.User) ([]models.Post, error) {
 	return result, nil
 }
 
+// All the posts liked by a specific user.
 func UserLikedPosts(db *sql.DB, user models.User) ([]models.Post, error) {
 	row, err := db.Query("select title, content, created from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.email=? and liked=?", user.Email, 1)
 	if err != nil {
@@ -79,6 +84,7 @@ func UserLikedPosts(db *sql.DB, user models.User) ([]models.Post, error) {
 	return result, nil
 }
 
+// All posts in the DB.
 func Posts(db *sql.DB) ([]models.Post, error) {
 	var result []models.Post
 	row, err := db.Query("select * from posts order by created desc")
@@ -103,6 +109,7 @@ func Posts(db *sql.DB) ([]models.Post, error) {
 	return result, nil
 }
 
+// All posts associated with a specific category.
 func PostsByCategory(db *sql.DB, category models.Category) ([]models.Post, error) {
 	var result []models.Post
 	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category.Id)
@@ -127,12 +134,12 @@ func PostsByCategory(db *sql.DB, category models.Category) ([]models.Post, error
 	return result, nil
 }
 
-func AddPost(db *sql.DB, post models.Post, user models.User) (int, error) {
+func AddPost(db *sql.DB, post models.Post) (int, error) {
 	stmt, err := db.Prepare("insert into posts (title, content, user_id) values (?, ?, ?)")
 	if err != nil {
 		return 0, err
 	}
-	res, err := stmt.Exec(post.Title, post.Content, user.Id)
+	res, err := stmt.Exec(post.Title, post.Content, post.UserId)
 	if err != nil {
 		return 0, err
 	}
@@ -143,6 +150,7 @@ func AddPost(db *sql.DB, post models.Post, user models.User) (int, error) {
 	return int(id), nil
 }
 
+// Posts ranked by most likes.
 func TrendingPosts(db *sql.DB, n int) ([]models.Post, error) {
 	var result []models.Post
 	row, err := db.Query("select posts.*, count(*) as num from posts join post_reactions on posts.id=post_id where liked=? group by post_id order by num desc limit ?", 1, n)
@@ -167,6 +175,8 @@ func TrendingPosts(db *sql.DB, n int) ([]models.Post, error) {
 	}
 	return result, nil
 }
+
+// Retrieve a specific post by its ID.
 func PostById(db *sql.DB, id int) (models.Post, error) {
 	var result models.Post
 	row := db.QueryRow("select * from posts where id=?", id)

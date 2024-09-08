@@ -3,6 +3,7 @@ package dbaser
 import (
 	"database/sql"
 	"errors"
+	"time"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 	"golang.org/x/crypto/bcrypt"
@@ -60,4 +61,24 @@ func CheckPassword(db *sql.DB, user models.User) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+func UserById(db *sql.DB, id int) (models.User, error) {
+	var result models.User
+	row := db.QueryRow("select id, email, username, created, avatar from users where id=?", id)
+	var created string
+	var avatar sql.NullString
+	err := row.Scan(&result.Id, &result.Email, &result.Name, &created, &avatar)
+	if err != nil {
+		return models.User{}, err
+	}
+	timeCreated, err := time.Parse(time.RFC3339, created)
+	if err != nil {
+		return models.User{}, err
+	}
+	result.Created = timeCreated
+	if avatar.Valid {
+		result.Avatar = avatar.String
+	}
+	return result, nil
 }

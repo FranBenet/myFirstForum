@@ -38,7 +38,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	fmt.Println(dbaser.PostById(db, 2))
+	// session := models.Session{UserId: 2, Uuid: "ssdlkd;-.29384FBERF098234", ExpiresAt: time.Now().Add(1 * time.Hour)}
+	// fmt.Println(dbaser.AddSession(db, session))
+	fmt.Println(dbaser.UserById(db, 1))
 
 	//	PROVISIONAL STARTING WEB SERVER CODE
 	//mux := routes()
