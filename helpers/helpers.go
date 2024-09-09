@@ -214,3 +214,10 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 
 // 	return post01
 // }
+
+/* Mindmap of post workflow
+   To create PostData I'll need a session ID to identify the user requesting, and a post ID.
+   With the post ID I have to fetch the post itself, the number of likes and dislikes, all the
+   comments as well as reactions to all the comments. For the post and each of the comments I
+   have to check if the user requesting has liked or disliked them.
+*/
