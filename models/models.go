@@ -22,22 +22,21 @@ type Post struct {
 	Created time.Time
 }
 
+// Liked will be either -1, 0 or 1, representing disliked, neutral or liked, respectively.
 type PostReaction struct {
 	PostId int
 	UserId int
-	Liked  bool
+	Liked  int
 }
 
 // PostData holds the metadata for a particular post.
 type PostData struct {
-	Post         Post
-	User         User
-	Categories   []Category
-	LikeCount    int
-	CommentCount int // Can be inferred from len(Comments)
-	Comments     []Comment
-	LikeState    bool
-	DislikeState bool
+	Post       Post
+	User       User
+	Categories []Category
+	LikeCount  int
+	Comments   []Comment // Use len for number of comments.
+	Liked      int
 }
 
 type Comment struct {
@@ -51,7 +50,7 @@ type Comment struct {
 type CommentReaction struct {
 	CommentId int
 	UserId    int
-	Liked     bool
+	Liked     int
 }
 
 type CommentData struct {
