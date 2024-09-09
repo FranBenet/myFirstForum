@@ -68,8 +68,7 @@ func UserById(db *sql.DB, id int) (models.User, error) {
 	row := db.QueryRow("select id, email, username, created, avatar from users where id=?", id)
 	var created string
 	var avatar sql.NullString
-	err := row.Scan(&result.Id, &result.Email, &result.Name, &created, &avatar)
-	if err != nil {
+	if err := row.Scan(&result.Id, &result.Email, &result.Name, &created, &avatar); err != nil {
 		return models.User{}, err
 	}
 	timeCreated, err := time.Parse(time.RFC3339, created)

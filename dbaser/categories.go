@@ -28,9 +28,9 @@ func Categories(db *sql.DB) ([]models.Category, error) {
 }
 
 // Retrieve all categories associated with a specific post.
-func PostCategories(db *sql.DB, post models.Post) ([]models.Category, error) {
+func PostCategories(db *sql.DB, id int) ([]models.Category, error) {
 	var categories []models.Category
-	row, err := db.Query("select categories.* from categories join post_categs on id=categ_id where post_id=?", post.Id)
+	row, err := db.Query("select categories.* from categories join post_categs on id=categ_id where post_id=?", id)
 	if err != nil {
 		return []models.Category{}, err
 	}

@@ -1,9 +1,13 @@
 package helpers
 
 import (
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
+
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
 func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
@@ -221,3 +225,44 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
    comments as well as reactions to all the comments. For the post and each of the comments I
    have to check if the user requesting has liked or disliked them.
 */
+
+func GetPostData(db *sql.DB, id int) (models.PostData, error) {
+	post, err := dbaser.PostById(db, 1)
+	if err != nil {
+		return models.PostData{}, err
+	}
+	user, err := dbaser.UserById(db, post.UserId)
+	if err != nil {
+		return models.PostData{}, err
+	}
+	comments, err := dbaser.PostComments(db, post.Id)
+	if err != nil {
+		return models.PostData{}, err
+	}
+	likes, dislikes, err := dbaser.PostReactions(db, post.Id)
+	if err != nil {
+		return models.PostData{}, err
+	}
+	categories, err := dbaser.PostCategories(db, post.Id)
+	if err != nil {
+		return models.PostData{}, err
+	}
+	sessionUser, err := dbaser.SessionUser(db, "ssdlkd;-.29384FBERF098234")
+	if err != nil {
+		return models.PostData{}, err
+	}
+	likeStatus, err := dbaser.PostLikeStatus(db, post.Id, sessionUser.Id)
+	if err != nil {
+		return models.PostData{}, err
+	}
+	data := models.PostData{
+		Post:         post,
+		User:         user,
+		Categories:   categories,
+		Comments:     comments,
+		LikeCount:    likes,
+		DislikeCount: dislikes,
+		Liked:        likeStatus,
+	}
+	return data, nil
+}

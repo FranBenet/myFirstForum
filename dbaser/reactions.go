@@ -23,13 +23,13 @@ func AddPostReaction(db *sql.DB, reaction models.PostReaction) (int, error) {
 }
 
 // Returns the number of likes and dislikes of a post.
-func PostReactions(db *sql.DB, post models.Post) (int, int, error) {
+func PostReactions(db *sql.DB, id int) (int, int, error) {
 	var likes, dislikes int
-	row := db.QueryRow("select count(*) from post_reactions where post_id=? and liked=?", post.Id, 1)
+	row := db.QueryRow("select count(*) from post_reactions where post_id=? and liked=?", id, 1)
 	if err := row.Scan(&likes); err != nil {
 		return 0, 0, err
 	}
-	row = db.QueryRow("select count(*) from post_reactions where post_id=? and liked=?", post.Id, 0)
+	row = db.QueryRow("select count(*) from post_reactions where post_id=? and liked=?", id, 0)
 	if err := row.Scan(&dislikes); err != nil {
 		return 0, 0, err
 	}
@@ -64,4 +64,21 @@ func CommentReactions(db *sql.DB, comment models.Comment) (int, int, error) {
 		return 0, 0, err
 	}
 	return likes, dislikes, nil
+}
+
+func PostLikeStatus(db *sql.DB, post_id, user_id int) (int, error) {
+	row := db.QueryRow("select liked from post_reactions where post_id=? and user_id=?", post_id, user_id)
+	var status int
+	var liked bool
+	if err := row.Scan(&liked); err == sql.ErrNoRows {
+		return 0, nil
+	} else if err != nil {
+		return 0, err
+	}
+	if liked {
+		status = 1
+	} else {
+		status = -1
+	}
+	return status, nil
 }

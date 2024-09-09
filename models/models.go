@@ -31,12 +31,13 @@ type PostReaction struct {
 
 // PostData holds the metadata for a particular post.
 type PostData struct {
-	Post       Post
-	User       User
-	Categories []Category
-	LikeCount  int
-	Comments   []Comment // Use len for number of comments.
-	Liked      int
+	Post         Post
+	User         User
+	Categories   []Category
+	LikeCount    int
+	DislikeCount int
+	Comments     []Comment // Use len for number of comments.
+	Liked        int
 }
 
 type Comment struct {
@@ -74,6 +75,13 @@ type Session struct {
 
 func (p Post) String() string {
 	return fmt.Sprintf("** %s **\n%s\n%s\n", p.Title, p.Content, p.Created.Format("02-01-2006 15:04"))
+}
+
+func (pd PostData) String() string {
+	return fmt.Sprintf(
+		"Title: %s\nContent: %s\nCreated: %s\nUser: %v\nLikes: %d Dislikes: %d Number of comments: %d Like status: %d\nComments: %v",
+		pd.Post.Title, pd.Post.Content, pd.Post.Created, pd.User, pd.LikeCount, pd.DislikeCount, len(pd.Comments), pd.Liked, pd.Comments,
+	)
 }
 
 // Used to compile all the dynamic data for the HTML

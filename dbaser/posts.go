@@ -109,7 +109,6 @@ func Posts(db *sql.DB) ([]models.Post, error) {
 	return result, nil
 }
 
-// All posts associated with a specific category.
 func PostsByCategory(db *sql.DB, category models.Category) ([]models.Post, error) {
 	var result []models.Post
 	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category.Id)
