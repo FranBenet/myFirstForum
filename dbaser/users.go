@@ -10,9 +10,9 @@ import (
 )
 
 func AddUser(db *sql.DB, user models.User) (int, error) {
-	if ok := UserEmailExists(db, user); !ok {
+	if ok := UserEmailExists(db, user.Email); !ok {
 		return 0, errors.New("User e-mail already registered.")
-	} else if ok = UsernameExists(db, user); !ok {
+	} else if ok = UsernameExists(db, user.Name); !ok {
 		return 0, errors.New("Username already registered.")
 	}
 	passHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 6)
@@ -35,30 +35,30 @@ func AddUser(db *sql.DB, user models.User) (int, error) {
 	return int(id), nil
 }
 
-func UserEmailExists(db *sql.DB, user models.User) bool {
-	row := db.QueryRow("select * from users where email=?", user.Email)
+func UserEmailExists(db *sql.DB, email string) bool {
+	row := db.QueryRow("select * from users where email=?", email)
 	if err := row.Scan(); err == sql.ErrNoRows {
 		return false
 	}
 	return true
 }
 
-func UsernameExists(db *sql.DB, user models.User) bool {
-	row := db.QueryRow("select * from users where username=?", user.Name)
+func UsernameExists(db *sql.DB, username string) bool {
+	row := db.QueryRow("select * from users where username=?", username)
 	if err := row.Scan(); err == sql.ErrNoRows {
 		return false
 	}
 	return true
 }
 
-func CheckPassword(db *sql.DB, user models.User) (bool, error) {
+func CheckPassword(db *sql.DB, email, password string) (bool, error) {
 	var pass string
-	row := db.QueryRow("select password from users where email=?", user.Email)
+	row := db.QueryRow("select password from users where email=?", email)
 	if err := row.Scan(&pass); err == sql.ErrNoRows {
 		return false, errors.New("User not found")
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(pass), []byte(user.Password)); err != nil {
-		return false, err
+	if err := bcrypt.CompareHashAndPassword([]byte(pass), []byte(password)); err != nil {
+		return false, errors.New("Incorrect password")
 	}
 	return true, nil
 }
@@ -66,6 +66,25 @@ func CheckPassword(db *sql.DB, user models.User) (bool, error) {
 func UserById(db *sql.DB, id int) (models.User, error) {
 	var result models.User
 	row := db.QueryRow("select id, email, username, created, avatar from users where id=?", id)
+	var created string
+	var avatar sql.NullString
+	if err := row.Scan(&result.Id, &result.Email, &result.Name, &created, &avatar); err != nil {
+		return models.User{}, err
+	}
+	timeCreated, err := time.Parse(time.RFC3339, created)
+	if err != nil {
+		return models.User{}, err
+	}
+	result.Created = timeCreated
+	if avatar.Valid {
+		result.Avatar = avatar.String
+	}
+	return result, nil
+}
+
+func UserByEmail(db *sql.DB, email string) (models.User, error) {
+	var result models.User
+	row := db.QueryRow("select id, email, username, created, avatar from users where email=?", email)
 	var created string
 	var avatar sql.NullString
 	if err := row.Scan(&result.Id, &result.Email, &result.Name, &created, &avatar); err != nil {
