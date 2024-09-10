@@ -86,11 +86,11 @@ func (pd PostData) String() string {
 
 // Used to compile all the dynamic data for the HTML
 type MainData struct {
-	Categories  []string
-	Posts       []Post
-	TotalPages  int
-	CurrentPage int
-	MiniPosts   []MiniPost
+	Categories []string
+	Posts      []PostData
+	// TotalPages  int
+	// CurrentPage int
+	MiniPosts []MiniPost // Trending posts.
 }
 
 // Used to compile all the dynamic data for each minipost in the sidebar

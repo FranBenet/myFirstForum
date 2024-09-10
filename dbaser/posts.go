@@ -57,8 +57,8 @@ func PostsByUser(db *sql.DB, user models.User) ([]models.Post, error) {
 }
 
 // All the posts liked by a specific user.
-func UserLikedPosts(db *sql.DB, user models.User) ([]models.Post, error) {
-	row, err := db.Query("select title, content, created from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.email=? and liked=?", user.Email, 1)
+func UserLikedPosts(db *sql.DB, id int) ([]models.Post, error) {
+	row, err := db.Query("select posts.* from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.id=? and liked=?", id, 1)
 	if err != nil {
 		return []models.Post{}, err
 	}
@@ -66,7 +66,7 @@ func UserLikedPosts(db *sql.DB, user models.User) ([]models.Post, error) {
 	for row.Next() {
 		var post models.Post
 		var created string
-		err = row.Scan(&post.Title, &post.Content, &created)
+		err = row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &created)
 		if err != nil {
 			return []models.Post{}, err
 		}
