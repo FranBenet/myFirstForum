@@ -40,7 +40,7 @@ func main() {
 	defer db.Close()
 	// session := models.Session{UserId: 2, Uuid: "ssdlkd;-.29384FBERF098234", ExpiresAt: time.Now().Add(1 * time.Hour)}
 
-	fmt.Println(dbaser.UserLikedPosts(db, 1))
+	fmt.Println(dbaser.PostsByUser(db, 2))
 	// fmt.Println(dbaser.DeleteSessionUuid(db, "ssdlkd;-.29384FBERF098234"))
 
 	//	PROVISIONAL STARTING WEB SERVER CODE

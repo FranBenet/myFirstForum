@@ -29,8 +29,8 @@ Behaviour:
 */
 
 // Posts created by a specific user.
-func PostsByUser(db *sql.DB, user models.User) ([]models.Post, error) {
-	row, err := db.Query("select posts.id, user_id, title, content, posts.created from posts join users on user_id=users.id where users.id=?", user.Id)
+func PostsByUser(db *sql.DB, id int) ([]models.Post, error) {
+	row, err := db.Query("select * from posts where user_id=?", id)
 	if err != nil {
 		return []models.Post{}, err
 	}
