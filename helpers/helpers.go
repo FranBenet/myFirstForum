@@ -301,6 +301,10 @@ func MainPageData(db *sql.DB, uuid string) (models.MainData, error) {
 	if err != nil {
 		return models.MainData{}, err
 	}
-	mainData := models.MainData{Categories: categories, Posts: postData, Trending: trendData}
+	loggedIn, err := dbaser.ValidSession(db, uuid)
+	if err != nil {
+		return models.MainData{}, err
+	}
+	mainData := models.MainData{Categories: categories, Posts: postData, Trending: trendData, LoggedIn: loggedIn}
 	return mainData, nil
 }

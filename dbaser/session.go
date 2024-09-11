@@ -65,3 +65,22 @@ func SessionUser(db *sql.DB, uuid string) (int, error) {
 	}
 	return id, nil
 }
+
+func ValidSession(db *sql.DB, uuid string) (bool, error) {
+	if uuid == "" {
+		return false, nil
+	}
+	row := db.QueryRow("select expires from sessions where uuid=?", uuid)
+	var created string
+	if err := row.Scan(&created); err != nil {
+		return false, err
+	}
+	timeCreated, err := time.Parse(time.RFC3339, created)
+	if err != nil {
+		return false, err
+	}
+	if timeCreated.Before(time.Now()) {
+		return false, nil
+	}
+	return true, nil
+}

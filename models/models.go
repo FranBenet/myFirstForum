@@ -89,6 +89,7 @@ type MainData struct {
 	Categories []Category
 	Posts      []PostData
 	Trending   []PostData
+	LoggedIn   bool
 }
 
 // Used to compile all the dynamic data for each minipost in the sidebar

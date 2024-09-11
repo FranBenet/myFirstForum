@@ -6,6 +6,8 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
+// TODO The user can either like or dislike a post, not both. So I have to check if there's already a reaction
+// before inserting. If so, I update the entry.
 func AddPostReaction(db *sql.DB, reaction models.PostReaction) (int, error) {
 	stmt, err := db.Prepare("insert into post_reactions values (?, ?, ?)")
 	if err != nil {
@@ -36,6 +38,8 @@ func PostReactions(db *sql.DB, id int) (int, int, error) {
 	return likes, dislikes, nil
 }
 
+// TODO The user can either like or dislike a comment, not both. So I have to check if there's already a reaction
+// before inserting. If so, I update the entry.
 func AddCommentReaction(db *sql.DB, reaction models.CommentReaction) (int, error) {
 	stmt, err := db.Prepare("insert into comment_reactions values (?, ?, ?)")
 	if err != nil {
