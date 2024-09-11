@@ -5,22 +5,68 @@
         </a>    
         <form class="search-bar" action="/search">
             <label for="search_bar"></label>
-            <textarea name="search_bar" id="search_bar" class="search" placeholder="Search"></textarea>
+            <input type="search" name="search_bar" id="search_bar" class="search" placeholder="Search"></textarea>
         </form>
+        {{if .UserLoggedIn}}
         <div class="icons-menu">
             <a href="/post/create" class="createPost-page-button page-button">
                 <span class="material-symbols-rounded main-icons createPost-icon" style="font-size: 36px;" >post_add</span>
                 <p class="text-icons">Create Post</p>
             </a>
-            <a href="/notifications" class="notifications-page-button page-button">
-                <span class="material-symbols-rounded main-icons notifications-icon" style="font-size: 36px;">notifications</span>
-                <p class="text-icons">Notifications</p>
+            <div class="profile-dropdown">
+                <button class="img-dropdown-button"></button>
+                <div class="dropdown-content">
+                    <a href="/profile" class="option"> Profile</a>
+                    <a href="/liked" class="option"> Liked Posts</a>
+                    <a href="/myposts" class="option">My Posts</a>
+                    <a href="/logOut" class="option">Log Out</a>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        <div class="standard-icons-menu">
+            <a href="#registerModal" class="register-page-button standard-button">
+                <p class="standard-text">Register</p>
             </a>
-            <a href="/profile" class="profile-page-button page-button">
-                <span class="material-symbols-rounded main-icons profile-icon" style="font-size: 36px;" >person</span>
-                <p class="text-icons">Profile</p>
+            <a href="#loginModal" class="login-page-button standard-button">
+                <p class="standard-text">Log in</p>
             </a>
         </div>
+        {{end}}
         
     </header>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <a href="#" class="close-button">&times;</a>
+            <h2>Register</h2>
+            <form action="/register" method="post">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required><br><br>
+                
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br><br>
+                
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required><br><br>
+
+                <input type="submit" value="Register">
+            </form>
+        </div>
+    </div>
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <a href="#" class="close-button">&times;</a>
+            <h2>Login</h2>
+            <form action="/login" method="post">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br><br>
+                
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required><br><br>
+
+                <input type="submit" value="Login">
+            </form>
+        </div>
+    </div>
 {{end}} 

@@ -1,0 +1,25 @@
+{{ define "page"}}
+<section class="section-profile">
+    {{ template "breadcrumbs".}}
+        <div class="profile-info-container">
+            <span class="profile-info">
+                <img src="../static/img/cat.png" alt="Profile Picture" class="image">
+                <!-- <div class="image"> Img</div> -->
+                <div class="info">
+                    <span>Name:</span>
+                    <span>bookLover394</span>
+                    <span>Email:</span>
+                    <span>make@example.com</span>
+                    <span>Created:</span>
+                    <span>3 March 2023</span>
+                </div>
+            </span>
+            <span class="edit-profile-botton">
+                <a href="/profile/edit" class="edit-button">
+                    <p class="edit-text">Edit</p>
+                </a>
+            </span>
+            
+        </div>
+</section>
+{{end}}

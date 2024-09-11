@@ -78,12 +78,18 @@
 }
 
 .like-container{
-    position: absolute;
-    left: 770px;
-    top:375px;
+    /* position: absolute; */
+    /* left: 770px; */
+    /* top:375px; */
     display: flex;
     flex-flow: row nowrap;
     gap: 30px;
+    align-self: flex-end;
+    justify-content: flex-end;
+    /* margin-right: 40px; */
+  
+
+    
 }
 
 .post-content {

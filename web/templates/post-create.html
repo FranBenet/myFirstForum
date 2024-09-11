@@ -1,0 +1,74 @@
+{{define "page"}}
+    <section class="section-createPost">
+        {{ template "breadcrumbs".}}
+            <section class="creator-container">
+                <form method="post" action="/post/create" class="createPost-form">
+                    <div class="form-title">
+                        <label for="form-title" class="form-title-text">Title:</label>
+                        <div class="form-title-box">
+                            <textarea class="form-title-box-area" name="title" id="form-title" placeholder="Title" maxlength="100" ></textarea>
+                        </div>
+                    </div>
+                    <div class="form-description">
+                        <label for="form-description" class="form-description-text">Description:</label>
+                        <div class="form-description-box">
+                            <textarea class="form-description-box-area" name="content" id="form-description" placeholder="Description"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-categories">
+                        <label for="category" class="form-categories-text">Categories:</label>
+                        
+                        <div class="form-categories-01">
+                            <div class="form-category-box">
+                                <input type="text" name="category1" list="category1" class="form-categories-area" placeholder="Add Category or Double click" title="Write a category or double click to see a list of available categories">
+                                <datalist id="category1" name="category1" >
+                                    <option value="" disabled selected > <p>Choose Category:</p></option>
+                                    {{range .}}
+                                        <option value="{{.Name}}">{{.Name}}</option>
+                                    {{end}}
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="form-categories-02">
+                            <div class="form-category-box">
+                                <input type="text" name="category2" list="category2" class="form-categories-area" placeholder="Add Category or Double click" title="Write a category or double click to see a list of available categories">
+                                <datalist id="category2" name="category2">
+                                    <option value="" disabled selected > <p>Choose Category:</p></option>
+                                    {{range .}}
+                                        <option value="{{.Name}}">{{.Name}}</option>
+                                    {{end}}
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="form-categories-03">
+                            <div class="form-category-box">
+                                <input type="text" name="category3" list="category3" class="form-categories-area" placeholder="Add Category or Double click" title="Write a category or double click to see a list of available categories">
+                                <datalist id="category3" name="category3">
+                                    <option value="" disabled selected > <p>Choose Category:</p></option>
+                                    {{range .}}
+                                        <option value="{{.Name}}">{{.Name}}</option>
+                                    {{end}}
+                                </datalist>
+                            </div>
+                        </div>
+                        
+                        <div class="form-buttons">
+                            <input type="submit" name="" id="" value="Post" class="form-button-post">
+                            <input type="reset" value="Reset" class="form-button-cancel">
+                        </div>
+                </form> 
+            </section>
+    </section>
+{{end}}
+
+
+{{define "categories"}}
+<select id=" category" name="category" class="filter-selector">
+    <option value="" disabled selected > <p>Choose Category:</p></option>
+    <option value="category01">Category01</option>
+    <!-- {{range .Categories}}
+        <option value="{{.}}">{{.}}</option>
+    {{end}} -->
+</select>
+{{end}}
+
