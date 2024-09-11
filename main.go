@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
 )
 
 func routes() *http.ServeMux {
@@ -39,9 +40,9 @@ func main() {
 	}
 	defer db.Close()
 	// session := models.Session{UserId: 2, Uuid: "ssdlkd;-.29384FBERF098234", ExpiresAt: time.Now().Add(1 * time.Hour)}
-
-	fmt.Println(dbaser.PostsByUser(db, 2))
-	// fmt.Println(dbaser.DeleteSessionUuid(db, "ssdlkd;-.29384FBERF098234"))
+	md, _ := helpers.MainPageData(db, "")
+	fmt.Println(md.Trending)
+	// fmt.Println(dbaser.TrendingPosts(db, 3))
 
 	//	PROVISIONAL STARTING WEB SERVER CODE
 	//mux := routes()

@@ -79,18 +79,16 @@ func (p Post) String() string {
 
 func (pd PostData) String() string {
 	return fmt.Sprintf(
-		"Title: %s\nContent: %s\nCreated: %s\nUser: %v\nLikes: %d Dislikes: %d Number of comments: %d Like status: %d\nComments: %v",
-		pd.Post.Title, pd.Post.Content, pd.Post.Created, pd.User, pd.LikeCount, pd.DislikeCount, len(pd.Comments), pd.Liked, pd.Comments,
+		"\n%vUser: %v\nCategories: %v\nLikes: %d Dislikes: %d Number of comments: %d Like status: %d\nComments: %v\n",
+		pd.Post, pd.User, pd.Categories, pd.LikeCount, pd.DislikeCount, len(pd.Comments), pd.Liked, pd.Comments,
 	)
 }
 
 // Used to compile all the dynamic data for the HTML
 type MainData struct {
-	Categories []string
+	Categories []Category
 	Posts      []PostData
-	// TotalPages  int
-	// CurrentPage int
-	MiniPosts []MiniPost // Trending posts.
+	Trending   []PostData
 }
 
 // Used to compile all the dynamic data for each minipost in the sidebar

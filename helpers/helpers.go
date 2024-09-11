@@ -226,12 +226,12 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
    have to check if the user requesting has liked or disliked them.
 */
 
-func GetPostData(db *sql.DB, id int) (models.PostData, error) {
-	post, err := dbaser.PostById(db, 1)
+func GetPostData(db *sql.DB, postId int, uuid string) (models.PostData, error) {
+	post, err := dbaser.PostById(db, postId)
 	if err != nil {
 		return models.PostData{}, err
 	}
-	user, err := dbaser.UserById(db, post.UserId)
+	postUser, err := dbaser.UserById(db, post.UserId)
 	if err != nil {
 		return models.PostData{}, err
 	}
@@ -247,17 +247,22 @@ func GetPostData(db *sql.DB, id int) (models.PostData, error) {
 	if err != nil {
 		return models.PostData{}, err
 	}
-	sessionUser, err := dbaser.SessionUser(db, "ssdlkd;-.29384FBERF098234")
+	sessionUser, err := dbaser.SessionUser(db, uuid)
 	if err != nil {
 		return models.PostData{}, err
 	}
-	likeStatus, err := dbaser.PostLikeStatus(db, post.Id, sessionUser.Id)
-	if err != nil {
-		return models.PostData{}, err
+	var likeStatus int
+	if sessionUser == 0 {
+		likeStatus = 0
+	} else {
+		likeStatus, err = dbaser.PostLikeStatus(db, post.Id, sessionUser)
+		if err != nil {
+			return models.PostData{}, err
+		}
 	}
 	data := models.PostData{
 		Post:         post,
-		User:         user,
+		User:         postUser,
 		Categories:   categories,
 		Comments:     comments,
 		LikeCount:    likes,
@@ -265,4 +270,37 @@ func GetPostData(db *sql.DB, id int) (models.PostData, error) {
 		Liked:        likeStatus,
 	}
 	return data, nil
+}
+
+func MainPageData(db *sql.DB, uuid string) (models.MainData, error) {
+	posts, err := dbaser.Posts(db)
+	if err != nil {
+		return models.MainData{}, err
+	}
+	var postData []models.PostData
+	for _, p := range posts {
+		data, err := GetPostData(db, p.Id, uuid)
+		if err != nil {
+			return models.MainData{}, err
+		}
+		postData = append(postData, data)
+	}
+	trending, err := dbaser.TrendingPosts(db, 3)
+	if err != nil {
+		return models.MainData{}, err
+	}
+	var trendData []models.PostData
+	for _, p := range trending {
+		data, err := GetPostData(db, p.Id, uuid)
+		if err != nil {
+			return models.MainData{}, err
+		}
+		trendData = append(trendData, data)
+	}
+	categories, err := dbaser.Categories(db)
+	if err != nil {
+		return models.MainData{}, err
+	}
+	mainData := models.MainData{Categories: categories, Posts: postData, Trending: trendData}
+	return mainData, nil
 }
