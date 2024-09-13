@@ -226,11 +226,7 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
    have to check if the user requesting has liked or disliked them.
 */
 
-func GetPostData(db *sql.DB, postId int, uuid string) (models.PostData, error) {
-	post, err := dbaser.PostById(db, postId)
-	if err != nil {
-		return models.PostData{}, err
-	}
+func GetPostData(db *sql.DB, post models.Post, uuid string) (models.PostData, error) {
 	postUser, err := dbaser.UserById(db, post.UserId)
 	if err != nil {
 		return models.PostData{}, err
@@ -272,39 +268,58 @@ func GetPostData(db *sql.DB, postId int, uuid string) (models.PostData, error) {
 	return data, nil
 }
 
-func MainPageData(db *sql.DB, uuid string) (models.MainData, error) {
+// func GetCommentData(db *sql.DB, commentId, uuid string) (models.CommentData, error) {}
+
+func MainPageData(db *sql.DB, uuid string) (models.MainPage, error) {
 	posts, err := dbaser.Posts(db)
 	if err != nil {
-		return models.MainData{}, err
+		return models.MainPage{}, err
 	}
 	var postData []models.PostData
 	for _, p := range posts {
-		data, err := GetPostData(db, p.Id, uuid)
+		data, err := GetPostData(db, p, uuid)
 		if err != nil {
-			return models.MainData{}, err
+			return models.MainPage{}, err
 		}
 		postData = append(postData, data)
 	}
 	trending, err := dbaser.TrendingPosts(db, 3)
 	if err != nil {
-		return models.MainData{}, err
+		return models.MainPage{}, err
 	}
 	var trendData []models.PostData
 	for _, p := range trending {
-		data, err := GetPostData(db, p.Id, uuid)
+		data, err := GetPostData(db, p, uuid)
 		if err != nil {
-			return models.MainData{}, err
+			return models.MainPage{}, err
 		}
 		trendData = append(trendData, data)
 	}
 	categories, err := dbaser.Categories(db)
 	if err != nil {
-		return models.MainData{}, err
+		return models.MainPage{}, err
 	}
 	loggedIn, err := dbaser.ValidSession(db, uuid)
 	if err != nil {
-		return models.MainData{}, err
+		return models.MainPage{}, err
 	}
-	mainData := models.MainData{Categories: categories, Posts: postData, Trending: trendData, LoggedIn: loggedIn}
+	mainData := models.MainPage{Categories: categories, Posts: postData, Trending: trendData, LoggedIn: loggedIn}
 	return mainData, nil
 }
+
+// func PostPageData(db *sql.DB, uuid string, id int) (models.PostPage, error) {
+// 	post, err := dbaser.PostById(db, id)
+// 	if err != nil {
+// 		return models.PostPage{}, err
+// 	}
+// 	data, err := GetPostData(db, p, uuid)
+// 	if err != nil {
+// 		return models.PostPage{}, err
+// 	}
+// 	loggedIn, err := dbaser.ValidSession(db, uuid)
+// 	if err != nil {
+// 		return models.PostPage{}, err
+// 	}
+// 	postData := models.PostPage{Post: data, LoggedIn: loggedIn}
+// 	return mainData, nil
+// }

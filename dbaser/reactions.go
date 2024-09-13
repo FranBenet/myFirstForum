@@ -27,11 +27,11 @@ func AddPostReaction(db *sql.DB, reaction models.PostReaction) (int, error) {
 // Returns the number of likes and dislikes of a post.
 func PostReactions(db *sql.DB, id int) (int, int, error) {
 	var likes, dislikes int
-	row := db.QueryRow("select count(*) from post_reactions where post_id=? and liked=?", id, 1)
+	row := db.QueryRow("select count(*) from post_reactions where post_id=? and liked=?", id, true)
 	if err := row.Scan(&likes); err != nil {
 		return 0, 0, err
 	}
-	row = db.QueryRow("select count(*) from post_reactions where post_id=? and liked=?", id, 0)
+	row = db.QueryRow("select count(*) from post_reactions where post_id=? and liked=?", id, false)
 	if err := row.Scan(&dislikes); err != nil {
 		return 0, 0, err
 	}
@@ -70,8 +70,27 @@ func CommentReactions(db *sql.DB, comment models.Comment) (int, int, error) {
 	return likes, dislikes, nil
 }
 
+// Determine if a user has either liked or disliked a post.
 func PostLikeStatus(db *sql.DB, post_id, user_id int) (int, error) {
 	row := db.QueryRow("select liked from post_reactions where post_id=? and user_id=?", post_id, user_id)
+	var status int
+	var liked bool
+	if err := row.Scan(&liked); err == sql.ErrNoRows {
+		return 0, nil
+	} else if err != nil {
+		return 0, err
+	}
+	if liked {
+		status = 1
+	} else {
+		status = -1
+	}
+	return status, nil
+}
+
+// Determine if a user has either liked or disliked a comment.
+func CommentLikeStatus(db *sql.DB, comment_id, user_id int) (int, error) {
+	row := db.QueryRow("select liked from comment_reactions where comment_id=? and user_id=?", comment_id, user_id)
 	var status int
 	var liked bool
 	if err := row.Scan(&liked); err == sql.ErrNoRows {

@@ -22,14 +22,15 @@ type Post struct {
 	Created time.Time
 }
 
-// Liked will be either -1, 0 or 1, representing disliked, neutral or liked, respectively.
 type PostReaction struct {
 	PostId int
 	UserId int
-	Liked  int
+	Liked  bool
 }
 
 // PostData holds the metadata for a particular post.
+// Liked tells if the user requesting the data has liked a specific post or comment.
+// Liked will be either -1, 0 or 1, representing disliked, neutral or liked, respectively.
 type PostData struct {
 	Post         Post
 	User         User
@@ -51,7 +52,7 @@ type Comment struct {
 type CommentReaction struct {
 	CommentId int
 	UserId    int
-	Liked     int
+	Liked     bool
 }
 
 type CommentData struct {
@@ -59,6 +60,7 @@ type CommentData struct {
 	User         User
 	LikeCount    int
 	DislikeCount int
+	Liked        int
 }
 
 type Category struct {
@@ -85,17 +87,15 @@ func (pd PostData) String() string {
 }
 
 // Used to compile all the dynamic data for the HTML
-type MainData struct {
+type MainPage struct {
 	Categories []Category
 	Posts      []PostData
 	Trending   []PostData
 	LoggedIn   bool
 }
 
-// Used to compile all the dynamic data for each minipost in the sidebar
-type MiniPost struct {
-	Id         int
-	User       User
-	Title      string
-	LikesCount int
+type PostPage struct {
+	Post     PostData
+	Comments []CommentData
+	LoggedIn bool
 }

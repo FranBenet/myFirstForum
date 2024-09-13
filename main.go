@@ -40,21 +40,21 @@ func main() {
 	}
 	defer db.Close()
 	// session := models.Session{UserId: 2, Uuid: "ssdlkd;-.29384FBERF098234", ExpiresAt: time.Now().Add(1 * time.Hour)}
-	md, _ := helpers.MainPageData(db, "ssdlkd;-.29384FBERF098234")
+	md, _ := helpers.MainPageData(db, "")
 	fmt.Println(md)
-	fmt.Println(dbaser.ValidSession(db, "ssdlkd;-.29384FBERF098234"))
+	// fmt.Println(dbaser.ValidSession(db, "ssdlkd;-.29384FBERF098234"))
 	// fmt.Println(dbaser.TrendingPosts(db, 3))
 
 	//	PROVISIONAL STARTING WEB SERVER CODE
-	//mux := routes()
-	//Creating a server
+	// mux := routes()
+	// Creating a server
 	// server := &http.Server{
 	// 	Addr:    ":8080",
 	// 	Handler: mux,
 	// 	// Errorlog: ,
 	// }
 	// fmt.Println("Server Running in port 8080...")
-	//Listen and Serve the server. If error, Fatal error.
+	// Listen and Serve the server. If error, Fatal error.
 	// if err := server.ListenAndServe(); err != nil {
 	// 	log.Fatal(err)
 	// }

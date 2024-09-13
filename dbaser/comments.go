@@ -64,3 +64,19 @@ func CommentNumber(db *sql.DB, post models.Post) (int, error) {
 	}
 	return result, nil
 }
+
+func CommentById(db *sql.DB, id int) (models.Comment, error) {
+	var result models.Comment
+	row := db.QueryRow("select * from comments where id=?", id)
+	var created string
+	err := row.Scan(&result.Id, &result.PostId, &result.UserId, &result.Content, &created)
+	if err != nil {
+		return models.Comment{}, err
+	}
+	timeCreated, err := time.Parse(time.RFC3339, created)
+	if err != nil {
+		return models.Comment{}, err
+	}
+	result.Created = timeCreated
+	return result, nil
+}
