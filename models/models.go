@@ -5,15 +5,6 @@ import (
 	"time"
 )
 
-type User struct {
-	Id       int
-	Email    string
-	Name     string
-	Password string
-	Created  time.Time
-	Avatar   string
-}
-
 type Post struct {
 	Id      int
 	UserId  int
@@ -41,40 +32,6 @@ type PostData struct {
 	Liked        int
 }
 
-type Comment struct {
-	Id      int
-	PostId  int
-	UserId  int
-	Content string
-	Created time.Time
-}
-
-type CommentReaction struct {
-	CommentId int
-	UserId    int
-	Liked     bool
-}
-
-type CommentData struct {
-	Comment      Comment
-	User         User
-	LikeCount    int
-	DislikeCount int
-	Liked        int
-}
-
-type Category struct {
-	Id   int
-	Name string
-}
-
-type Session struct {
-	Id        int
-	UserId    int
-	Uuid      string
-	ExpiresAt time.Time
-}
-
 func (p Post) String() string {
 	return fmt.Sprintf("** %s **\n%s\n%s\n", p.Title, p.Content, p.Created.Format("02-01-2006 15:04"))
 }
@@ -84,18 +41,4 @@ func (pd PostData) String() string {
 		"\n%vUser: %v\nCategories: %v\nLikes: %d Dislikes: %d Number of comments: %d Like status: %d\nComments: %v\n",
 		pd.Post, pd.User, pd.Categories, pd.LikeCount, pd.DislikeCount, len(pd.Comments), pd.Liked, pd.Comments,
 	)
-}
-
-// Used to compile all the dynamic data for the HTML
-type MainPage struct {
-	Categories []Category
-	Posts      []PostData
-	Trending   []PostData
-	LoggedIn   bool
-}
-
-type PostPage struct {
-	Post     PostData
-	Comments []CommentData
-	LoggedIn bool
 }

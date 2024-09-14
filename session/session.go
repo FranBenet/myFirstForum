@@ -2,6 +2,7 @@ package session
 
 import (
 	"crypto/rand"
+	"database/sql"
 	"encoding/hex"
 	"log"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 )
 
 // CREATES A NEW SESSION, STORES IT IN THE DATABASE AND ADDS THEM IN THE RESPONSEWRITER
-func CreateSession(w http.ResponseWriter, userID int) {
+func CreateSession(w http.ResponseWriter, userID int, db *sql.DB) {
 	sessionUUID, err := generateSessionUUID()
 	if err != nil {
 		log.Printf("Error Generating Sesssion ID: %v", err)
@@ -21,14 +22,14 @@ func CreateSession(w http.ResponseWriter, userID int) {
 
 	expiration := time.Now().Add(30 * time.Minute)
 
-	session := &models.Session{
+	session := models.Session{
 		Uuid:      sessionUUID,
 		UserId:    userID,
 		ExpiresAt: expiration,
 	}
 
 	//	Save session data in the db.
-	err = dbaser.SaveSession(session)
+	_, err = dbaser.AddSession(db, session)
 	if err != nil {
 		log.Printf("Error creating session for the %v: %v", userID, err)
 		return
@@ -46,30 +47,26 @@ func CreateSession(w http.ResponseWriter, userID int) {
 }
 
 // CLOSE A SESSION BY MAKING INVALID THE CURRENT SESSION
-func EndSession(w http.ResponseWriter, r *http.Request) {
+func EndSession(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	//	Get user's session from cookie
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
 		//	No Cookie found
 		return
 	}
-
 	sessionUUID := cookie.Value
-
-	err = dbaser.DeleteSessionID(sessionUUID)
+	_, err = dbaser.DeleteSession(db, sessionUUID)
 	if err != nil {
 		log.Printf("Error Deleting SessionID: %v from database. %v", sessionUUID, err)
 		return
 	}
-
 	//	Expire the session for the cookie
 	expiredCookie := &http.Cookie{
 		Name:     "session_token",
 		Value:    "",
-		Expires:  time.Now().Add(-1 * time.Day()),
+		Expires:  time.Now(),
 		HttpOnly: true,
 	}
-
 	http.SetCookie(w, expiredCookie)
 }
 

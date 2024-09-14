@@ -57,13 +57,13 @@ func AddCommentReaction(db *sql.DB, reaction models.CommentReaction) (int, error
 }
 
 // Returns the number of likes and dislikes of a comment.
-func CommentReactions(db *sql.DB, comment models.Comment) (int, int, error) {
+func CommentReactions(db *sql.DB, id int) (int, int, error) {
 	var likes, dislikes int
-	row := db.QueryRow("select count(*) from comment_reactions where comment_id=? and liked=?", comment.Id, 1)
+	row := db.QueryRow("select count(*) from comment_reactions where comment_id=? and liked=?", id, 1)
 	if err := row.Scan(&likes); err != nil {
 		return 0, 0, err
 	}
-	row = db.QueryRow("select count(*) from comment_reactions where comment_id=? and liked=?", comment.Id, 0)
+	row = db.QueryRow("select count(*) from comment_reactions where comment_id=? and liked=?", id, 0)
 	if err := row.Scan(&dislikes); err != nil {
 		return 0, 0, err
 	}

@@ -40,7 +40,7 @@ func main() {
 	}
 	defer db.Close()
 	// session := models.Session{UserId: 2, Uuid: "ssdlkd;-.29384FBERF098234", ExpiresAt: time.Now().Add(1 * time.Hour)}
-	md, _ := helpers.MainPageData(db, "")
+	md, _ := helpers.PostPageData(db, 1, 3)
 	fmt.Println(md)
 	// fmt.Println(dbaser.ValidSession(db, "ssdlkd;-.29384FBERF098234"))
 	// fmt.Println(dbaser.TrendingPosts(db, 3))

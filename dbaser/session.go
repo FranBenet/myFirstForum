@@ -46,12 +46,16 @@ func SessionById(db *sql.DB, id int) (models.Session, error) {
 	return result, nil
 }
 
-func DeleteSessionUuid(db *sql.DB, uuid string) error {
-	_, err := db.Exec("delete from sessions where uuid=?", uuid)
+func DeleteSession(db *sql.DB, uuid string) (int, error) {
+	row, err := db.Exec("delete from sessions where uuid=?", uuid)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	id, err := row.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return int(id), nil
 }
 
 func SessionUser(db *sql.DB, uuid string) (int, error) {
@@ -66,11 +70,11 @@ func SessionUser(db *sql.DB, uuid string) (int, error) {
 	return id, nil
 }
 
-func ValidSession(db *sql.DB, uuid string) (bool, error) {
-	if uuid == "" {
+func ValidSession(db *sql.DB, id int) (bool, error) {
+	if id == 0 {
 		return false, nil
 	}
-	row := db.QueryRow("select expires from sessions where uuid=?", uuid)
+	row := db.QueryRow("select expires from sessions where user_id=?", id)
 	var created string
 	if err := row.Scan(&created); err != nil {
 		return false, err

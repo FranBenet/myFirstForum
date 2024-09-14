@@ -226,7 +226,7 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
    have to check if the user requesting has liked or disliked them.
 */
 
-func GetPostData(db *sql.DB, post models.Post, uuid string) (models.PostData, error) {
+func GetPostData(db *sql.DB, post models.Post, userId int) (models.PostData, error) {
 	postUser, err := dbaser.UserById(db, post.UserId)
 	if err != nil {
 		return models.PostData{}, err
@@ -243,15 +243,11 @@ func GetPostData(db *sql.DB, post models.Post, uuid string) (models.PostData, er
 	if err != nil {
 		return models.PostData{}, err
 	}
-	sessionUser, err := dbaser.SessionUser(db, uuid)
-	if err != nil {
-		return models.PostData{}, err
-	}
 	var likeStatus int
-	if sessionUser == 0 {
+	if userId == 0 {
 		likeStatus = 0
 	} else {
-		likeStatus, err = dbaser.PostLikeStatus(db, post.Id, sessionUser)
+		likeStatus, err = dbaser.PostLikeStatus(db, post.Id, userId)
 		if err != nil {
 			return models.PostData{}, err
 		}
@@ -268,16 +264,42 @@ func GetPostData(db *sql.DB, post models.Post, uuid string) (models.PostData, er
 	return data, nil
 }
 
-// func GetCommentData(db *sql.DB, commentId, uuid string) (models.CommentData, error) {}
+func GetCommentData(db *sql.DB, comment models.Comment, sessionUser int) (models.CommentData, error) {
+	commentUser, err := dbaser.UserById(db, comment.UserId)
+	if err != nil {
+		return models.CommentData{}, err
+	}
+	likes, dislikes, err := dbaser.CommentReactions(db, comment.Id)
+	if err != nil {
+		return models.CommentData{}, err
+	}
+	var likeStatus int
+	if sessionUser == 0 {
+		likeStatus = 0
+	} else {
+		likeStatus, err = dbaser.CommentLikeStatus(db, comment.Id, sessionUser)
+		if err != nil {
+			return models.CommentData{}, err
+		}
+	}
+	data := models.CommentData{
+		Comment:      &comment,
+		User:         commentUser,
+		LikeCount:    likes,
+		DislikeCount: dislikes,
+		Liked:        likeStatus,
+	}
+	return data, nil
+}
 
-func MainPageData(db *sql.DB, uuid string) (models.MainPage, error) {
+func MainPageData(db *sql.DB, id int) (models.MainPage, error) {
 	posts, err := dbaser.Posts(db)
 	if err != nil {
 		return models.MainPage{}, err
 	}
 	var postData []models.PostData
 	for _, p := range posts {
-		data, err := GetPostData(db, p, uuid)
+		data, err := GetPostData(db, p, id)
 		if err != nil {
 			return models.MainPage{}, err
 		}
@@ -289,7 +311,7 @@ func MainPageData(db *sql.DB, uuid string) (models.MainPage, error) {
 	}
 	var trendData []models.PostData
 	for _, p := range trending {
-		data, err := GetPostData(db, p, uuid)
+		data, err := GetPostData(db, p, id)
 		if err != nil {
 			return models.MainPage{}, err
 		}
@@ -299,7 +321,7 @@ func MainPageData(db *sql.DB, uuid string) (models.MainPage, error) {
 	if err != nil {
 		return models.MainPage{}, err
 	}
-	loggedIn, err := dbaser.ValidSession(db, uuid)
+	loggedIn, err := dbaser.ValidSession(db, id)
 	if err != nil {
 		return models.MainPage{}, err
 	}
@@ -307,19 +329,27 @@ func MainPageData(db *sql.DB, uuid string) (models.MainPage, error) {
 	return mainData, nil
 }
 
-// func PostPageData(db *sql.DB, uuid string, id int) (models.PostPage, error) {
-// 	post, err := dbaser.PostById(db, id)
-// 	if err != nil {
-// 		return models.PostPage{}, err
-// 	}
-// 	data, err := GetPostData(db, p, uuid)
-// 	if err != nil {
-// 		return models.PostPage{}, err
-// 	}
-// 	loggedIn, err := dbaser.ValidSession(db, uuid)
-// 	if err != nil {
-// 		return models.PostPage{}, err
-// 	}
-// 	postData := models.PostPage{Post: data, LoggedIn: loggedIn}
-// 	return mainData, nil
-// }
+func PostPageData(db *sql.DB, postId, sessionUser int) (models.PostPage, error) {
+	post, err := dbaser.PostById(db, postId)
+	if err != nil {
+		return models.PostPage{}, err
+	}
+	data, err := GetPostData(db, post, sessionUser)
+	if err != nil {
+		return models.PostPage{}, err
+	}
+	var comments []models.CommentData
+	for _, comment := range data.Comments {
+		commData, err := GetCommentData(db, comment, sessionUser)
+		if err != nil {
+			return models.PostPage{}, err
+		}
+		comments = append(comments, commData)
+	}
+	loggedIn, err := dbaser.ValidSession(db, sessionUser)
+	if err != nil {
+		return models.PostPage{}, err
+	}
+	postData := models.PostPage{Post: data, Comments: comments, LoggedIn: loggedIn}
+	return postData, nil
+}
