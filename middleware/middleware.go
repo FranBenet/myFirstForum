@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
+	"database/sql"
 	"net/http"
-	"time"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
 )
@@ -14,7 +14,15 @@ import (
 //	FALSE -> SESSION DOES NOT EXISTS OR IS NOT VALID
 //	THE REQUEST WITH THE NEW CONTEXT INFORMATION IS PASSED TO THE NEXT HANDLER
 
-func MidlewareSession(requestedHandler http.Handler) http.Handler {
+type Middleware struct {
+	db *sql.DB
+}
+
+func NewMiddleware(db *sql.DB) *Middleware {
+	return &Middleware{db: db}
+}
+
+func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		//	Check if there is a cookie in the request
@@ -27,12 +35,20 @@ func MidlewareSession(requestedHandler http.Handler) http.Handler {
 			requestedHandler.ServeHTTP(w, r.WithContext(ctx))
 		}
 
-		//	Get the value of the session
+		//	Get the value of the session from the cookie
 		sessionUUID := sessionToken.Value
 
-		//	Check if the sessionUUID exists and has not expired
-		session, exists := dbaser.GetSession(sessionUUID)
-		if !exists || session.ExpiresAt.Before(time.Now()) {
+		//	Get UserID from database
+		userID, err := dbaser.SessionUser(mw.db, sessionUUID)
+		if err != nil {
+			// HANDLE ERROR
+		}
+
+		//	Check if userID has a valid session
+		exists, err := dbaser.ValidSession(mw.db, userID)
+		if err != nil {
+			//	HANDLE ERROR
+		} else if !exists {
 			//	Create a new context with a key-value pair: loggedIn = false
 			ctx := context.WithValue(r.Context(), "loggedIn", false)
 
@@ -44,7 +60,7 @@ func MidlewareSession(requestedHandler http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), "loggedIn", true)
 
 		//	Create a new context with a key-value pair containing userID.
-		ctx = context.WithValue(ctx, "userID", session.UserId)
+		ctx = context.WithValue(ctx, "userID", userID)
 
 		//	Send the request to the correct handler, using .WithContext() to include the context
 		requestedHandler.ServeHTTP(w, r.WithContext(ctx))

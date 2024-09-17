@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"strconv"
@@ -12,8 +13,16 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/session"
 )
 
+type Handler struct {
+	db *sql.DB
+}
+
+func NewHandler(db *sql.DB) *Handler {
+	return &Handler{db: db}
+}
+
 // To handle "/".
-func Homepage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		log.Println("Homepage")
 		log.Println("Error. Path Not Allowed.")
@@ -44,7 +53,7 @@ func Homepage(w http.ResponseWriter, r *http.Request) {
 }
 
 // To handle "/post/{id}"
-func GetPost(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
@@ -87,7 +96,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 }
 
 // To handle "/search"
-func Search(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/search" {
 		log.Println("Seach")
 		log.Println("Error. Path Not Allowed.")
@@ -118,7 +127,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 }
 
 // To handle "/post/create"
-func NewPost(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path != "/post/create" {
 		log.Println("Post Create")
@@ -156,7 +165,7 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 }
 
 // To handle "/profile"
-func Profile(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/profile" {
 		log.Println("Profile")
 		log.Println("Error. Path Not Allowed.")
@@ -191,7 +200,7 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 }
 
 // To handle "/posts/liked"
-func LikedPosts(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/posts/liked" {
 		log.Println("Liked Posts")
 		log.Println("Error. Path Not Allowed.")
@@ -222,7 +231,7 @@ func LikedPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 // To handle "/posts/mined"
-func MyPosts(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/posts/myPosts" {
 		log.Println("posts/myPosts")
 		log.Println("Error. Path Not Allowed.")
@@ -254,7 +263,7 @@ func MyPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 // To handle "/login"
-func Login(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/login" {
 		log.Println("Login")
 		log.Println("Error. Path Not Allowed.")
@@ -302,7 +311,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 // To handle "/register"
-func Register(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/register" {
 		log.Println("Register")
 		log.Println("Error. Path Not Allowed.")
@@ -332,7 +341,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 }
 
 // To handle "/users/{username}/profile"
-// func UsersPost(w http.ResponseWriter, r *http.Request) {
+// func (h *Handler)UsersPost(w http.ResponseWriter, r *http.Request) {
 // 	if r.URL.Path != "/users/{username}/profile" {
 // 		log.Println("Users Post")
 // 		log.Println("Error. Path Not Allowed.")
