@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -10,7 +11,6 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
-	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/session"
 )
 
 type Handler struct {
@@ -36,18 +36,13 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//	Get logIn status for the request
-	loggedIn := r.Context().Value("loggedIn").(bool)
-
 	//	Get userID that is making the request
-	userID := r.Context().Value("userID").(int)
+	userID := r.Context().Value(models.UserIDKey).(int)
 
-	//	Call a function passing two paramenters:
-	//	- Boolean value indicating if user is loggedIn or not
-	//	- Int value indicating the ID of the User.
-	//	Example: func getDataHome(loggedIn bool, userID int)
-
-	//	data := getDataHome (loggedIn, userID)
+	data, err := helpers.MainPageData(h.db, userID)
+	if err != nil {
+		//	HANDLE ERROR
+	}
 
 	helpers.RenderTemplate(w, "home", data)
 }
@@ -71,19 +66,13 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid post ID", http.StatusBadRequest)
 		}
 
-		//	Get logIn status for the request
-		loggedIn := r.Context().Value("loggedIn").(bool)
-
 		//	Get userID that is making the request
-		userID := r.Context().Value("userID").(int)
+		userID := r.Context().Value(models.UserIDKey).(int)
 
-		//	Call a function passing two paramenters:
-		//	- Boolean value indicating if user is loggedIn or not
-		//	- Int value indicating the ID of the User.
-		//	Example: func getDataPostID(loggedIn bool, userID int, postId int)
-
-		//	data := getDataPostID (loggedIn, userID, postId)
-
+		data, err := helpers.PostPageData(h.db, postId, userID)
+		if err != nil {
+			//	HANDLE ERROR
+		}
 		helpers.RenderTemplate(w, "post-id", data)
 
 	} else {
@@ -110,20 +99,14 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//	Get logIn status for the request
-	loggedIn := r.Context().Value("loggedIn").(bool)
-
 	//	Get userID that is making the request
-	userID := r.Context().Value("userID").(int)
+	// userID := r.Context().Value(models.UserIDKey).(int)
 
-	//	Call a function passing two paramenters:
-	//	- Boolean value indicating if user is loggedIn or not
-	//	- Int value indicating the ID of the User.
-	//	Example: func getDataHomeFiltered(loggedIn bool, userID int)
-
-	//	data := getDataHomeFiltered (loggedIn, userID)
-
-	helpers.RenderTemplate(w, "home.html", data)
+	// data, err := helpers.MainPageDataFilter(h.db, userID)
+	// if err != nil {
+	// 	//	HANDLE ERROR
+	// }
+	// helpers.RenderTemplate(w, "home.html", data)
 }
 
 // To handle "/post/create"
@@ -136,10 +119,11 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loggedIn := r.Context().Value("loggedIn").(bool)
+	//	Get userID that is making the request
+	userID := r.Context().Value(models.UserIDKey).(int)
 
 	//	Check the request comes from a logged-in user or not and act in consequence
-	if !loggedIn {
+	if userID == 0 {
 		http.Redirect(w, r, "/login", http.StatusFound)
 	} else {
 
@@ -149,7 +133,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 			//	Call a function that returns all existent categories:
 			//	data := getDataNewPost() -> this should include all existent categories and a field Message type string that can be used to print error/success when posting.
 
-			helpers.RenderTemplate(w, "post-create", data)
+			// helpers.RenderTemplate(w, "post-create", data)
 
 		case http.MethodPost:
 			//	Save the post into the database
@@ -175,19 +159,18 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		//	Check if user is logged in
-		loggedIn := r.Context().Value("loggedIn").(bool)
+		//	Get userID that is making the request
+		userID := r.Context().Value(models.UserIDKey).(int)
 
-		if !loggedIn {
+		if userID == 0 {
 			http.Redirect(w, r, "/login", http.StatusFound)
+
 		} else {
-			//	Get userID that is making the request
-			userID := r.Context().Value("userID").(int)
-
-			//	Call funtion to collect data
-			// data:= getUserDetails(userID int)
-
-			helpers.RenderTemplate(w, "profile.html", data)
+			// data, err := helpers.ProfilePageData(h.db, userID)
+			// if err != nil {
+			// 	//	HANDLE ERROR
+			// }
+			// helpers.RenderTemplate(w, "profile.html", data)
 		}
 
 	case http.MethodPost:
@@ -214,19 +197,17 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//	Check if user is logged in
-	loggedIn := r.Context().Value("loggedIn").(bool)
+	//	Get userID that is making the request
+	userID := r.Context().Value(models.UserIDKey).(int)
 
-	if !loggedIn {
+	if userID == 0 {
 		http.Redirect(w, r, "/login", http.StatusFound)
 	} else {
-		//	Get userID that is making the request
-		userID := r.Context().Value("userID").(int)
 
 		//	Call function to get data
 		// 	data := getLikedPosts(userID int)
 
-		helpers.RenderTemplate(w, "likedPosts.html", data)
+		// helpers.RenderTemplate(w, "likedPosts.html", data)
 	}
 }
 
@@ -244,20 +225,17 @@ func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+	// Get userID that is making the request
+	userID := r.Context().Value(models.UserIDKey).(int)
 
-	//	Check if user is logged in
-	loggedIn := r.Context().Value("loggedIn").(bool)
-
-	if !loggedIn {
+	if userID == 0 {
 		http.Redirect(w, r, "/login", http.StatusFound)
 	} else {
-		// Get userID that is making the request
-		userID := r.Context().Value("userID").(int)
 
 		//	Call function to get data
 		//	data := getUserPosts(userID int)
 
-		helpers.RenderTemplate(w, "myPosts.html", data)
+		// helpers.RenderTemplate(w, "myPosts.html", data)
 	}
 
 }
@@ -273,34 +251,33 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		helpers.RenderTemplate(w, "login.html", nil)
+		// helpers.RenderTemplate(w, "login.html", nil)
+		fmt.Println("DO WE NEED A GET METHOD FOR LOGIN???")
 
 	case http.MethodPost:
-		user := models.User{
-			Email:    r.FormValue("email"),
-			Password: r.FormValue("password"),
-		}
+
 		//	Check the username and password are correct.
-		valid, err := dbaser.CheckPassword(user)
+		valid, err := dbaser.CheckPassword(h.db, r.FormValue("email"), r.FormValue("password"))
 		if !valid {
 			log.Printf("Incorrect password: %v", err)
 			message := "Failed to log in. Try again!"
 			helpers.RenderTemplate(w, "login.html", message)
 		}
 
-		//	Get UserID from email
-		//	userID := userIDbyEmail(r.FormValue("email"))
+		//	Get User ID from email.
+		user, err := dbaser.UserByEmail(h.db, r.FormValue("email"))
+		if err != nil {
+			//	SOMETHING
+		}
+		userID := user.Id
+		fmt.Println(userID)
 
-		//	Create session for the userID
-		session.CreateSession(w, userID)
+		//	Create User Session for the User.
 
-		//	Call a function passing two paramenters:
-		//	- Boolean value indicating if user is loggedIn or not
-		//	- Int value indicating the ID of the User.
-		//	Example: func getDataHome(loggedIn bool, userID int)
+		// session.CreateSession(w, userID)
 
 		//	data := getDataHome (loggedIn, userID)
-		helpers.RenderTemplate(w, "home", data)
+		// helpers.RenderTemplate(w, "home", data)
 
 	default:
 		w.Header().Set("Allow", "GET, POST")
@@ -321,17 +298,34 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		helpers.RenderTemplate(w, "register.html", nil)
+		// helpers.RenderTemplate(w, "register.html", nil)
+		fmt.Println("DO WE NEED A GET METHOD FOR REGISTER???")
 
 	case http.MethodPost:
-		//	Check if email exists in the db
-		//	Create a new user in the DB. Returns an error if failed.
+		user := models.User{
+			Email:    r.FormValue("email"),
+			Name:     r.FormValue("username"),
+			Password: r.FormValue("password"),
+		}
 
+		//	Check if email exists in the db
+		exist := dbaser.UserEmailExists(h.db, user.Email)
+		if !exist {
+			//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRINT ERROR MESSAGE
+		}
+
+		//	Check if username exists in the db
+		exist = dbaser.UsernameExists(h.db, user.Name)
+		if !exist {
+			//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRINT ERROR MESSAGE
+		}
+
+		//	Register user in the db
+		_, err := dbaser.AddUser(h.db, user)
 		if err != nil {
 			log.Printf("Error registering new user: %v", err)
 		}
-		message := "Registration Succesful"
-		helpers.RenderTemplate(w, "register.html", message)
+		//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRIN SUCCESFUL MESSAGE
 
 	default:
 		w.Header().Set("Allow", "GET, POST")
