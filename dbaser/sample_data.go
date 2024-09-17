@@ -50,4 +50,13 @@ var insertStatements = map[string]string{
 (3, 3, "It's amazing how we can prepare great meals with very little."),
 (3, 4, "The ultimate test tonight: I'm cooking dinner for a date. Fingers crossed!"),
 (4, 1, "All hail the emperor!");`,
+	"comment_reactions": `insert into comment_reactions values
+(1, 1, 1),
+(1, 2, 1),
+(2, 3, 1),
+(2, 4, 1),
+(4, 2, 0),
+(4, 3, 0),
+(4, 4, 1),
+(7, 2, 1);`,
 }
