@@ -1,11 +1,29 @@
 {{define "filter"}}
-    <form method="post" action="/" class="filter-menu">  
-        <select class="filter-selector">
-        <option value="" disabled selected > <p>Filter by Category:</p></option>
-        {{range .Categories}}
-        <option value="{{.}}">{{.}}</option>
+    <section class="filter-section">
+        <div class="category-filter-dropdown">
+            <div class="category-filter-dropdown-box">
+                Filter by Category:
+            </div>
+            
+            <div class="category-filter-content">
+                {{range .Categories}}
+                    <a href="/filter?category={{.Name}}" class="category-option"> {{.Name}}</a>
+                {{end}}
+            </div>
+            
+        </div>
         
-        {{end}}
-        </select>
-    </form>
+        <div class="other-filter-dropdown">
+            <div class="other-filter-dropdown-box">
+                Filter by:
+            </div>
+            
+            <div class="other-filter-content">
+                <a href="/filter?likes" class="other-option">Likes (Descendent)</a>
+                <a href="/filter?dislikes" class="other-option">Dislikes (Descendent)</a>
+                <a href="/filter?recent" class="other-option">Recently Added</a>
+            </div>
+            
+        </div>
+    </section>
 {{end}}

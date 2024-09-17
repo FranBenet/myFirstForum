@@ -2,11 +2,13 @@
     <header class="header">
         <a href="/" class="logo">
             <img class= "img-logo" src="../static/img/literary_lions_logo.png" alt="Logo literary lions club">
-        </a>    
+        </a>
+
         <form class="search-bar" action="/search">
             <label for="search_bar"></label>
             <input type="search" name="search_bar" id="search_bar" class="search" placeholder="Search"></textarea>
         </form>
+
         {{if .UserLoggedIn}}
         <div class="icons-menu">
             <a href="/post/create" class="createPost-page-button page-button">
@@ -37,36 +39,65 @@
     </header>
 
     <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <a href="#" class="close-button">&times;</a>
-            <h2>Register</h2>
-            <form action="/register" method="post">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required><br><br>
+        <div class="modal-content-register">
+            <div class="title-modal-content">
+                <a href="#" class="close-button">&times;</a>
+                <h2 class="title-register">Register</h2>
+            </div>
+                       
+            <form action="/register" method="post" class="form-modal-content-register">
+                <label class="register-form-username-txt" for="username">Username:</label>
+                <input class="register-form-username" type="text" id="username" name="username" required>
                 
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required><br><br>
+                <label class="register-form-email-txt" for="email">Email:</label>
+                <input class="register-form-email" type="email" id="email" name="email" required>
                 
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required><br><br>
-
-                <input type="submit" value="Register">
+                <label class="register-form-password-txt" for="password">Password:</label>
+                <input class="register-form-password" type="password" id="password" name="password" required>
+                <div class="submit-button">
+                    <input type="submit" value="Register" class="register-form-button">
+                </div>
+                
             </form>
+
+            <hr class="separator-bar">
+
+            <div class="subtext-registerModal">
+                <h3 class="subtext-register">Do you have an account?</h3>
+                <a href="#loginModal" class="register-button">Log in</a>
+            </div>
+            <h4 class="error-text">Error. Registration process failed.</h4> 
+            
         </div>
     </div>
     <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <a href="#" class="close-button">&times;</a>
-            <h2>Login</h2>
-            <form action="/login" method="post">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required><br><br>
+        <div class="modal-content-login">
+            <div class="title-modal-content">
+                <a href="#" class="close-button">&times;</a>
+                <h2 class="title-login">Log in</h2>
+            </div>
+            
+            <form action="/login" method="post" class="form-modal-content-login">
+                <label class="register-form-email-txt" for="email">Email:</label>
+                <input class="register-form-email" type="email" id="email" name="email" required>
                 
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required><br><br>
-
-                <input type="submit" value="Login">
+                <label class="register-form-password-txt" for="password">Password:</label>
+                <input class="register-form-password" type="password" id="password" name="password" required>
+                <div class="submit-button">
+                    <input type="submit" value="Register" class="register-form-button">
+                </div>
+                
             </form>
+
+            <hr class="separator-bar">
+
+            <div class="subtext-registerModal">
+                <h3 class="subtext-register">You don't have an account?</h3>
+                <a href="#registerModal" class="register-button">Register in</a>
+            </div>
+
+            <h4 class="error-text">Error. Log in process failed.</h4>
+
         </div>
     </div>
 {{end}} 
