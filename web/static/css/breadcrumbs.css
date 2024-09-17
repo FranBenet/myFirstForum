@@ -2,6 +2,9 @@ ul.breadcrumb {
     padding: 10px 16px;
     list-style: none;
     /* background-color: #eee; */
+    /* border: 1px solid red; */
+    /* box-sizing: border-box; */
+    
   }
   ul.breadcrumb li {
     display: inline;
@@ -11,6 +14,7 @@ ul.breadcrumb {
     padding: 8px;
     color: black;
     content: "/\00a0";
+    
   }
   ul.breadcrumb li a {
     color: var(--primary-color);

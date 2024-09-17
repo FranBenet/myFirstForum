@@ -5,17 +5,16 @@
     flex-flow: column nowrap;
 }
 
-.id-gallery{
+.postId-gallery{
     width: 95%;
     border-radius: 40px;
     margin-top: 40px;
     /* align-self: start; */
-    display: flex;
+    display: none;
     flex-flow: column nowrap;
     align-items: center;
     gap: 30px;
-    /* background-color: green; */
-
+   
 }
 
 .post-id-container{
