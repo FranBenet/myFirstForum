@@ -66,9 +66,9 @@
 <select id=" category" name="category" class="filter-selector">
     <option value="" disabled selected > <p>Choose Category:</p></option>
     <option value="category01">Category01</option>
-    <!-- {{range .Categories}}
-        <option value="{{.}}">{{.}}</option>
-    {{end}} -->
+    {{range .Categories}}
+        <option value="{{.Name}}">{{.Name}}</option>
+    {{end}}
 </select>
 {{end}}
 

@@ -27,7 +27,7 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 
 	tmpl := template.Must(template.ParseFiles(htmlTemplates...))
 
-	err := tmpl.ExecuteTemplate(w, name, data)
+	err := tmpl.ExecuteTemplate(w, "base.html", data)
 	if err != nil {
 		log.Printf("Error Executing Template: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
