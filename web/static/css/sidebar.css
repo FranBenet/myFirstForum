@@ -4,6 +4,7 @@
     display: flex;
     flex-flow: row nowrap;
     gap: 40px;
+    background-color: red;
 }
 
 .divisor{

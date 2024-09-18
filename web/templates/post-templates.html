@@ -16,7 +16,7 @@
             <section class="post-data">
                 <div class="data">
                     <p class="data-info">
-                        <time datetime="2026-02-03">{{.Post.Created}}</time>
+                        <time datetime="{{.Post.Created}}">{{.Post.Created}}</time>
                     </p>
                     <p class="data-info">
                         |
@@ -28,10 +28,10 @@
                         |
                     </p>
                     <p class="data-info">
-                        {{.CommentCount}} Comments
+                        {{len .Comments}} Comments
                     </p>
                 </div>
-                <form action="/likeState" method="post" class="like-container">
+                <form action="/reaction" method="post" class="like-container">
                     <input type="hidden" name="post_Id" id="{{.Post.Id}}">
                     <button name="state" value="like" class="like-comment-button like-button">
                         <span class="material-symbols-rounded thumbs-icon {{if eq .Liked 1}} active-like-icon {{else if eq .Liked 0}} like-icon {{end}}">thumb_up</span>
@@ -42,15 +42,6 @@
                 </form>
             </section>
         </a>
-        <!-- <form action="/likeState" method="post" class="like-container">
-            <input type="hidden" name="post_Id" id="{{.Post.Id}}">
-            <button name="state" value="like" class="like-comment-button like-button">
-                <span class="material-symbols-rounded thumbs-icon {{if .LikeState}} active-like-icon {{else}} like-icon {{end}}">thumb_up</span>
-            </button>
-            <button name="state" value="dislike" class="like-comment-button like-button">
-                <span class="material-symbols-rounded thumbs-icon {{if .DislikeState}} active-dislike-icon {{else}} dislike-icon {{end}}">thumb_down</span>
-            </button>
-        </form> -->
    </div>  
 {{end}}
 
@@ -72,55 +63,55 @@
     
     <div class="post-id-container">
         <section class="post-id-header">
-            <a href="/" class="post-id-user-info">
+            <a href="/user/{.User.Id}" class="post-id-user-info">
                 <div class="user-info-image">
-                    <img src="../static/img/cat.png" alt="Profile Img" class="image">
+                    <img src="{{.User.Avatar}}" alt="Profile Img" class="image">
                 </div>
                 <div class="user-info-text">
-                    <p class="info-username">bookLover293</p>
+                    <p class="info-username">{{.User.Name}}</p>
                     <p class="data-info">
-                        <time datetime="3 March 2023">3 March 2023</time>
+                        <time datetime="{{.Post.Created}}">{{.Post.Created}}</time>
                     </p>
                 </div>
             </a>
             <div class="post-category-container">
-            
-                <a href="/category/4" class="post-category">Fantasy</a>
-                <a href="/category/5" class="post-category">Romance</a>
-                <a href="/category/2" class="post-category">Medieval</a>
+                {{range .Categories}}
+                    <a href="/category/{{.Id}}" class="post-category">{{.Name}}</a>
+                {{end}}
             </div>
         </section>
         <section class="post-id-content">
-            <h1 class="post-id-title">Character Development in Fantasy Novels</h1>
-            <p class="post-id-description">Character development is one of the most important elements in any story, but in fantasy novels, it often becomes even more essential. Since fantasy worlds tend to be so vast and imaginative, the characters need to feel real and grounded. For me, The Name of the Wind by Patrick Rothfuss is a masterclass in character development. Kvothe's transformation from a young boy with raw talent to a legendary figure is beautifully written. Another great example is A Song of Ice and Fire by George R.R. Martin. Each character, whether protagonist or antagonist, experiences growth, setbacks, and complexity. Who are your favorite characters that have grown over the course of a series?</p>
+            <h1 class="post-id-title">{{.Post.Title}}</h1>
+            <p class="post-id-description">{{.Post.Content}}</p>
         </section>
         <section class="post-id-data">
             <div class="data">
                 <p class="data-info">
-                    23 Likes
+                    {{.LikeCount}} Likes
                 </p>
                 <p class="data-info">
                     |
                 </p>
                 <p class="data-info">
-                    1 Comments
+                    {{len .Comments}} Comments
                 </p>
             </div>
-            <form action="/likeState" method="post" class="like-container-post">
-                <input type="hidden" name="post_Id" id="6">
+            <form action="/reaction" method="post" class="like-container">
+                <input type="hidden" name="post_Id" id="{{.Post.Id}}">
                 <button name="state" value="like" class="like-comment-button like-button">
-                    <span class="material-symbols-rounded thumbs-icon {{if .Post.LikeState}} active-like-icon {{else}} like-icon {{end}}">thumb_up</span>
+                    <span class="material-symbols-rounded thumbs-icon {{if eq .Liked 1}} active-like-icon {{else if eq .Liked 0}} like-icon {{end}}">thumb_up</span>
                 </button>
                 <button name="state" value="dislike" class="like-comment-button like-button">
-                    <span class="material-symbols-rounded thumbs-icon {{if .Post.DislikeState}} active-dislike-icon {{else}} dislike-icon {{end}}">thumb_down</span>
+                    <span class="material-symbols-rounded thumbs-icon {{if eq .Liked -1}} active-dislike-icon {{else if eq .Liked 0}} dislike-icon {{end}}">thumb_down</span>
                 </button>
             </form>
         </section>
         
         <hr class="separator">
-        {{template "comment"}}
-       
-
+        {{range .Comments}}
+            {{template "comment"}}
+        {{end}}
+        
         <form method="post" action="/post/comment" class="comment-form">
             <textarea class="comment-area" name="new-comment" id="" placeholder="What do you think?" cols="100" rows="2"></textarea>
             <button class="submit">Comment</button>
@@ -136,29 +127,23 @@
         <section class="comment-id-header">
             <div class="comment-id-user-info">
                 <div class="user-info-image">
-                    <img src="../static/img/dog2.png" alt="Profile Img" class="image">
+                    <img src="{{.User.Avatar}}" alt="Profile Img" class="image">
                 </div>
                 <div class="user-info-text">
-                    <p class="info-username">blackHeart64</p>
-                    <p class="info-date">Created on <time datetime="6 January 2021">6 January 2021</time></p>
+                    <p class="info-username">{{.User.Name}}</p>
+                    <p class="info-date">Created on <time datetime="{{.User.Created}}">{{.User.Created}}</time></p>
                 </div>
             </div>
         </section>
         <section class="comment-id-content">
-            <p class="comment-id-description">I loved the book and your article. I agree in everything what you think.</p>
+            <p class="comment-id-description">{{.Comment.Content}}</p>
         </section>
         <section class="comment-id-data">
             <p class="data-likes">
-                2 Likes
+                {{.LikeCount}} Likes
             </p>
-            <!-- <p class="date">
-                |
-            </p>
-            <p class="date">
-                10 Comments
-            </p> -->
-            <form action="/likeState" method="post" class="like-container-comment">
-                <input type="hidden" name="post_Id" id="1">
+            <form action="/reaction" method="post" class="like-container-comment">
+                <input type="hidden" name="post_Id" id="{{.Post.Id}}">
                 <button name="state" value="like" class="like-comment-button like-button">
                     <span class="material-symbols-rounded thumbs-icon {{if .LikeState}} active-like-icon {{else}} like-icon {{end}}">thumb_up</span>
                 </button>
