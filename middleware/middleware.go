@@ -30,6 +30,7 @@ func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Hand
 		//	Get cookie from request
 		sessionToken, err := r.Cookie("session_token")
 		if err != nil {
+			log.Println(err)
 			//	If no cookie available, create a new context with a key-value pair: userID = 0
 			ctx := context.WithValue(r.Context(), models.UserIDKey, 0)
 
@@ -45,7 +46,6 @@ func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Hand
 		if err != nil {
 			// LOG ERROR
 			log.Printf("Error: %v", err)
-
 			//	If fail to get the user of the session create a new context with a key-value pair: userID = 0
 			ctx := context.WithValue(r.Context(), models.UserIDKey, 0)
 

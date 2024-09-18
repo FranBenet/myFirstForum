@@ -24,23 +24,20 @@ func routes(db *sql.DB) *http.ServeMux {
 	fileServer := http.FileServer(http.Dir("./web/static"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-	// mux.HandleFunc("/", mw.handler.Homepage)
-	// mux.HandleFunc("/post/{id}", mw.handler.GetPost)
-	// mux.HandleFunc("/post/create", mw.handler.NewPost)
-	// mux.HandleFunc("/login", mw.handler.Login)
-	// mux.HandleFunc("/register", mw.handler.Register)
-	// mux.HandleFunc("/search", mw.handler.Search)
-	// mux.HandleFunc("/profile", mw.handler.Profile)
-	// mux.HandleFunc("/liked", mw.handler.LikedPosts)
-	// mux.HandleFunc("/myposts", mw.handler.MyPosts)
-	// mux.HandleFunc("/profile/{username}", mw.handler.Profile)
-
 	mux.Handle("/", mw.MiddlewareSession(http.HandlerFunc(handler.Homepage)))
 	mux.Handle("/post/{id}", mw.MiddlewareSession(http.HandlerFunc(handler.GetPost)))
 	mux.Handle("/post/create", mw.MiddlewareSession(http.HandlerFunc(handler.NewPost)))
+	mux.Handle("/reaction", mw.MiddlewareSession(http.HandlerFunc(handler.Reaction)))
+
+	mux.HandleFunc("/login", handler.Login)       //	No need to go through the middleware because never will be a cookie
+	mux.HandleFunc("/register", handler.Register) //	No need to go through the middleware because never will be a cookie
+
+	mux.Handle("/search", mw.MiddlewareSession(http.HandlerFunc(handler.Search)))
+	mux.Handle("/filter", mw.MiddlewareSession(http.HandlerFunc(handler.Filter)))
+	mux.Handle("/user/{username}/profile", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
+
 	mux.Handle("/profile", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
 	mux.Handle("/profile/edit", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
-	mux.Handle("/user/{username}/profile", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
 	mux.Handle("/liked", mw.MiddlewareSession(http.HandlerFunc(handler.LikedPosts)))
 	mux.Handle("/myposts", mw.MiddlewareSession(http.HandlerFunc(handler.MyPosts)))
 

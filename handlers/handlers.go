@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -41,9 +40,9 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 
 	data, err := helpers.MainPageData(h.db, userID)
 	if err != nil {
-		//	HANDLE ERROR
+		log.Println(err)
 	}
-
+	data.LoggedIn = true
 	helpers.RenderTemplate(w, "home", data)
 }
 
@@ -71,7 +70,7 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 		data, err := helpers.PostPageData(h.db, postId, userID)
 		if err != nil {
-			//	HANDLE ERROR
+			log.Println(err)
 		}
 		helpers.RenderTemplate(w, "post-id", data)
 
@@ -84,34 +83,9 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// To handle "/search"
-func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/search" {
-		log.Println("Seach")
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
-		return
-	}
-
-	if r.Method != http.MethodGet {
-		w.Header().Set("Allow", http.MethodGet)
-		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	//	Get userID that is making the request
-	// userID := r.Context().Value(models.UserIDKey).(int)
-
-	// data, err := helpers.MainPageDataFilter(h.db, userID)
-	// if err != nil {
-	// 	//	HANDLE ERROR
-	// }
-	// helpers.RenderTemplate(w, "home.html", data)
-}
-
 // To handle "/post/create"
-func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
+func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/post/create" {
 		log.Println("Post Create")
 		log.Println("Error. Path Not Allowed.")
@@ -124,20 +98,31 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
 	//	Check the request comes from a logged-in user or not and act in consequence
 	if userID == 0 {
-		http.Redirect(w, r, "/login", http.StatusFound)
+		http.Redirect(w, r, "/#registerModal", http.StatusForbidden)
 	} else {
-
 		switch r.Method {
 		case http.MethodGet:
-
 			//	Call a function that returns all existent categories:
-			//	data := getDataNewPost() -> this should include all existent categories and a field Message type string that can be used to print error/success when posting.
-
-			// helpers.RenderTemplate(w, "post-create", data)
+			categories, err := dbaser.Categories(h.db)
+			if err != nil {
+				log.Println(err)
+			}
+			helpers.RenderTemplate(w, "post-create", categories)
 
 		case http.MethodPost:
+
+			post := models.Post{
+				UserId:  userID,
+				Title:   r.FormValue("title"),
+				Content: r.FormValue("content"),
+			}
 			//	Save the post into the database
+			dbaser.AddPost(h.db, post)
+			//	Save the categories associated to the post into the database
 			//	Print a Succesful message
+			referer := r.Referer()
+			msg := "Post was created succesfully!"
+			helpers.RenderTemplate(w, referer, msg)
 
 		default:
 			w.Header().Set("Allow", "GET, POST")
@@ -148,207 +133,40 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// To handle "/profile"
-func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/profile" {
-		log.Println("Profile")
+func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
+
+	if r.URL.Path != "/reaction" {
+		log.Println("Post Create")
 		log.Println("Error. Path Not Allowed.")
 		http.Error(w, "Page Not Found", http.StatusNotFound)
-		return
-	}
-
-	switch r.Method {
-	case http.MethodGet:
-		//	Get userID that is making the request
-		userID := r.Context().Value(models.UserIDKey).(int)
-
-		if userID == 0 {
-			http.Redirect(w, r, "/login", http.StatusFound)
-
-		} else {
-			// data, err := helpers.ProfilePageData(h.db, userID)
-			// if err != nil {
-			// 	//	HANDLE ERROR
-			// }
-			// helpers.RenderTemplate(w, "profile.html", data)
-		}
-
-	case http.MethodPost:
-		//	To edit password and name
-	default:
-		w.Header().Set("Allow", "GET, POST")
-		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-}
-
-// To handle "/posts/liked"
-func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/posts/liked" {
-		log.Println("Liked Posts")
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
-		return
-	}
-
-	if r.Method != http.MethodGet {
-		w.Header().Set("Allow", http.MethodGet)
-		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	//	Get userID that is making the request
 	userID := r.Context().Value(models.UserIDKey).(int)
 
+	//	Check the request comes from a logged-in user or not and act in consequence
 	if userID == 0 {
-		http.Redirect(w, r, "/login", http.StatusFound)
+		referer := r.Referer()
+		http.Redirect(w, r, referer+"#registerModal", http.StatusForbidden)
+
 	} else {
+		switch r.Method {
+		case http.MethodPost:
+			// Parse form values
+			r.ParseForm()
 
-		//	Call function to get data
-		// 	data := getLikedPosts(userID int)
+			// Get the postID from the hidden input
+			// postID := r.FormValue("post_Id")
 
-		// helpers.RenderTemplate(w, "likedPosts.html", data)
+			// Get the reactionType based on which button was clicked
+			// reaction := r.FormValue("state")
+
+		default:
+			w.Header().Set("Allow", "GET, POST")
+			http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
 	}
 }
-
-// To handle "/posts/mined"
-func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/posts/myPosts" {
-		log.Println("posts/myPosts")
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
-		return
-	}
-
-	if r.Method != http.MethodGet {
-		w.Header().Set("Allow", http.MethodGet)
-		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-	// Get userID that is making the request
-	userID := r.Context().Value(models.UserIDKey).(int)
-
-	if userID == 0 {
-		http.Redirect(w, r, "/login", http.StatusFound)
-	} else {
-
-		//	Call function to get data
-		//	data := getUserPosts(userID int)
-
-		// helpers.RenderTemplate(w, "myPosts.html", data)
-	}
-
-}
-
-// To handle "/login"
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/login" {
-		log.Println("Login")
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
-		return
-	}
-
-	switch r.Method {
-	case http.MethodGet:
-		// helpers.RenderTemplate(w, "login.html", nil)
-		fmt.Println("DO WE NEED A GET METHOD FOR LOGIN???")
-
-	case http.MethodPost:
-
-		//	Check the username and password are correct.
-		valid, err := dbaser.CheckPassword(h.db, r.FormValue("email"), r.FormValue("password"))
-		if !valid {
-			log.Printf("Incorrect password: %v", err)
-			message := "Failed to log in. Try again!"
-			helpers.RenderTemplate(w, "login.html", message)
-		}
-
-		//	Get User ID from email.
-		user, err := dbaser.UserByEmail(h.db, r.FormValue("email"))
-		if err != nil {
-			//	SOMETHING
-		}
-		userID := user.Id
-		fmt.Println(userID)
-
-		//	Create User Session for the User.
-
-		// session.CreateSession(w, userID)
-
-		//	data := getDataHome (loggedIn, userID)
-		// helpers.RenderTemplate(w, "home", data)
-
-	default:
-		w.Header().Set("Allow", "GET, POST")
-		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-}
-
-// To handle "/register"
-func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/register" {
-		log.Println("Register")
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
-		return
-	}
-
-	switch r.Method {
-	case http.MethodGet:
-		// helpers.RenderTemplate(w, "register.html", nil)
-		fmt.Println("DO WE NEED A GET METHOD FOR REGISTER???")
-
-	case http.MethodPost:
-		user := models.User{
-			Email:    r.FormValue("email"),
-			Name:     r.FormValue("username"),
-			Password: r.FormValue("password"),
-		}
-
-		//	Check if email exists in the db
-		exist := dbaser.UserEmailExists(h.db, user.Email)
-		if !exist {
-			//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRINT ERROR MESSAGE
-		}
-
-		//	Check if username exists in the db
-		exist = dbaser.UsernameExists(h.db, user.Name)
-		if !exist {
-			//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRINT ERROR MESSAGE
-		}
-
-		//	Register user in the db
-		_, err := dbaser.AddUser(h.db, user)
-		if err != nil {
-			log.Printf("Error registering new user: %v", err)
-		}
-		//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRIN SUCCESFUL MESSAGE
-
-	default:
-		w.Header().Set("Allow", "GET, POST")
-		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-}
-
-// To handle "/users/{username}/profile"
-// func (h *Handler)UsersPost(w http.ResponseWriter, r *http.Request) {
-// 	if r.URL.Path != "/users/{username}/profile" {
-// 		log.Println("Users Post")
-// 		log.Println("Error. Path Not Allowed.")
-// 		http.Error(w, "Page Not Found", http.StatusNotFound)
-// 		return
-// 	}
-
-// 	if r.Method != http.MethodGet {
-// 		w.Header().Set("Allow", http.MethodGet)
-// 		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
-// 		return
-// 	}
-
-// 	data := helpers.GetData()
-// 	helpers.RenderTemplate(w, "", data)
-// }
