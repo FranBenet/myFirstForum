@@ -76,7 +76,9 @@ func ValidSession(db *sql.DB, id int) (bool, error) {
 	}
 	row := db.QueryRow("select expires from sessions where user_id=?", id)
 	var created string
-	if err := row.Scan(&created); err != nil {
+	if err := row.Scan(&created); err == sql.ErrNoRows {
+		return false, nil
+	} else if err != nil {
 		return false, err
 	}
 	timeCreated, err := time.Parse(time.RFC3339, created)
