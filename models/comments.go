@@ -17,7 +17,7 @@ type CommentReaction struct {
 }
 
 type CommentData struct {
-	Comment      *Comment
+	Comment      Comment
 	User         User
 	LikeCount    int
 	DislikeCount int

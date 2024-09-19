@@ -102,7 +102,7 @@ func GetCommentData(db *sql.DB, comment models.Comment, sessionUser int) (models
 		}
 	}
 	data := models.CommentData{
-		Comment:      &comment,
+		Comment:      comment,
 		User:         commentUser,
 		LikeCount:    likes,
 		DislikeCount: dislikes,
