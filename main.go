@@ -53,12 +53,10 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	// session := models.Session{UserId: 2, Uuid: "ssdlkd;-.29384FBERF098234", ExpiresAt: time.Now().Add(1 * time.Hour)}
-	// md, _ := helpers.PostPageData(db, 1, 3)
-	// fmt.Println(md)
-	// fmt.Println(dbaser.ValidSession(db, "ssdlkd;-.29384FBERF098234"))
-	// fmt.Println(dbaser.TrendingPosts(db, 3))
-
+	valid, err := dbaser.ValidateLogin(db, "PageTurner@example.com", "SbdfbWE345$")
+	fmt.Println(valid, err)
+	// emailOk, err := dbaser.UsernameExists(db, "PageTurner")
+	// fmt.Println(emailOk, err)
 	//	PROVISIONAL STARTING WEB SERVER CODE
 	mux := routes(db)
 	// Creating a server

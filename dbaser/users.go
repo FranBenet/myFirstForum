@@ -10,10 +10,14 @@ import (
 )
 
 func AddUser(db *sql.DB, user models.User) (int, error) {
-	if ok := UserEmailExists(db, user.Email); !ok {
+	if ok, err := UserEmailExists(db, user.Email); !ok {
 		return 0, errors.New("User e-mail already registered.")
-	} else if ok = UsernameExists(db, user.Name); !ok {
+	} else if err != nil {
+		return 0, err
+	} else if ok, err = UsernameExists(db, user.Name); !ok {
 		return 0, errors.New("Username already registered.")
+	} else if err != nil {
+		return 0, err
 	}
 	passHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 6)
 	if err != nil {
@@ -35,20 +39,26 @@ func AddUser(db *sql.DB, user models.User) (int, error) {
 	return int(id), nil
 }
 
-func UserEmailExists(db *sql.DB, email string) bool {
-	row := db.QueryRow("select * from users where email=?", email)
-	if err := row.Scan(); err == sql.ErrNoRows {
-		return false
+func UserEmailExists(db *sql.DB, email string) (bool, error) {
+	row := db.QueryRow("select email from users where email=?", email)
+	var epost string
+	if err := row.Scan(&epost); err == sql.ErrNoRows {
+		return false, nil
+	} else if err != nil {
+		return false, err
 	}
-	return true
+	return true, nil
 }
 
-func UsernameExists(db *sql.DB, username string) bool {
-	row := db.QueryRow("select * from users where username=?", username)
-	if err := row.Scan(); err == sql.ErrNoRows {
-		return false
+func UsernameExists(db *sql.DB, username string) (bool, error) {
+	row := db.QueryRow("select username from users where username=?", username)
+	var name string
+	if err := row.Scan(&name); err == sql.ErrNoRows {
+		return false, nil
+	} else if err != nil {
+		return false, err
 	}
-	return true
+	return true, nil
 }
 
 func CheckPassword(db *sql.DB, email, password string) (bool, error) {
@@ -99,4 +109,23 @@ func UserByEmail(db *sql.DB, email string) (models.User, error) {
 		result.Avatar = avatar.String
 	}
 	return result, nil
+}
+
+func ValidateLogin(db *sql.DB, email, password string) (models.User, error) {
+	if emailOk, err := UserEmailExists(db, email); !emailOk {
+		return models.User{}, errors.New("User e-mail not found!")
+	} else if err != nil {
+		return models.User{}, err
+	}
+	passOk, err := CheckPassword(db, email, password)
+	if err != nil {
+		return models.User{}, err
+	} else if !passOk {
+		return models.User{}, errors.New("Incorrect password!")
+	}
+	user, err := UserByEmail(db, email)
+	if err != nil {
+		return models.User{}, err
+	}
+	return user, nil
 }

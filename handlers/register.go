@@ -85,7 +85,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//	Check if email exists in the db
-		exist := dbaser.UserEmailExists(h.db, user.Email)
+		exist, _ := dbaser.UserEmailExists(h.db, user.Email)
 		if !exist {
 			//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRINT ERROR MESSAGE
 			log.Println("Error. Email is already registered. Try logging in.")
@@ -93,7 +93,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//	Check if username exists in the db
-		exist = dbaser.UsernameExists(h.db, user.Name)
+		exist, _ = dbaser.UsernameExists(h.db, user.Name)
 		if !exist {
 			//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRINT ERROR MESSAGE
 			log.Println("Error. Username is already registered. Try logging in.")
