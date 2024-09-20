@@ -10,11 +10,11 @@ import (
 )
 
 func AddUser(db *sql.DB, user models.User) (int, error) {
-	if ok, err := UserEmailExists(db, user.Email); !ok {
+	if exists, err := UserEmailExists(db, user.Email); exists {
 		return 0, errors.New("User e-mail already registered.")
 	} else if err != nil {
 		return 0, err
-	} else if ok, err = UsernameExists(db, user.Name); !ok {
+	} else if exists, err = UsernameExists(db, user.Name); exists {
 		return 0, errors.New("Username already registered.")
 	} else if err != nil {
 		return 0, err
