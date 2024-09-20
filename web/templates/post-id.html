@@ -1,8 +1,18 @@
 {{ define "page" }}
+
         <section class="post-id-section">
             {{ template "breadcrumbs".}}
             <section class="postId-gallery">
-               {{template "post-extended" .}}
+                {{template "post-extended" .}}          
+            </section>
+        </section>
+{{end}}
+{{ define "paffe" }}
+
+        <section class="card-xx-section">
+            {{ template "breadcrumbs".}}
+            <section class="card-xx">
+                {{template "post-extended" .}} 
             </section>
         </section>
 {{end}}

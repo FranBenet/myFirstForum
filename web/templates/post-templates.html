@@ -46,11 +46,11 @@
 {{end}}
 
 {{define "post-miniature"}}
-    <a href="/post/{{.Post.Id}}" class="miniature-post-container">
-        <h1 class="miniature-post-title">{{.Post.Title}}</h1>
-        <div class="miniature-data">
-            <p class="miniature-post-username">{{.User.Name}}</p>
-            <p class="miniature-likes">
+    <a href="/post/{{.Post.Id}}" class="trending-post-container">
+        <h1 class="trending-post-title">{{.Post.Title}}</h1>
+        <div class="trending-post-data">
+            <p class="trending-post-username">{{.User.Name}}</p>
+            <p class="trending-likes">
                 {{.LikeCount}} Likes
             </p>              
         </div>
@@ -63,31 +63,31 @@
     
     <div class="post-id-container">
         <section class="post-id-header">
-            <a href="/user/{.User.Id}" class="post-id-user-info">
+            <a href="/user/{.Post.User.Id}" class="post-id-user-info">
                 <div class="user-info-image">
-                    <img src="{{.User.Avatar}}" alt="Profile Img" class="image">
+                    <img src="../static/img/bear.png" alt="Profile Img" class="image">
                 </div>
                 <div class="user-info-text">
-                    <p class="info-username">{{.User.Name}}</p>
+                    <p class="info-username">{{.Post.User.Name}}</p>
                     <p class="data-info">
-                        <time datetime="{{.Post.Created}}">{{.Post.Created}}</time>
+                        <time datetime="{{.Post.Post.Created}}">{{.Post.Post.Created}}</time>
                     </p>
                 </div>
             </a>
             <div class="post-category-container">
-                {{range .Categories}}
+                {{range .Post.Categories}}
                     <a href="/category/{{.Id}}" class="post-category">{{.Name}}</a>
                 {{end}}
             </div>
         </section>
         <section class="post-id-content">
-            <h1 class="post-id-title">{{.Post.Title}}</h1>
-            <p class="post-id-description">{{.Post.Content}}</p>
+            <h1 class="post-id-title">{{.Post.Post.Title}}</h1>
+            <p class="post-id-description">{{.Post.Post.Content}}</p>
         </section>
         <section class="post-id-data">
             <div class="data">
                 <p class="data-info">
-                    {{.LikeCount}} Likes
+                    {{.Post.LikeCount}} Likes
                 </p>
                 <p class="data-info">
                     |
@@ -96,20 +96,20 @@
                     {{len .Comments}} Comments
                 </p>
             </div>
-            <form action="/reaction" method="post" class="like-container">
-                <input type="hidden" name="post_Id" id="{{.Post.Id}}">
+            <form action="/reaction" method="post" class="like-container-post">
+                <input type="hidden" name="post_Id" id="{{.Post.Post.Id}}">
                 <button name="state" value="like" class="like-comment-button like-button">
-                    <span class="material-symbols-rounded thumbs-icon {{if eq .Liked 1}} active-like-icon {{else if eq .Liked 0}} like-icon {{end}}">thumb_up</span>
+                    <span class="material-symbols-rounded thumbs-icon {{if eq .Post.Liked 1}} active-like-icon {{else if eq .Post.Liked 0}} like-icon {{end}}">thumb_up</span>
                 </button>
                 <button name="state" value="dislike" class="like-comment-button like-button">
-                    <span class="material-symbols-rounded thumbs-icon {{if eq .Liked -1}} active-dislike-icon {{else if eq .Liked 0}} dislike-icon {{end}}">thumb_down</span>
+                    <span class="material-symbols-rounded thumbs-icon {{if eq .Post.Liked -1}} active-dislike-icon {{else if eq .Post.Liked 0}} dislike-icon {{end}}">thumb_down</span>
                 </button>
             </form>
         </section>
         
         <hr class="separator">
         {{range .Comments}}
-            {{template "comment"}}
+            {{template "comment" .}}
         {{end}}
         
         <form method="post" action="/post/comment" class="comment-form">
@@ -131,7 +131,7 @@
                 </div>
                 <div class="user-info-text">
                     <p class="info-username">{{.User.Name}}</p>
-                    <p class="info-date">Created on <time datetime="{{.User.Created}}">{{.User.Created}}</time></p>
+                    <p class="info-date">Created on <time datetime="{{.Comment.Created}}">{{.Comment.Created}}</time></p>
                 </div>
             </div>
         </section>
@@ -143,12 +143,12 @@
                 {{.LikeCount}} Likes
             </p>
             <form action="/reaction" method="post" class="like-container-comment">
-                <input type="hidden" name="post_Id" id="{{.Post.Id}}">
+                <input type="hidden" name="post_Id" id="{{.Comment.Id}}">
                 <button name="state" value="like" class="like-comment-button like-button">
-                    <span class="material-symbols-rounded thumbs-icon {{if .LikeState}} active-like-icon {{else}} like-icon {{end}}">thumb_up</span>
+                    <span class="material-symbols-rounded thumbs-icon {{if eq .Liked 1}} active-like-icon {{else if eq .Liked 0}} like-icon {{end}}">thumb_up</span>
                 </button>
                 <button name="state" value="dislike" class="like-comment-button like-button">
-                    <span class="material-symbols-rounded thumbs-icon {{if .DislikeState}} active-dislike-icon {{else}} dislike-icon {{end}}">thumb_down</span>
+                    <span class="material-symbols-rounded thumbs-icon {{if eq .Liked -1}} active-dislike-icon {{else if eq .Liked 0}} dislike-icon {{end}}">thumb_down</span>
                 </button>
             </form>
         </section>

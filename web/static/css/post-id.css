@@ -1,20 +1,17 @@
-.post-id-section {
-    grid-area: gallery;
+.post-id-section{
+    grid-area:gallery;
     background-color: var(--secondary-color);
     display: flex;
     flex-flow: column nowrap;
-}
 
+}
 .postId-gallery{
     width: 95%;
-    border-radius: 40px;
-    margin-top: 40px;
-    /* align-self: start; */
-    display: none;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    display: flex;
     flex-flow: column nowrap;
-    align-items: center;
-    gap: 30px;
-   
+    align-items: center;  
 }
 
 .post-id-container{
@@ -47,12 +44,19 @@
             .user-info-image{
                 width: 60px;
                 height: 60px;
-                /* border: 2px solid black; */
-                border-radius: 50px;
+                border: 2px solid black;
+                box-sizing: border-box;
+                border-radius: 30px;
+                overflow: hidden;
+                display: flex;   
+                justify-content: center;
+                align-items: center;
+               
             }
                 .image{
-                    width: 60px;
-                    height:60px;
+                    width: 100%;
+                    height:100%;
+                    object-fit: contain;
                 }
             .user-info-text{
                 /* border: 2px solid red; */

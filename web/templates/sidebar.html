@@ -1,11 +1,10 @@
-{{define "sidebar"}}
-<section class="miniature-section">
-        <hr class="divisor">
-        <div class="miniature-content">
-                <p class="miniature-section-title">Trending Posts</p>
-                {{range .Trending}}
-                        {{template "post-miniature".}}
-                {{end}}
-        </div>
-</section>
+{{ define "sidebar" }}
+<hr class="divisor">
+<div class="miniature-content">
+        <div class="miniature-section-title">Trending Posts</div>
+        {{range .Trending}}
+        {{template "post-miniature".}}
+                
+        {{end}}
+</div>
 {{end}}
