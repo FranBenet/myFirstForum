@@ -1,7 +1,9 @@
 package dbaser
 
 import (
+	"crypto/rand"
 	"database/sql"
+	"encoding/base64"
 	"time"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
@@ -13,22 +15,22 @@ import (
    - Get user by session UUID. OK
 */
 
-func AddSession(db *sql.DB, session models.Session) (int, error) {
+func AddSession(db *sql.DB, user models.User) (string, error) {
 	stmt, err := db.Prepare("insert into sessions (user_id, uuid, expires) values (?, ?, ?)")
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 	defer stmt.Close()
-	expiration := session.ExpiresAt.Format("2006-01-02 15:04:05")
-	res, err := stmt.Exec(session.UserId, session.Uuid, expiration)
+	uuid, err := GenerateUuid(16)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	var id int64
-	if id, err = res.LastInsertId(); err != nil {
-		return 0, err
+	expiration := time.Now().Add(time.Hour).Format("2006-01-02 15:04:05")
+	_, err = stmt.Exec(user.Id, uuid, expiration)
+	if err != nil {
+		return "", err
 	}
-	return int(id), nil
+	return uuid, nil
 }
 
 func SessionById(db *sql.DB, id int) (models.Session, error) {
@@ -89,4 +91,13 @@ func ValidSession(db *sql.DB, id int) (bool, error) {
 		return false, nil
 	}
 	return true, nil
+}
+
+func GenerateUuid(length int) (string, error) {
+	buffer := make([]byte, length)
+	_, err := rand.Read(buffer)
+	if err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(buffer)[:length], nil
 }

@@ -117,11 +117,10 @@ func ValidateLogin(db *sql.DB, email, password string) (models.User, error) {
 	} else if err != nil {
 		return models.User{}, err
 	}
-	passOk, err := CheckPassword(db, email, password)
-	if err != nil {
-		return models.User{}, err
-	} else if !passOk {
+	if passOk, err := CheckPassword(db, email, password); !passOk {
 		return models.User{}, errors.New("Incorrect password!")
+	} else if err != nil {
+		return models.User{}, err
 	}
 	user, err := UserByEmail(db, email)
 	if err != nil {

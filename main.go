@@ -53,8 +53,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	valid, err := dbaser.ValidateLogin(db, "PageTurner@example.com", "SbdfbWE345$")
-	fmt.Println(valid, err)
+	// valid, err := dbaser.ValidateLogin(db, "PageTurner@example.com", "SbdfbWE345$")
+	uuid, err := dbaser.GenerateUuid(32)
+	fmt.Println(uuid, err)
 	// emailOk, err := dbaser.UsernameExists(db, "PageTurner")
 	// fmt.Println(emailOk, err)
 	//	PROVISIONAL STARTING WEB SERVER CODE
