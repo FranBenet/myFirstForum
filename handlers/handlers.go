@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/middleware"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
@@ -36,13 +38,33 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//	Get userID that is making the request
-	userID := r.Context().Value(models.UserIDKey).(int)
+	// userID := r.Context().Value(models.UserIDKey).(int)
+
+	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
+	//	Get cookie from request
+	var userID int
+	sessionToken, err := r.Cookie("session_token")
+	if err != nil {
+		userID = 0
+		log.Println(err)
+	} else {
+		//	Get the value of the session from the cookie
+		sessionUUID := sessionToken.Value
+		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+		if err != nil {
+			userID = 0
+			log.Println(err)
+
+		}
+	}
+
+	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
 	data, err := helpers.MainPageData(h.db, userID)
 	if err != nil {
 		log.Println(err)
 	}
-	data.LoggedIn = true
+	data.LoggedIn = false
 	helpers.RenderTemplate(w, "home", data)
 }
 
@@ -55,6 +77,29 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//	Get userID that is making the request
+	// userID := r.Context().Value(models.UserIDKey).(int)
+
+	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
+	//	Get cookie from request
+	var userID int
+
+	sessionToken, err := r.Cookie("session_token")
+	if err != nil {
+		userID = 0
+		log.Println(err)
+	} else {
+		//	Get the value of the session from the cookie
+		sessionUUID := sessionToken.Value
+		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+		if err != nil {
+			userID = 0
+			log.Println(err)
+		}
+	}
+
+	// ---------------------------------------------------PROVISIONAL CODE FOR TEST END----------------------------------------------------------------------------------------
+
 	path := r.URL.Path
 	pathDivide := strings.Split(path, "/")
 
@@ -62,16 +107,14 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 		postId, err := strconv.Atoi(pathDivide[2])
 		if err != nil {
-			http.Error(w, "Invalid post ID", http.StatusBadRequest)
+			http.Error(w, "ID for the post is not a number", http.StatusBadRequest)
 		}
-
-		//	Get userID that is making the request
-		userID := r.Context().Value(models.UserIDKey).(int)
-
+		fmt.Println(postId, userID)
 		data, err := helpers.PostPageData(h.db, postId, userID)
 		if err != nil {
 			log.Println(err)
 		}
+		fmt.Println(data)
 		helpers.RenderTemplate(w, "post-id", data)
 
 	} else {

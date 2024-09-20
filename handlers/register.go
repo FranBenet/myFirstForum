@@ -11,57 +11,6 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
-// To handle "/login"
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/login" {
-		log.Println("Login")
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
-		return
-	}
-
-	switch r.Method {
-	case http.MethodGet:
-		// helpers.RenderTemplate(w, "login.html", nil)
-		fmt.Println("DO WE NEED A GET METHOD FOR LOGIN???")
-
-	case http.MethodPost:
-
-		//	Check the username and password are correct.
-		valid, err := dbaser.CheckPassword(h.db, r.FormValue("email"), r.FormValue("password"))
-		if !valid {
-			log.Printf("Incorrect password: %v", err)
-			message := "Failed to log in. Try again!"
-			helpers.RenderTemplate(w, "login.html", message)
-		}
-
-		//	Get User ID from email.
-		user, err := dbaser.UserByEmail(h.db, r.FormValue("email"))
-		if err != nil {
-			log.Println(err)
-		}
-		userID := user.Id
-		fmt.Println(userID)
-
-		//	Create User Session for the User.
-
-		data, err := helpers.MainPageData(h.db, userID)
-		if err != nil {
-			fmt.Println("Error Getting MainPageData")
-			log.Println(err)
-		}
-		// data.LoggedIn = true
-
-		helpers.RenderTemplate(w, "home", data)
-
-	default:
-		w.Header().Set("Allow", "GET, POST")
-		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-}
-
 // To handle "/register"
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("You have reached Register function")
@@ -83,32 +32,16 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 			Name:     r.FormValue("username"),
 			Password: r.FormValue("password"),
 		}
-
-		//	Check if email exists in the db
-		exist, _ := dbaser.UserEmailExists(h.db, user.Email)
-		if !exist {
-			//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRINT ERROR MESSAGE
-			log.Println("Error. Email is already registered. Try logging in.")
-			os.Exit(0)
-		}
-
-		//	Check if username exists in the db
-		exist, _ = dbaser.UsernameExists(h.db, user.Name)
-		if !exist {
-			//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRINT ERROR MESSAGE
-			log.Println("Error. Username is already registered. Try logging in.")
-			os.Exit(0)
-		}
-
+		fmt.Println(user)
 		//	Register user in the db
 		_, err := dbaser.AddUser(h.db, user)
 		if err != nil {
 			log.Println(err)
-			os.Exit(0)
+
 		}
 
 		//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRINT SUCCESFUL MESSAGE
-		http.Redirect(w, r, "/login", http.StatusFound)
+		http.Redirect(w, r, "/#registerModal", http.StatusFound)
 
 	default:
 		w.Header().Set("Allow", "GET, POST")
@@ -116,4 +49,93 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		os.Exit(0)
 		return
 	}
+}
+
+// To handle "/login"
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("You have reached Login function")
+	if r.URL.Path != "/login" {
+		log.Println("Login")
+		log.Println("Error. Path Not Allowed.")
+		http.Error(w, "Page Not Found", http.StatusNotFound)
+		return
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		// helpers.RenderTemplate(w, "login.html", nil)
+		fmt.Println("DO WE NEED A GET METHOD FOR LOGIN???")
+
+	case http.MethodPost:
+
+		//	Check the username and password are correct.
+		valid, err := dbaser.CheckPassword(h.db, r.FormValue("email"), r.FormValue("password"))
+		if !valid {
+			log.Printf("Incorrect password: %v", err)
+			message := "Failed to log in. Try again!"
+			helpers.RenderTemplate(w, "/#loginModal", message)
+		}
+
+		//	Create Session by the
+		//	Get User ID from email.
+		user, err := dbaser.UserByEmail(h.db, r.FormValue("email"))
+		if err != nil {
+			log.Println(err)
+		}
+		userID := user.Id
+
+		data, err := helpers.MainPageData(h.db, userID)
+		if err != nil {
+			fmt.Println("Error Getting MainPageData")
+			log.Println(err)
+		}
+		data.LoggedIn = true
+
+		helpers.RenderTemplate(w, "home", data)
+
+	default:
+		w.Header().Set("Allow", "GET, POST")
+		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+}
+
+// To handle "/login"
+func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("You have reached Logout function")
+	if r.URL.Path != "/logout" {
+		log.Println("Logout")
+		log.Println("Error. Path Not Allowed.")
+		http.Error(w, "Page Not Found", http.StatusNotFound)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	//	Get cookie from request
+	var userID int
+	sessionToken, err := r.Cookie("session_token")
+	if err != nil {
+		userID = 0
+		log.Println(err)
+	} else {
+		//	Delete the session
+		sessionUUID := sessionToken.Value
+		_, err = dbaser.DeleteSession(h.db, sessionUUID)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	data, err := helpers.MainPageData(h.db, userID)
+	if err != nil {
+		fmt.Println("Error Getting MainPageData")
+		log.Println(err)
+	}
+	helpers.RenderTemplate(w, "home", data)
 }

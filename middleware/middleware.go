@@ -84,3 +84,23 @@ func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Hand
 	})
 
 }
+
+// FUNCTION PROVISIONAL TO SKIP MIDDLEWARE AND CHECK THAT ITS NOT GENERATING PROBLEMS
+func IsUserLoggedIn(db *sql.DB, sessionUUID string) (int, error) {
+	// Get UserID from database
+	userID, err := dbaser.SessionUser(db, sessionUUID)
+	if err != nil {
+		return 0, err
+	}
+
+	// Check if userID has a valid session
+	exists, err := dbaser.ValidSession(db, userID)
+	if err != nil {
+		return 0, err
+
+	} else if !exists {
+		return 0, err
+	}
+
+	return userID, nil
+}
