@@ -23,3 +23,7 @@ type CommentData struct {
 	DislikeCount int
 	Liked        int
 }
+
+func (c Comment) Date() string {
+	return c.Created.Format("02-01-2006 15:04")
+}

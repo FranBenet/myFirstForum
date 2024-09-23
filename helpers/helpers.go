@@ -43,6 +43,10 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
    With the post ID I have to fetch the post itself, the number of likes and dislikes, all the
    comments as well as reactions to all the comments. For the post and each of the comments I
    have to check if the user requesting has liked or disliked them.
+
+   TODO
+   - Add pagination function, 5 posts per page.
+   - Add message field to structs in order to pass error messages (login/resgistration, for example).
 */
 
 func GetPostData(db *sql.DB, post models.Post, userId int) (models.PostData, error) {

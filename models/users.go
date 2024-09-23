@@ -10,3 +10,7 @@ type User struct {
 	Created  time.Time
 	Avatar   string
 }
+
+func (u User) Date() string {
+	return u.Created.Format("02-01-2006 15:04")
+}

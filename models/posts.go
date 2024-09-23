@@ -36,6 +36,10 @@ func (p Post) String() string {
 	return fmt.Sprintf("** %s **\n%s\n%s\n", p.Title, p.Content, p.Created.Format("02-01-2006 15:04"))
 }
 
+func (p Post) Date() string {
+	return p.Created.Format("02-01-2006 15:04")
+}
+
 func (pd PostData) String() string {
 	return fmt.Sprintf(
 		"\n%vUser: %v\nCategories: %v\nLikes: %d Dislikes: %d Number of comments: %d Like status: %d\nComments: %v\n",

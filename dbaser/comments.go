@@ -31,7 +31,7 @@ func AddComment(db *sql.DB, comment models.Comment) (int, error) {
 
 func PostComments(db *sql.DB, id int) ([]models.Comment, error) {
 	var result []models.Comment
-	row, err := db.Query("select comments.* from comments where post_id=?", id)
+	row, err := db.Query("select * from comments where post_id=? order by created", id)
 	if err != nil {
 		return []models.Comment{}, err
 	}

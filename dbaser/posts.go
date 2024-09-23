@@ -30,7 +30,7 @@ Behaviour:
 
 // Posts created by a specific user.
 func PostsByUser(db *sql.DB, id int) ([]models.Post, error) {
-	row, err := db.Query("select * from posts where user_id=?", id)
+	row, err := db.Query("select * from posts where user_id=? order by created desc", id)
 	if err != nil {
 		return []models.Post{}, err
 	}
@@ -58,7 +58,7 @@ func PostsByUser(db *sql.DB, id int) ([]models.Post, error) {
 
 // All the posts liked by a specific user.
 func UserLikedPosts(db *sql.DB, id int) ([]models.Post, error) {
-	row, err := db.Query("select posts.* from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.id=? and liked=?", id, 1)
+	row, err := db.Query("select posts.* from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.id=? and liked=? order by created desc", id, 1)
 	if err != nil {
 		return []models.Post{}, err
 	}
