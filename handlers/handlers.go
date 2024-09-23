@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -44,6 +45,7 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	//	Get cookie from request
 	var userID int
 	sessionToken, err := r.Cookie("session_token")
+	fmt.Println("session:", sessionToken)
 	if err != nil {
 		userID = 0
 		log.Println(err)
@@ -64,7 +66,31 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	data.LoggedIn = false
+
+	fmt.Println("userLoggedIn:", data.LoggedIn)
+
+	// Parse the query parameters from the URL
+	fmt.Println("URL:", r.URL.Path)
+	query := r.URL.Query()
+
+	// Get the value of the "error" parameter
+	errorMessage := query.Get("error")
+	fmt.Println("ErrorMessage1:", errorMessage)
+	successMessage := query.Get("success")
+	fmt.Println("Success1:", successMessage)
+
+	unescapedError, err := url.QueryUnescape(errorMessage)
+	if err != nil || unescapedError == "" {
+		log.Println(err)
+	}
+	data.Metadata.LoginError = unescapedError
+
+	unescapedSuccess, err := url.QueryUnescape(successMessage)
+	if err != nil || unescapedSuccess == "" {
+		log.Println(err)
+	}
+	data.Metadata.RegSuccess = unescapedSuccess
+
 	helpers.RenderTemplate(w, "home", data)
 }
 
@@ -109,12 +135,27 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, "ID for the post is not a number", http.StatusBadRequest)
 		}
-		fmt.Println(postId, userID)
+
 		data, err := helpers.PostPageData(h.db, postId, userID)
 		if err != nil {
 			log.Println(err)
 		}
-		fmt.Println(data)
+
+		// Parse the query parameters from the URL
+		fmt.Println("URL:", r.URL.Path)
+		query := r.URL.Query()
+
+		// Get the value of the "error" parameter
+		errorMessage := query.Get("errorLogIn")
+		fmt.Println("ErrorMessage1:", errorMessage)
+
+		unescapedError, err := url.QueryUnescape(errorMessage)
+
+		if err != nil || unescapedError == "" {
+			log.Println(err)
+		}
+		data.Metadata.LoginError = unescapedError
+
 		helpers.RenderTemplate(w, "post-id", data)
 
 	} else {

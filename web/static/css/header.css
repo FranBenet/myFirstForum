@@ -197,6 +197,7 @@
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
 }
 
+
 /* Modal Content Box */
 .modal-content-register {
   background-color: var(--secondary-color);
@@ -253,12 +254,65 @@
 #registerModal:target {
   display: block;
 }
+#registerModalM:target {
+  display: none;
+}
 
 /* Show the modal when the button is clicked */
 #loginModal:target {
   display: block;
 }
 
+.background-informative-message{
+  display: block;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeOut 2.5s forwards;
+  
+  
+}
+
+.informative-message{
+  position: fixed;
+  z-index: 1;
+  background-color: var(--secondary-color);
+  box-shadow: 2px 2px 10px 1px var(--primary-color-op);
+  border: 1px solid #888;
+  border-radius: 30px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  margin: 15% auto; /* Center the modal */
+  width: 500px;
+  height: 360px;
+  padding: 30px;
+  gap: 30px;
+
+  animation: fadeOut 2.5s forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+      opacity: 1; /* Fully visible */
+      visibility: visible;
+  }
+  85% {
+      opacity: 1; /* Stay visible for 3 seconds */
+      visibility: visible;
+  }
+  100% {
+      opacity: 0; /* Fully transparent */
+      visibility: hidden;
+  }
+}
 
 .form-modal-content-register{
   display: grid;

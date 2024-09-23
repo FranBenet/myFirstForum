@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
@@ -22,26 +23,75 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.Method {
-	case http.MethodGet:
-		// helpers.RenderTemplate(w, "register.html", nil)
-		fmt.Println("DO WE NEED A GET METHOD FOR REGISTER???")
 
 	case http.MethodPost:
+		userID := 0
+		data, err := helpers.MainPageData(h.db, userID)
+		if err != nil {
+			log.Println(err)
+		}
+
 		user := models.User{
 			Email:    r.FormValue("email"),
 			Name:     r.FormValue("username"),
 			Password: r.FormValue("password"),
 		}
-		fmt.Println(user)
+
 		//	Register user in the db
-		_, err := dbaser.AddUser(h.db, user)
+		_, err = dbaser.AddUser(h.db, user)
 		if err != nil {
 			log.Println(err)
+			//	Include the error in the data to be printed on screen.
+			data.Metadata.RegError = fmt.Sprintf("%s", err)
 
+			//	Get the page where user requested to log in.
+			referer := r.Referer()
+
+			//	Convert URL to url.url format
+			refererURL, err2 := url.Parse(referer)
+			if err2 != nil {
+				log.Println("Failed to parse referer:", err2)
+				refererURL = &url.URL{Path: "/"}
+			}
+
+			// Get all query values
+			query := refererURL.Query()
+
+			// Add/Update the error to the query.
+			query.Set("error", err.Error())
+
+			// Set the updated query back to the referer URL
+			refererURL.RawQuery = query.Encode()
+
+			// Redirect to the referer with the error included in the query.
+			http.Redirect(w, r, refererURL.String(), http.StatusFound)
+			return
+
+		} else {
+			data.Metadata.RegSuccess = "Registration Succesful!"
+			//	Get the page where user requested to log in.
+			referer := r.Referer()
+
+			//	Convert URL to url.url format
+			refererURL, err2 := url.Parse(referer)
+			if err2 != nil {
+				log.Println("Failed to parse referer:", err2)
+				refererURL = &url.URL{Path: "/"}
+			}
+
+			// Get all query values
+			query := refererURL.Query()
+
+			// Add/Update the error to the query.
+			query.Set("success", "Registration Succesful!")
+
+			// Set the updated query back to the referer URL
+			refererURL.RawQuery = query.Encode()
+
+			// Redirect to the referer with the error included in the query.
+			http.Redirect(w, r, refererURL.String(), http.StatusFound)
+			return
 		}
-
-		//	RESPONSE TAKES USER TO THE SAME PAGE IT WAS AND PRINT SUCCESFUL MESSAGE
-		http.Redirect(w, r, "/#registerModal", http.StatusFound)
 
 	default:
 		w.Header().Set("Allow", "GET, POST")
@@ -62,36 +112,82 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.Method {
-	case http.MethodGet:
-		// helpers.RenderTemplate(w, "login.html", nil)
-		fmt.Println("DO WE NEED A GET METHOD FOR LOGIN???")
 
 	case http.MethodPost:
+		email := r.FormValue("email")
+		password := r.FormValue("password")
 
 		//	Check the username and password are correct.
-		valid, err := dbaser.CheckPassword(h.db, r.FormValue("email"), r.FormValue("password"))
+		// 	If not correct, return to the page with error message.
+		valid, err := dbaser.CheckPassword(h.db, email, password)
 		if !valid {
-			log.Printf("Incorrect password: %v", err)
-			message := "Failed to log in. Try again!"
-			helpers.RenderTemplate(w, "/#loginModal", message)
+			log.Println("Check Password:", err)
+
+			//	Get the page where user requested to log in.
+			referer := r.Referer()
+
+			//	Convert URL to url.url format
+			refererURL, err2 := url.Parse(referer)
+			if err2 != nil {
+				log.Println("Failed to parse referer:", err2)
+				refererURL = &url.URL{Path: "/"}
+			}
+
+			// Get all query values
+			query := refererURL.Query()
+
+			// Add/Update the error to the query.
+			query.Set("error", err.Error())
+
+			// Set the updated query back to the referer URL
+			refererURL.RawQuery = query.Encode()
+
+			// Redirect to the referer with the error included in the query.
+			http.Redirect(w, r, refererURL.String(), http.StatusFound)
+			return
 		}
 
-		//	Create Session by the
-		//	Get User ID from email.
+		//	Get UserData from email.
 		user, err := dbaser.UserByEmail(h.db, r.FormValue("email"))
 		if err != nil {
-			log.Println(err)
+			log.Println("UserByEmail", err)
 		}
-		userID := user.Id
 
-		data, err := helpers.MainPageData(h.db, userID)
+		//	Create Session for the user.
+		sessionUUID, err := dbaser.AddSession(h.db, user)
 		if err != nil {
-			fmt.Println("Error Getting MainPageData")
-			log.Println(err)
+			log.Println("AddSession", err)
 		}
-		data.LoggedIn = true
 
-		helpers.RenderTemplate(w, "home", data)
+		cookie := &http.Cookie{
+			Name:     "session_token",
+			Value:    sessionUUID,
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   true,
+		}
+
+		// Send the cookie to the client
+		http.SetCookie(w, cookie)
+
+		//	Get the page where user request to log in.
+		referer := r.Referer()
+
+		//	Convert the string url into a url.url format.
+		refererURL, err := url.Parse(referer)
+		if err != nil {
+			log.Println("Failed to parse referer:", err)
+			refererURL = &url.URL{Path: "/"}
+		}
+
+		//	Delete any queries that the url may have
+		refererURL.RawQuery = ""
+
+		//	Convert url.url format to string format
+		referer = refererURL.String()
+
+		fmt.Println("Referer F", referer)
+		http.Redirect(w, r, referer, http.StatusFound)
 
 	default:
 		w.Header().Set("Allow", "GET, POST")
@@ -118,10 +214,8 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//	Get cookie from request
-	var userID int
 	sessionToken, err := r.Cookie("session_token")
 	if err != nil {
-		userID = 0
 		log.Println(err)
 	} else {
 		//	Delete the session
@@ -132,10 +226,6 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data, err := helpers.MainPageData(h.db, userID)
-	if err != nil {
-		fmt.Println("Error Getting MainPageData")
-		log.Println(err)
-	}
-	helpers.RenderTemplate(w, "home", data)
+	http.Redirect(w, r, "/", http.StatusFound)
+
 }
