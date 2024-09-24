@@ -154,8 +154,8 @@ func MainPageData(db *sql.DB, id int) (models.MainPage, error) {
 	if err != nil {
 		return models.MainPage{}, err
 	}
-
-	mainData := models.MainPage{Categories: categories, Posts: postData, Trending: trendData, LoggedIn: loggedIn}
+	metadata := models.Metadata{LoggedIn: loggedIn}
+	mainData := models.MainPage{Categories: categories, Posts: postData, Trending: trendData, LoggedIn: loggedIn, Metadata: metadata}
 	return mainData, nil
 }
 
@@ -180,6 +180,7 @@ func PostPageData(db *sql.DB, postId, sessionUser int) (models.PostPage, error) 
 	if err != nil {
 		return models.PostPage{}, err
 	}
-	postData := models.PostPage{Post: data, Comments: comments, LoggedIn: loggedIn}
+	metadata := models.Metadata{LoggedIn: loggedIn}
+	postData := models.PostPage{Post: data, Comments: comments, Metadata: metadata}
 	return postData, nil
 }
