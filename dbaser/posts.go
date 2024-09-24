@@ -8,26 +8,6 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
-/* TODO
-   - Add a post. OK
-   - Filter posts by category. OK
-   - Filter posts by reaction (likes).
-   - Display all posts. OK
-   - Filter posts by user. OK
-   - Number of comments of a post. OK
-   - Trending posts (most likes).
-   - User-liked posts. OK
-   - Get categories associated with a post. OK
-   - Get user ID from session ID.
-   -
-
-Behaviour:
-   When a post is requested from the DB, the idea is that the post will be displayed along with its tags, username,
-   comments, likes/dislikes, etc. Should I create a function that will return all this? The other option is to have
-   separate functions for each piece of information needed and I concatenate them for the handler function, which I
-   guess is a more modular approach.
-*/
-
 // Posts created by a specific user.
 func PostsByUser(db *sql.DB, id int) ([]models.Post, error) {
 	row, err := db.Query("select * from posts where user_id=? order by created desc", id)
@@ -190,4 +170,13 @@ func PostById(db *sql.DB, id int) (models.Post, error) {
 	}
 	result.Created = timeCreated
 	return result, nil
+}
+
+func NumberOfPosts(db *sql.DB) (int, error) {
+	var num int
+	row := db.QueryRow("select count(*) from posts;")
+	if err := row.Scan(&num); err != nil {
+		return 0, err
+	}
+	return num, nil
 }

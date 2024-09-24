@@ -6,11 +6,6 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
-/* TODO
-   - Add possibility of adding new categories.
-   - Limit 3 categories per post.
-*/
-
 func Categories(db *sql.DB) ([]models.Category, error) {
 	var result []models.Category
 	row, err := db.Query("select * from categories")

@@ -7,12 +7,6 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
-/* TODO
-   - Add comment.
-   - Number of comments of a post. Inferred from comments of a post?
-   - Comments of a post.
-*/
-
 func AddComment(db *sql.DB, comment models.Comment) (int, error) {
 	stmt, err := db.Prepare("insert into comments (post_id, user_id, content) values (?, ?, ?)")
 	if err != nil {

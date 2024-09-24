@@ -38,17 +38,6 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 	}
 }
 
-/* Mindmap of post workflow
-   To create PostData I'll need a session ID to identify the user requesting, and a post ID.
-   With the post ID I have to fetch the post itself, the number of likes and dislikes, all the
-   comments as well as reactions to all the comments. For the post and each of the comments I
-   have to check if the user requesting has liked or disliked them.
-
-   TODO
-   - Add pagination function, 5 posts per page.
-   - Add message field to structs in order to pass error messages (login/resgistration, for example).
-*/
-
 func GetPostData(db *sql.DB, post models.Post, userId int) (models.PostData, error) {
 	postUser, err := dbaser.UserById(db, post.UserId)
 	if err != nil {
@@ -154,8 +143,11 @@ func MainPageData(db *sql.DB, id int) (models.MainPage, error) {
 	if err != nil {
 		return models.MainPage{}, err
 	}
-
-	mainData := models.MainPage{Categories: categories, Posts: postData, Trending: trendData, LoggedIn: loggedIn}
+	pagination, err := NumberOfPages(db)
+	if err != nil {
+		return models.MainPage{}, err
+	}
+	mainData := models.MainPage{Categories: categories, Posts: postData, Trending: trendData, LoggedIn: loggedIn, Pagination: pagination}
 	return mainData, nil
 }
 
@@ -182,4 +174,25 @@ func PostPageData(db *sql.DB, postId, sessionUser int) (models.PostPage, error) 
 	}
 	postData := models.PostPage{Post: data, Comments: comments, LoggedIn: loggedIn}
 	return postData, nil
+}
+
+func NumberOfPages(db *sql.DB) ([]int, error) {
+	nPosts, err := dbaser.NumberOfPosts(db)
+	if err != nil {
+		return []int{}, err
+	}
+	var quot, rest int
+	quot = nPosts / 5
+	rest = nPosts % 5
+	if quot == 0 || (quot == 1 && rest == 0) {
+		return []int{1}, nil
+	}
+	var pagination []int
+	if rest != 0 {
+		quot++
+	}
+	for i := 1; i < quot+1; i++ {
+		pagination = append(pagination, i)
+	}
+	return pagination, nil
 }
