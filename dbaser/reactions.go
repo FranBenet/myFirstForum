@@ -99,8 +99,6 @@ func PostReactions(db *sql.DB, id int) (int, int, error) {
 	return likes, dislikes, nil
 }
 
-// TODO The user can either like or dislike a comment, not both. So I have to check if there's already a reaction
-// before inserting. If so, I update the entry.
 func AddCommentReaction(db *sql.DB, reaction models.CommentReaction) (int, error) {
 	exists, err := CommentReactionExists(db, reaction)
 	if err != nil {
