@@ -67,11 +67,6 @@
                 <h3 class="subtext-register">Do you have an account?</h3>
                 <a href="#loginModal" class="register-button">Log in</a>
             </div>
-            {{if .Metadata.RegSuccess}}
-                <h4 class="success-text">{{.Metadata.RegSuccess}}</h4>
-            {{else if .Metadata.RegError}}
-                <h4 class="error-text">{{.Metadata.RegError}}</h4>
-            {{end}}
         </div>
     </div>
 
@@ -100,31 +95,22 @@
                 <h3 class="subtext-register">You don't have an account?</h3>
                 <a href="#registerModal" class="register-button">Register</a>
             </div>
-            {{if .Metadata.LoginError}}
-                <h4 class="error-text">{{.Metadata.LoginError}}</h4>
-            {{end}}
+            
         </div>
     </div>
 
-    {{if .Metadata.RegSuccess}}
+    {{if .Metadata.Success}}
     <div class="background-informative-message">
         <div class="informative-message">
             <h4 class="success-text"> INFORMATIVE MESSAGE!</h4>
-                <h4 class="success-text" style="color:green;">{{.Metadata.RegSuccess}}</h4>
+                <h4 class="success-text" style="color:green;">{{.Metadata.Success}}</h4>
         </div>
     </div>
-    {{else if .Metadata.RegError}}
+    {{else if .Metadata.Error}}
     <div class="background-informative-message">
         <div class="informative-message">
             <h4 class="success-text"> INFORMATIVE MESSAGE!</h4>
-                <h4 class="error-text" style="color:red;">{{.Metadata.RegError}}</h4>
-        </div>
-    </div>
-    {{else if .Metadata.LoginError}}
-    <div class="background-informative-message">
-        <div class="informative-message">
-            <h4 class="success-text"> INFORMATIVE MESSAGE!</h4>
-                <h4 class="error-text" style="color:red;">{{.Metadata.LoginError}}</h4>
+                <h4 class="error-text" style="color:red;">{{.Metadata.Error}}</h4>
         </div>
     </div>
     {{end}}

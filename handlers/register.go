@@ -14,7 +14,8 @@ import (
 
 // To handle "/register"
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("You have reached Register function")
+	log.Println("You are in the Register Handler")
+
 	if r.URL.Path != "/register" {
 		log.Println("Register")
 		log.Println("Error. Path Not Allowed.")
@@ -36,13 +37,14 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 			Name:     r.FormValue("username"),
 			Password: r.FormValue("password"),
 		}
+		log.Printf("Registration Details. Email: %s, Username: %s, Password: %s", r.FormValue("email"), r.FormValue("username"), r.FormValue("password"))
 
 		//	Register user in the db
 		_, err = dbaser.AddUser(h.db, user)
 		if err != nil {
 			log.Println(err)
 			//	Include the error in the data to be printed on screen.
-			data.Metadata.RegError = fmt.Sprintf("%s", err)
+			data.Metadata.Error = fmt.Sprintf("%s", err)
 
 			//	Get the page where user requested to log in.
 			referer := r.Referer()
@@ -53,6 +55,9 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 				log.Println("Failed to parse referer:", err2)
 				refererURL = &url.URL{Path: "/"}
 			}
+
+			//	Delete any queries that the url may have
+			refererURL.RawQuery = ""
 
 			// Get all query values
 			query := refererURL.Query()
@@ -63,12 +68,16 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 			// Set the updated query back to the referer URL
 			refererURL.RawQuery = query.Encode()
 
+			log.Printf("Redirecting to: %s", refererURL.String())
+
 			// Redirect to the referer with the error included in the query.
 			http.Redirect(w, r, refererURL.String(), http.StatusFound)
 			return
 
 		} else {
-			data.Metadata.RegSuccess = "Registration Succesful!"
+			log.Println("User Registered in the data base succesfully!")
+
+			data.Metadata.Success = "Registration Succesful!"
 			//	Get the page where user requested to log in.
 			referer := r.Referer()
 
@@ -79,6 +88,9 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 				refererURL = &url.URL{Path: "/"}
 			}
 
+			//	Delete any queries that the url may have
+			refererURL.RawQuery = ""
+
 			// Get all query values
 			query := refererURL.Query()
 
@@ -87,6 +99,8 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 
 			// Set the updated query back to the referer URL
 			refererURL.RawQuery = query.Encode()
+
+			log.Printf("Redirecting to: %s", refererURL.String())
 
 			// Redirect to the referer with the error included in the query.
 			http.Redirect(w, r, refererURL.String(), http.StatusFound)
@@ -103,7 +117,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 
 // To handle "/login"
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("You have reached Login function")
+	log.Println("You are in the Login Handler")
 	if r.URL.Path != "/login" {
 		log.Println("Login")
 		log.Println("Error. Path Not Allowed.")
@@ -117,11 +131,13 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
+		log.Printf("Login Details. Email: %s, Password: %s", r.FormValue("email"), r.FormValue("password"))
+
 		//	Check the username and password are correct.
 		// 	If not correct, return to the page with error message.
 		valid, err := dbaser.CheckPassword(h.db, email, password)
 		if !valid {
-			log.Println("Check Password:", err)
+			log.Println("Email and Password Incorrect:", err)
 
 			//	Get the page where user requested to log in.
 			referer := r.Referer()
@@ -133,19 +149,27 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 				refererURL = &url.URL{Path: "/"}
 			}
 
+			//	Delete any queries that the url may have
+			refererURL.RawQuery = ""
+
 			// Get all query values
 			query := refererURL.Query()
 
 			// Add/Update the error to the query.
 			query.Set("error", err.Error())
+			fmt.Println(err)
 
 			// Set the updated query back to the referer URL
 			refererURL.RawQuery = query.Encode()
+
+			log.Printf("Redirecting to: %s", refererURL.String())
 
 			// Redirect to the referer with the error included in the query.
 			http.Redirect(w, r, refererURL.String(), http.StatusFound)
 			return
 		}
+
+		log.Println("Email and Password Correct")
 
 		//	Get UserData from email.
 		user, err := dbaser.UserByEmail(h.db, r.FormValue("email"))
@@ -153,11 +177,15 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			log.Println("UserByEmail", err)
 		}
 
+		log.Println("User Id got correctly from data base.")
+
 		//	Create Session for the user.
 		sessionUUID, err := dbaser.AddSession(h.db, user)
 		if err != nil {
 			log.Println("AddSession", err)
 		}
+
+		log.Println("New Session created succesfully!")
 
 		cookie := &http.Cookie{
 			Name:     "session_token",
@@ -186,7 +214,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		//	Convert url.url format to string format
 		referer = refererURL.String()
 
-		fmt.Println("Referer F", referer)
+		log.Printf("Redirecting to: %s", referer)
 		http.Redirect(w, r, referer, http.StatusFound)
 
 	default:

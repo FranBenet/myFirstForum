@@ -26,7 +26,7 @@ func NewHandler(db *sql.DB) *Handler {
 // To handle "/".
 func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		log.Println("Homepage")
+		log.Println("You are in the Homepage Handler")
 		log.Println("Error. Path Not Allowed.")
 		http.Error(w, "Page Not Found", http.StatusNotFound)
 		return
@@ -45,18 +45,18 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	//	Get cookie from request
 	var userID int
 	sessionToken, err := r.Cookie("session_token")
-	fmt.Println("session:", sessionToken)
+
 	if err != nil {
 		userID = 0
-		log.Println(err)
+		log.Println("There is no cookie available:", err)
 	} else {
 		//	Get the value of the session from the cookie
 		sessionUUID := sessionToken.Value
+		log.Println("Session UUID is:", sessionUUID)
 		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
 		if err != nil {
 			userID = 0
-			log.Println(err)
-
+			log.Println("Error. No valid session available:", err)
 		}
 	}
 
@@ -64,32 +64,32 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 
 	data, err := helpers.MainPageData(h.db, userID)
 	if err != nil {
-		log.Println(err)
+		log.Println("Error getting data", err)
 	}
 
-	fmt.Println("userLoggedIn:", data.LoggedIn)
+	log.Println("Is user logged in?:", data.LoggedIn)
 
 	// Parse the query parameters from the URL
-	fmt.Println("URL:", r.URL.Path)
 	query := r.URL.Query()
 
 	// Get the value of the "error" parameter
 	errorMessage := query.Get("error")
-	fmt.Println("ErrorMessage1:", errorMessage)
+	fmt.Println("Query Parameter Error:", errorMessage)
 	successMessage := query.Get("success")
-	fmt.Println("Success1:", successMessage)
+	fmt.Println("Query Parameter Success:", successMessage)
 
 	unescapedError, err := url.QueryUnescape(errorMessage)
 	if err != nil || unescapedError == "" {
-		log.Println(err)
+		log.Println("Error unsecaping Error:", err)
 	}
-	data.Metadata.LoginError = unescapedError
+	data.Metadata.Error = unescapedError
 
 	unescapedSuccess, err := url.QueryUnescape(successMessage)
 	if err != nil || unescapedSuccess == "" {
-		log.Println(err)
+		log.Println("Error unsecaping Success:", err)
 	}
-	data.Metadata.RegSuccess = unescapedSuccess
+	data.Metadata.Success = unescapedSuccess
+	data.Metadata.Error = unescapedError
 
 	helpers.RenderTemplate(w, "home", data)
 }
@@ -154,7 +154,7 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		if err != nil || unescapedError == "" {
 			log.Println(err)
 		}
-		data.Metadata.LoginError = unescapedError
+		data.Metadata.Error = unescapedError
 
 		helpers.RenderTemplate(w, "post-id", data)
 
@@ -178,7 +178,29 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//	Get userID that is making the request
-	userID := r.Context().Value(models.UserIDKey).(int)
+	// userID := r.Context().Value(models.UserIDKey).(int)
+
+	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
+	//	Get cookie from request
+	var userID int
+	sessionToken, err := r.Cookie("session_token")
+
+	if err != nil {
+		userID = 0
+		log.Println("Error Getting cookie:", err)
+	} else {
+		//	Get the value of the session from the cookie
+		sessionUUID := sessionToken.Value
+		fmt.Println("session:", sessionUUID)
+		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+		if err != nil {
+			userID = 0
+			log.Println("Error, validating session:", err)
+
+		}
+	}
+
+	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
 	//	Check the request comes from a logged-in user or not and act in consequence
 	if userID == 0 {
@@ -186,12 +208,13 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 	} else {
 		switch r.Method {
 		case http.MethodGet:
-			//	Call a function that returns all existent categories:
-			categories, err := dbaser.Categories(h.db)
+
+			//	Call a function that returns categories and loggedIn status:
+			data, err := helpers.CreatePostData(h.db, userID)
 			if err != nil {
 				log.Println(err)
 			}
-			helpers.RenderTemplate(w, "post-create", categories)
+			helpers.RenderTemplate(w, "post-create", data)
 
 		case http.MethodPost:
 
@@ -227,7 +250,28 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//	Get userID that is making the request
-	userID := r.Context().Value(models.UserIDKey).(int)
+	// userID := r.Context().Value(models.UserIDKey).(int)
+
+	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
+	//	Get cookie from request
+	var userID int
+	sessionToken, err := r.Cookie("session_token")
+
+	if err != nil {
+		userID = 0
+		log.Println("Error Getting cookie:", err)
+	} else {
+		//	Get the value of the session from the cookie
+		sessionUUID := sessionToken.Value
+		fmt.Println("session:", sessionUUID)
+		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+		if err != nil {
+			userID = 0
+			log.Println("Error, validating session:", err)
+
+		}
+	}
+	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
 	//	Check the request comes from a logged-in user or not and act in consequence
 	if userID == 0 {
@@ -241,11 +285,31 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 			r.ParseForm()
 
 			// Get the postID from the hidden input
-			// postID := r.FormValue("post_Id")
+			id := r.FormValue("post_Id")
+			postID, err := strconv.Atoi(id)
+			if err != nil {
+				log.Println(err)
+			}
 
 			// Get the reactionType based on which button was clicked
-			// reaction := r.FormValue("state")
+			form_reaction := r.FormValue("state")
 
+			var reaction bool
+			switch form_reaction {
+			case "like":
+				reaction = true
+			case "dislike":
+				reaction = false
+			}
+
+			newReaction := models.PostReaction{PostId: postID, UserId: userID, Liked: reaction}
+			dbaser.AddPostReaction(h.db, newReaction)
+
+			//	Get the page where user requested to log in.
+			referer := r.Referer()
+
+			// Redirect to the referer with the error included in the query.
+			http.Redirect(w, r, referer, http.StatusFound)
 		default:
 			w.Header().Set("Allow", "GET, POST")
 			http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)

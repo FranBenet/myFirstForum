@@ -199,3 +199,19 @@ func NumberOfPages(db *sql.DB) ([]int, error) {
 	}
 	return pagination, nil
 }
+
+func CreatePostData(db *sql.DB, id int) (models.MainPage, error) {
+	categories, err := dbaser.Categories(db)
+	if err != nil {
+		return models.MainPage{}, err
+	}
+
+	loggedIn, err := dbaser.ValidSession(db, id)
+	if err != nil {
+		return models.MainPage{}, err
+	}
+	metadata := models.Metadata{LoggedIn: loggedIn}
+
+	postData := models.MainPage{Categories: categories, LoggedIn: loggedIn, Metadata: metadata}
+	return postData, nil
+}
