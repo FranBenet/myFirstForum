@@ -135,7 +135,6 @@ func MainPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
-
 	var trendData []models.PostData
 	for _, p := range trending {
 		data, err := GetPostData(db, p, userId)
@@ -166,28 +165,33 @@ func MainPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
 }
 
 func PostPageData(db *sql.DB, postId, sessionUser int) (models.PostPage, error) {
+	var postData models.PostPage
 	post, err := dbaser.PostById(db, postId)
 	if err != nil {
-		return models.PostPage{}, err
+		postData.Metadata.Error = err.Error()
+		return postData, err
 	}
 	data, err := GetPostData(db, post, sessionUser)
 	if err != nil {
-		return models.PostPage{}, err
+		postData.Metadata.Error = err.Error()
+		return postData, err
 	}
 	var comments []models.CommentData
 	for _, comment := range data.Comments {
 		commData, err := GetCommentData(db, comment, sessionUser)
 		if err != nil {
-			return models.PostPage{}, err
+			postData.Metadata.Error = err.Error()
+			return postData, err
 		}
 		comments = append(comments, commData)
 	}
 	loggedIn, err := dbaser.ValidSession(db, sessionUser)
 	if err != nil {
-		return models.PostPage{}, err
+		postData.Metadata.Error = err.Error()
+		return postData, err
 	}
 	metadata := models.Metadata{LoggedIn: loggedIn}
-	postData := models.PostPage{Post: data, Comments: comments, Metadata: metadata}
+	postData = models.PostPage{Post: data, Comments: comments, Metadata: metadata}
 	return postData, nil
 }
 
