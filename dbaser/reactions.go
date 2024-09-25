@@ -18,9 +18,19 @@ func AddPostReaction(db *sql.DB, reaction models.PostReaction) (int, error) {
 			return 0, err
 		}
 		if currentReaction.Liked == reaction.Liked {
-			DeletePostReaction(db, reaction)
+			affectedRows, err := DeletePostReaction(db, reaction)
+			if err != nil {
+				return 0, err
+			} else {
+				return affectedRows, nil
+			}
 		} else {
-			UpdatePostReaction(db, reaction)
+			affectedRows, err := UpdatePostReaction(db, reaction)
+			if err != nil {
+				return 0, err
+			} else {
+				return affectedRows, nil
+			}
 		}
 	}
 	stmt, err := db.Prepare("insert into post_reactions values (?, ?, ?)")
@@ -109,12 +119,21 @@ func AddCommentReaction(db *sql.DB, reaction models.CommentReaction) (int, error
 			return 0, err
 		}
 		if currentReaction.Liked == reaction.Liked {
-			DeleteCommentReaction(db, reaction)
+			affectedRows, err := DeleteCommentReaction(db, reaction)
+			if err != nil {
+				return 0, err
+			} else {
+				return affectedRows, nil
+			}
 		} else {
-			UpdateCommentReaction(db, reaction)
+			affectedRows, err := UpdateCommentReaction(db, reaction)
+			if err != nil {
+				return 0, err
+			} else {
+				return affectedRows, nil
+			}
 		}
 	}
-
 	stmt, err := db.Prepare("insert into comment_reactions values (?, ?, ?)")
 	if err != nil {
 		return 0, err
@@ -138,7 +157,7 @@ func DeleteCommentReaction(db *sql.DB, reaction models.CommentReaction) (int, er
 	} else if !exists {
 		return 0, errors.New("Comment reaction not found.")
 	}
-	stmt, err := db.Prepare("delete from commentt_reactions where commentt_id=? and user_id=?")
+	stmt, err := db.Prepare("delete from comment_reactions where comment_id=? and user_id=?")
 	if err != nil {
 		return 0, err
 	}
@@ -161,7 +180,7 @@ func UpdateCommentReaction(db *sql.DB, reaction models.CommentReaction) (int, er
 	} else if !exists {
 		return 0, errors.New("Comment reaction not found.")
 	}
-	stmt, err := db.Prepare("update comment_reactions set liked=? where post_id=? and user_id=?")
+	stmt, err := db.Prepare("update comment_reactions set liked=? where comment_id=? and user_id=?")
 	if err != nil {
 		return 0, err
 	}
@@ -262,7 +281,7 @@ func CommentReactionExists(db *sql.DB, reaction models.CommentReaction) (bool, e
 
 func GetCommentReaction(db *sql.DB, reaction models.CommentReaction) (models.CommentReaction, error) {
 	var result models.CommentReaction
-	row := db.QueryRow("select * from commentt_reactions where comment_id=? and user_id=?", reaction.CommentId, reaction.UserId)
+	row := db.QueryRow("select * from comment_reactions where comment_id=? and user_id=?", reaction.CommentId, reaction.UserId)
 	if err := row.Scan(&result.CommentId, &result.UserId, &result.Liked); err != nil {
 		return models.CommentReaction{}, err
 	}

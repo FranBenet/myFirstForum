@@ -77,6 +77,29 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("Is user logged in?:", data.LoggedIn)
 
+<<<<<<< HEAD
+=======
+	// Parse the query parameters from the URL
+	query := r.URL.Query()
+
+	// Get the value of the "error" parameter
+	errorMessage := query.Get("error")
+	fmt.Println("Query Parameter Error:", errorMessage)
+	successMessage := query.Get("success")
+	fmt.Println("Query Parameter Success:", successMessage)
+
+	unescapedError, err := url.QueryUnescape(errorMessage)
+	if err != nil || unescapedError == "" {
+		log.Println("Error unsecaping Error:", err)
+	}
+	data.Metadata.Error = unescapedError
+	unescapedSuccess, err := url.QueryUnescape(successMessage)
+	if err != nil || unescapedSuccess == "" {
+		log.Println("Error unsecaping Success:", err)
+	}
+	data.Metadata.Success = unescapedSuccess
+	data.Metadata.Error = unescapedError
+>>>>>>> 5ecbcd320c8e4fdd2b70b2627a97c65423f572f9
 	helpers.RenderTemplate(w, "home", data)
 }
 
@@ -141,7 +164,6 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		data.Metadata.Error = unescapedError
-
 		helpers.RenderTemplate(w, "post-id", data)
 
 	} else {
