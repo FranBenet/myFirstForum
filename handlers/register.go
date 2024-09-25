@@ -182,7 +182,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			log.Println("UserByEmail", err)
 		}
 
-		log.Println("User Id got correctly from data base.")
+		log.Println("User ID got correctly from data base.")
 
 		//	Create Session for the user.
 		sessionUUID, err := dbaser.AddSession(h.db, user)
@@ -213,8 +213,15 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			refererURL = &url.URL{Path: "/"}
 		}
 
-		//	Delete any queries that the url may have
-		refererURL.RawQuery = ""
+		// Get the query parameters
+		queryParams := refererURL.Query()
+
+		// Remove the "error" and "success" query parameter
+		queryParams.Del("error")
+		queryParams.Del("success")
+
+		// Set the modified query parameters back to the URL
+		refererURL.RawQuery = queryParams.Encode()
 
 		//	Convert url.url format to string format
 		referer = refererURL.String()

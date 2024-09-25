@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 
@@ -25,8 +24,8 @@ func NewHandler(db *sql.DB) *Handler {
 
 // To handle "/".
 func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
+	log.Println("You are in the Homepage Handler")
 	if r.URL.Path != "/" {
-		log.Println("You are in the Homepage Handler")
 		log.Println("Error. Path Not Allowed.")
 		http.Error(w, "Page Not Found", http.StatusNotFound)
 		return
@@ -45,18 +44,16 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	//	Get cookie from request
 	var userID int
 	sessionToken, err := r.Cookie("session_token")
-
 	if err != nil {
 		userID = 0
-		log.Println("There is no cookie available:", err)
+		log.Println("Error getting cookie:", err)
 	} else {
 		//	Get session UUID from the cookie
 		sessionUUID := sessionToken.Value
 		log.Println("Session UUID is:", sessionUUID)
 		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
 		if err != nil {
-			userID = 0
-			log.Println("Error. No valid session available:", err)
+			log.Println(err)
 		}
 	}
 
@@ -64,9 +61,11 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	//	Get the page number requested if not set the page number to 1.
 	requestedPage, err := helpers.GetQueryPage(r)
 	if err != nil {
-		log.Println("Error getting Query Page:", err)
+		log.Println("No Page Required:", err)
 		requestedPage = 1
 	}
+
+	log.Println("UserID:", userID, "Requested page number: ", requestedPage)
 
 	//	Get data according to the page requested.
 	data, err := helpers.MainPageData(h.db, userID, requestedPage)
@@ -77,12 +76,14 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	//	Get messages from the query parameters
 	errorMessage, successMessage, err := helpers.GetQueryMessages(r)
 	if err != nil {
-		log.Println(err)
+		log.Println("Error getting Messages: ", err)
 	}
 
 	//	Add Error/success messages to the data.
 	data.Metadata.Error = errorMessage
 	data.Metadata.Success = successMessage
+
+	fmt.Println("Logged In status: ", data.Metadata.LoggedIn)
 
 	helpers.RenderTemplate(w, "home", data)
 }
@@ -136,18 +137,19 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 		// Parse the query parameters from the URL
 		fmt.Println("URL:", r.URL.Path)
-		query := r.URL.Query()
 
-		// Get the value of the "error" parameter
-		errorMessage := query.Get("errorLogIn")
-		fmt.Println("ErrorMessage1:", errorMessage)
-
-		unescapedError, err := url.QueryUnescape(errorMessage)
-
-		if err != nil || unescapedError == "" {
-			log.Println(err)
+		//	Get messages from the query parameters
+		errorMessage, successMessage, err := helpers.GetQueryMessages(r)
+		if err != nil {
+			log.Println("Error getting Messages: ", err)
 		}
-		data.Metadata.Error = unescapedError
+
+		//	Add Error/success messages to the data.
+		data.Metadata.Error = errorMessage
+		data.Metadata.Success = successMessage
+
+		fmt.Println("Logged In status: ", data.Metadata.LoggedIn)
+
 		helpers.RenderTemplate(w, "post-id", data)
 
 	} else {

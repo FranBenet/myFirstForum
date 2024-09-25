@@ -3,6 +3,8 @@ package middleware
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -90,15 +92,18 @@ func IsUserLoggedIn(db *sql.DB, sessionUUID string) (int, error) {
 	// Get UserID from database
 	userID, err := dbaser.SessionUser(db, sessionUUID)
 	if err != nil {
-		return 0, err
+		log.Println(err)
 	}
 
+	log.Println("UserID:", userID, "has a valid session?")
 	// Check if userID has a valid session
 	exists, err := dbaser.ValidSession(db, userID)
+	fmt.Println(exists, err)
 	if err != nil {
 		return 0, err
 
 	} else if !exists {
+		err := errors.New("no valid session")
 		return 0, err
 	}
 
