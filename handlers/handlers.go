@@ -83,14 +83,12 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error unsecaping Error:", err)
 	}
 	data.Metadata.Error = unescapedError
-
 	unescapedSuccess, err := url.QueryUnescape(successMessage)
 	if err != nil || unescapedSuccess == "" {
 		log.Println("Error unsecaping Success:", err)
 	}
 	data.Metadata.Success = unescapedSuccess
 	data.Metadata.Error = unescapedError
-
 	helpers.RenderTemplate(w, "home", data)
 }
 
@@ -155,7 +153,6 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		data.Metadata.Error = unescapedError
-
 		helpers.RenderTemplate(w, "post-id", data)
 
 	} else {

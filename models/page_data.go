@@ -5,7 +5,6 @@ type MainPage struct {
 	Categories []Category
 	Posts      []PostData
 	Trending   []PostData
-	LoggedIn   bool
 	Pagination []int
 	Metadata   Metadata
 }
@@ -13,7 +12,7 @@ type MainPage struct {
 type PostPage struct {
 	Post     PostData
 	Comments []CommentData
-	LoggedIn bool
+	Metadata Metadata
 }
 
 type Metadata struct {

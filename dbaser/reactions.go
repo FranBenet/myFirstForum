@@ -18,9 +18,19 @@ func AddPostReaction(db *sql.DB, reaction models.PostReaction) (int, error) {
 			return 0, err
 		}
 		if currentReaction.Liked == reaction.Liked {
-			DeletePostReaction(db, reaction)
+			affectedRows, err := DeletePostReaction(db, reaction)
+			if err != nil {
+				return 0, err
+			} else {
+				return affectedRows, nil
+			}
 		} else {
-			UpdatePostReaction(db, reaction)
+			affectedRows, err := UpdatePostReaction(db, reaction)
+			if err != nil {
+				return 0, err
+			} else {
+				return affectedRows, nil
+			}
 		}
 	}
 	stmt, err := db.Prepare("insert into post_reactions values (?, ?, ?)")

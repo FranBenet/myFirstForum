@@ -64,10 +64,11 @@ func UserLikedPosts(db *sql.DB, id int) ([]models.Post, error) {
 	return result, nil
 }
 
-// All posts in the DB.
-func Posts(db *sql.DB) ([]models.Post, error) {
+// Posts for the main page. We've decided to display 5 posts at a time and include some pagination at the footer.
+func MainPagePosts(db *sql.DB, page int) ([]models.Post, error) {
 	var result []models.Post
-	row, err := db.Query("select * from posts order by created desc")
+	offset := page * 5
+	row, err := db.Query("select * from posts order by created desc offset ? limit 5", offset)
 	if err != nil {
 		return []models.Post{}, err
 	}

@@ -104,52 +104,56 @@ func GetCommentData(db *sql.DB, comment models.Comment, sessionUser int) (models
 	return data, nil
 }
 
-func MainPageData(db *sql.DB, id int) (models.MainPage, error) {
-	posts, err := dbaser.Posts(db)
+func MainPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
+	var mainData models.MainPage
+	posts, err := dbaser.MainPagePosts(db, page)
 	if err != nil {
 		log.Print(err)
-		return models.MainPage{}, err
+		mainData.Metadata.Error = err.Error()
+		return mainData, err
 	}
-
 	var postData []models.PostData
 	for _, p := range posts {
-		data, err := GetPostData(db, p, id)
+		data, err := GetPostData(db, p, userId)
 		if err != nil {
-			return models.MainPage{}, err
+			mainData.Metadata.Error = err.Error()
+			return mainData, err
 		}
 		postData = append(postData, data)
 	}
 
 	trending, err := dbaser.TrendingPosts(db, 3)
 	if err != nil {
-		return models.MainPage{}, err
+		mainData.Metadata.Error = err.Error()
+		return mainData, err
 	}
 
 	var trendData []models.PostData
 	for _, p := range trending {
-		data, err := GetPostData(db, p, id)
+		data, err := GetPostData(db, p, userId)
 		if err != nil {
-			return models.MainPage{}, err
+			mainData.Metadata.Error = err.Error()
+			return mainData, err
 		}
 		trendData = append(trendData, data)
 	}
-
 	categories, err := dbaser.Categories(db)
 	if err != nil {
-		return models.MainPage{}, err
+		mainData.Metadata.Error = err.Error()
+		return mainData, err
 	}
-
-	loggedIn, err := dbaser.ValidSession(db, id)
+	loggedIn, err := dbaser.ValidSession(db, userId)
 	if err != nil {
-		return models.MainPage{}, err
+		mainData.Metadata.Error = err.Error()
+		return mainData, err
 	}
-	metadata := models.Metadata{LoggedIn: loggedIn}
-
 	pagination, err := NumberOfPages(db)
 	if err != nil {
-		return models.MainPage{}, err
+		mainData.Metadata.Error = err.Error()
+		return mainData, err
 	}
-	mainData := models.MainPage{Categories: categories, Posts: postData, Trending: trendData, LoggedIn: loggedIn, Metadata: metadata, Pagination: pagination}
+	metadata := models.Metadata{LoggedIn: loggedIn}
+	mainData = models.MainPage{Categories: categories, Posts: postData, Trending: trendData, Metadata: metadata, Pagination: pagination}
 	return mainData, nil
 }
 
@@ -212,6 +216,6 @@ func CreatePostData(db *sql.DB, id int) (models.MainPage, error) {
 	}
 	metadata := models.Metadata{LoggedIn: loggedIn}
 
-	postData := models.MainPage{Categories: categories, LoggedIn: loggedIn, Metadata: metadata}
+	postData := models.MainPage{Categories: categories, Metadata: metadata}
 	return postData, nil
 }
