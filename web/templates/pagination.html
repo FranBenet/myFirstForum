@@ -7,16 +7,17 @@
         </li>
         {{end}}
 
-        {{ range .Pagination}}
+        {{ range $i:= .Pagination}}
         <li class="page-item active">
-                <a class="{{if eq $i .CurrentPage}}page-link-active {{else}} page-link {{end}}" href="?page={{$i}}">{{$i}}</a>
+                <a class="{{if eq $i .CurrentPage }}page-link-active {{else}} page-link {{end}}" href="?page={{$i}}">{{$i}}</a>
         </li>
         {{end}}
 
-        {{if lt .CurrentPage .TotalPages}}
+        {{if lt .CurrentPage (len .TotalPages)}}
         <li class="page-item">
                 <a class="page-link" href="?page={{add .CurrentPage 1}}" aria-label="Next">&raquo;</a>
         </li>
+        {{end}}
         </ul>
     </nav>
 {{end}}

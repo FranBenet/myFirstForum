@@ -61,45 +61,34 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-
-	//	Managing query parameters
-	unescapedError, unescapedSuccess, requestedPage, err := helpers.CheckQueryParameters(r)
-
-	//	Add Error/success messages to the data.
-	data.Metadata.Error = unescapedError
-	data.Metadata.Success = unescapedSuccess
+	//	Get the page number requested
+	requestedPage, err := helpers.GetQueryPage(r)
+	if err != nil {
+		log.Println("Error getting Query Page:", err)
+		requestedPage = 1
+	}
 
 	//	Get data according to the page requested.
-	data, err := helpers.MainPageData(h.db, userID)
+	data, err := helpers.MainPageData(h.db, userID, requestedPage)
 	if err != nil {
 		log.Println("Error getting data", err)
 	}
 
-	log.Println("Is user logged in?:", data.LoggedIn)
+	//	Add CurrentPage to the data.
+	data.CurrentPage = requestedPage
+	data.TotalPages = len(data.Pagination)
+	fmt.Printf("CURRENT PAGE:%d , TOTAL PAGES:%d /n", data.CurrentPage, data.TotalPages)
 
-<<<<<<< HEAD
-=======
-	// Parse the query parameters from the URL
-	query := r.URL.Query()
-
-	// Get the value of the "error" parameter
-	errorMessage := query.Get("error")
-	fmt.Println("Query Parameter Error:", errorMessage)
-	successMessage := query.Get("success")
-	fmt.Println("Query Parameter Success:", successMessage)
-
-	unescapedError, err := url.QueryUnescape(errorMessage)
-	if err != nil || unescapedError == "" {
-		log.Println("Error unsecaping Error:", err)
+	//	Get messages from the query parameters
+	errorMessage, successMessage, err := helpers.GetQueryMessages(r)
+	if err != nil {
+		log.Println(err)
 	}
-	data.Metadata.Error = unescapedError
-	unescapedSuccess, err := url.QueryUnescape(successMessage)
-	if err != nil || unescapedSuccess == "" {
-		log.Println("Error unsecaping Success:", err)
-	}
-	data.Metadata.Success = unescapedSuccess
-	data.Metadata.Error = unescapedError
->>>>>>> 5ecbcd320c8e4fdd2b70b2627a97c65423f572f9
+
+	//	Add Error/success messages to the data.
+	data.Metadata.Error = errorMessage
+	data.Metadata.Success = successMessage
+
 	helpers.RenderTemplate(w, "home", data)
 }
 

@@ -27,7 +27,12 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 
 	case http.MethodPost:
 		userID := 0
-		data, err := helpers.MainPageData(h.db, userID)
+		currentPage, err := helpers.GetRefererPage(r)
+		if err != nil {
+			log.Println(err)
+		}
+
+		data, err := helpers.MainPageData(h.db, userID, currentPage)
 		if err != nil {
 			log.Println(err)
 		}
