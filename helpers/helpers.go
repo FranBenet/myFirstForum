@@ -175,7 +175,7 @@ func PostPageData(db *sql.DB, postId, sessionUser int) (models.PostPage, error) 
 		return models.PostPage{}, err
 	}
 	metadata := models.Metadata{LoggedIn: loggedIn}
-	postData := models.PostPage{Post: data, Comments: comments, Metadata: metadata}
+	postData := models.PostPage{Post: data, Comments: comments, LoggedIn: loggedIn, Metadata: metadata}
 	return postData, nil
 }
 
