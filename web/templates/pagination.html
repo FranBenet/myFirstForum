@@ -1,27 +1,21 @@
 {{define "pagination"}}
     <nav aria-label="Page navigation" class="page-navigation">
         <ul class="paginations">
+        {{ if gt .CurrentPage 1}}        
         <li class="page-item disabled">
-                <a class="page-link" href="#" aria-label="Previous">&laquo;</a>
+                <a class="page-link" href="?page={{sub .CurrentPage 1}}" aria-label="Previous">&laquo;</a>
         </li>
-        
+        {{end}}
+
+        {{ range .Pagination}}
         <li class="page-item active">
-                <a class="page-link" href="#">1</a>
+                <a class="{{if eq $i .CurrentPage}}page-link-active {{else}} page-link {{end}}" href="?page={{$i}}">{{$i}}</a>
         </li>
+        {{end}}
+
+        {{if lt .CurrentPage .TotalPages}}
         <li class="page-item">
-                <a class="page-link" href="#">2</a>
-        </li>
-        <li class="page-item">
-                <a class="page-link" href="#">3</a>
-        </li>
-        <li class="page-item">
-                <a class="page-link" href="#">4</a>
-        </li>
-        <li class="page-item">
-                <a class="page-link" href="#">5</a>
-        </li>
-        <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">&raquo;</a>
+                <a class="page-link" href="?page={{add .CurrentPage 1}}" aria-label="Next">&raquo;</a>
         </li>
         </ul>
     </nav>
