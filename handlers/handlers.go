@@ -61,7 +61,7 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-	//	Get the page number requested
+	//	Get the page number requested if not set the page number to 1.
 	requestedPage, err := helpers.GetQueryPage(r)
 	if err != nil {
 		log.Println("Error getting Query Page:", err)
@@ -73,11 +73,6 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Error getting data", err)
 	}
-
-	//	Add CurrentPage to the data.
-	data.CurrentPage = requestedPage
-	data.TotalPages = len(data.Pagination)
-	fmt.Printf("CURRENT PAGE:%d , TOTAL PAGES:%d /n", data.CurrentPage, data.TotalPages)
 
 	//	Get messages from the query parameters
 	errorMessage, successMessage, err := helpers.GetQueryMessages(r)

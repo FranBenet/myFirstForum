@@ -2,9 +2,12 @@ package helpers
 
 import (
 	"database/sql"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
+	"strconv"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
@@ -16,6 +19,13 @@ var funcMap = template.FuncMap{
 	},
 	"add": func(a, b int) int {
 		return a + b
+	},
+	"seq": func(start, end int) []int {
+		s := make([]int, end-start+1)
+		for i := start; i <= end; i++ {
+			s[i-start] = i
+		}
+		return s
 	},
 }
 
@@ -135,6 +145,7 @@ func MainPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
+
 	var trendData []models.PostData
 	for _, p := range trending {
 		data, err := GetPostData(db, p, userId)
@@ -160,38 +171,34 @@ func MainPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
 		return mainData, err
 	}
 	metadata := models.Metadata{LoggedIn: loggedIn}
-	mainData = models.MainPage{Categories: categories, Posts: postData, Trending: trendData, Metadata: metadata, Pagination: pagination}
+	pageData := models.Pagination{CurrentPage: page, TotalPages: len(pagination)}
+	mainData = models.MainPage{Categories: categories, Posts: postData, Trending: trendData, Metadata: metadata, Pagination: pageData}
 	return mainData, nil
 }
 
 func PostPageData(db *sql.DB, postId, sessionUser int) (models.PostPage, error) {
-	var postData models.PostPage
 	post, err := dbaser.PostById(db, postId)
 	if err != nil {
-		postData.Metadata.Error = err.Error()
-		return postData, err
+		return models.PostPage{}, err
 	}
 	data, err := GetPostData(db, post, sessionUser)
 	if err != nil {
-		postData.Metadata.Error = err.Error()
-		return postData, err
+		return models.PostPage{}, err
 	}
 	var comments []models.CommentData
 	for _, comment := range data.Comments {
 		commData, err := GetCommentData(db, comment, sessionUser)
 		if err != nil {
-			postData.Metadata.Error = err.Error()
-			return postData, err
+			return models.PostPage{}, err
 		}
 		comments = append(comments, commData)
 	}
 	loggedIn, err := dbaser.ValidSession(db, sessionUser)
 	if err != nil {
-		postData.Metadata.Error = err.Error()
-		return postData, err
+		return models.PostPage{}, err
 	}
 	metadata := models.Metadata{LoggedIn: loggedIn}
-	postData = models.PostPage{Post: data, Comments: comments, Metadata: metadata}
+	postData := models.PostPage{Post: data, Comments: comments, Metadata: metadata}
 	return postData, nil
 }
 
@@ -230,4 +237,70 @@ func CreatePostData(db *sql.DB, id int) (models.MainPage, error) {
 
 	postData := models.MainPage{Categories: categories, Metadata: metadata}
 	return postData, nil
+}
+
+func GetQueryMessages(r *http.Request) (string, string, error) {
+
+	// Parse the query parameters from the URL
+	query := r.URL.Query()
+
+	errorMessage := query.Get("error")
+	fmt.Println("Query Parameter Error:", errorMessage)
+
+	successMessage := query.Get("success")
+	fmt.Println("Query Parameter Success:", successMessage)
+
+	if errorMessage != "" {
+		unescapedError, err := url.QueryUnescape(errorMessage)
+		if err != nil || unescapedError == "" {
+			log.Println("Error unsecaping Error:", err)
+			return "", "", err
+		}
+		return unescapedError, "", nil
+
+	} else if successMessage != "" {
+		unescapedSuccess, err := url.QueryUnescape(successMessage)
+		if err != nil || unescapedSuccess == "" {
+			log.Println("Error unsecaping Success:", err)
+			return "", "", err
+		}
+		return "", unescapedSuccess, nil
+	}
+	return "", "", nil
+}
+
+func GetQueryPage(r *http.Request) (int, error) {
+	// Parse the query parameters from the URL
+
+	pageNumber := r.URL.Query().Get("page")
+	fmt.Println("Query Parameter Page:", pageNumber)
+
+	page, err := strconv.Atoi(pageNumber)
+	if err != nil {
+		log.Println("Error converting from string to int:", err)
+		return 0, err
+	}
+	return page, nil
+}
+
+func GetRefererPage(r *http.Request) (int, error) {
+	// Parse the query parameters from the URL
+	referer := r.Referer()
+	refererURL, err := url.Parse(referer)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+	pageNumber := refererURL.Query().Get("page")
+	if pageNumber == "" {
+		return 1, nil
+	}
+
+	page, err := strconv.Atoi(pageNumber)
+	if err != nil {
+		log.Println("Error converting from string to int:", err)
+		return 0, err
+	}
+
+	return page, nil
 }

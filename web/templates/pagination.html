@@ -2,18 +2,18 @@
     <nav aria-label="Page navigation" class="page-navigation">
         <ul class="paginations">
         {{ if gt .CurrentPage 1}}        
-        <li class="page-item disabled">
+        <li class="page-item">
                 <a class="page-link" href="?page={{sub .CurrentPage 1}}" aria-label="Previous">&laquo;</a>
         </li>
         {{end}}
 
-        {{ range $i:= .Pagination}}
+        {{ range $i := (seq 1 .TotalPages) }}
         <li class="page-item active">
-                <a class="{{if eq $i .CurrentPage }}page-link-active {{else}} page-link {{end}}" href="?page={{$i}}">{{$i}}</a>
-        </li>
+                <a class="{{ if eq $i $.CurrentPage}} page-link-active {{else}} page-link {{end}}" href="?page={{$i}}">{{$i}}</a>
+        </li>   
         {{end}}
 
-        {{if lt .CurrentPage (len .TotalPages)}}
+        {{if lt .CurrentPage .TotalPages}}
         <li class="page-item">
                 <a class="page-link" href="?page={{add .CurrentPage 1}}" aria-label="Next">&raquo;</a>
         </li>
@@ -21,3 +21,4 @@
         </ul>
     </nav>
 {{end}}
+
