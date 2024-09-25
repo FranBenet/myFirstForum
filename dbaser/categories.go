@@ -50,7 +50,7 @@ func PostCategories(db *sql.DB, id int) ([]models.Category, error) {
 }
 
 func AddPostCategory(db *sql.DB, category models.PostCategory) error {
-	stmt, err := db.Prepare("insert into post_categs values ?, ?")
+	stmt, err := db.Prepare("insert into post_categs values (?, ?)")
 	if err != nil {
 		return err
 	}
@@ -60,4 +60,18 @@ func AddPostCategory(db *sql.DB, category models.PostCategory) error {
 		return err
 	}
 	return nil
+}
+
+func AddCategory(db *sql.DB, category models.Category) (int, error) {
+	stmt, err := db.Prepare("insert into categories (label) values (?)")
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+	res, err := stmt.Exec(category.Name)
+	if err != nil {
+		return 0, err
+	}
+	id, err := res.LastInsertId()
+	return int(id), nil
 }
