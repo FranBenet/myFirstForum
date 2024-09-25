@@ -50,7 +50,7 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 		userID = 0
 		log.Println("There is no cookie available:", err)
 	} else {
-		//	Get the value of the session from the cookie
+		//	Get session UUID from the cookie
 		sessionUUID := sessionToken.Value
 		log.Println("Session UUID is:", sessionUUID)
 		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
@@ -62,34 +62,20 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
+	//	Managing query parameters
+	unescapedError, unescapedSuccess, requestedPage, err := helpers.CheckQueryParameters(r)
+
+	//	Add Error/success messages to the data.
+	data.Metadata.Error = unescapedError
+	data.Metadata.Success = unescapedSuccess
+
+	//	Get data according to the page requested.
 	data, err := helpers.MainPageData(h.db, userID)
 	if err != nil {
 		log.Println("Error getting data", err)
 	}
 
 	log.Println("Is user logged in?:", data.LoggedIn)
-
-	// Parse the query parameters from the URL
-	query := r.URL.Query()
-
-	// Get the value of the "error" parameter
-	errorMessage := query.Get("error")
-	fmt.Println("Query Parameter Error:", errorMessage)
-	successMessage := query.Get("success")
-	fmt.Println("Query Parameter Success:", successMessage)
-
-	unescapedError, err := url.QueryUnescape(errorMessage)
-	if err != nil || unescapedError == "" {
-		log.Println("Error unsecaping Error:", err)
-	}
-	data.Metadata.Error = unescapedError
-
-	unescapedSuccess, err := url.QueryUnescape(successMessage)
-	if err != nil || unescapedSuccess == "" {
-		log.Println("Error unsecaping Success:", err)
-	}
-	data.Metadata.Success = unescapedSuccess
-	data.Metadata.Error = unescapedError
 
 	helpers.RenderTemplate(w, "home", data)
 }
@@ -189,7 +175,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 		userID = 0
 		log.Println("Error Getting cookie:", err)
 	} else {
-		//	Get the value of the session from the cookie
+		//	Get session UUID from the cookie
 		sessionUUID := sessionToken.Value
 		fmt.Println("session:", sessionUUID)
 		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
@@ -202,7 +188,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
-	//	Check the request comes from a logged-in user or not and act in consequence
+	//	Check IS USER LOGGED IN?
 	if userID == 0 {
 		http.Redirect(w, r, "/#registerModal", http.StatusForbidden)
 	} else {
