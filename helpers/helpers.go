@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,6 +9,15 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
+
+var funcMap = template.FuncMap{
+	"sub": func(a, b int) int {
+		return a - b
+	},
+	"add": func(a, b int) int {
+		return a + b
+	},
+}
 
 func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 	htmlTemplates := []string{
@@ -26,11 +34,11 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 	//	Adding to the Templates the needed html page to be sent for each specific page request.
 	htmlTemplates = append(htmlTemplates, "web/templates/"+name+".html")
 
-	tmpl := template.Must(template.ParseFiles(htmlTemplates...))
+	tmpl := template.Must(template.New("base.html").Funcs(funcMap).ParseFiles(htmlTemplates...))
 
 	err := tmpl.ExecuteTemplate(w, "base.html", data)
 	if err != nil {
-		fmt.Println("ERROR EXECUTING TEMPLATES")
+		log.Println("ERROR EXECUTING TEMPLATES")
 		log.Printf("Error Executing Template: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -179,7 +187,7 @@ func PostPageData(db *sql.DB, postId, sessionUser int) (models.PostPage, error) 
 		return models.PostPage{}, err
 	}
 	metadata := models.Metadata{LoggedIn: loggedIn}
-	postData := models.PostPage{Post: data, Comments: comments, LoggedIn: loggedIn, Metadata: metadata}
+	postData := models.PostPage{Post: data, Comments: comments, Metadata: metadata}
 	return postData, nil
 }
 
