@@ -117,6 +117,9 @@ func AddPostCategories(db *sql.DB, categories []string, postId int) error {
 				return err
 			}
 			err = AddPostCategory(db, models.PostCategory{PostId: postId, CategoryId: id})
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
