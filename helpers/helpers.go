@@ -160,67 +160,66 @@ func MainPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
-	loggedIn, err := dbaser.ValidSession(db, userId)
-	if err != nil {
-		mainData.Metadata.Error = err.Error()
-		return mainData, err
-	}
 	pagination, err := NumberOfPages(db)
 	if err != nil {
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
-	metadata := models.Metadata{LoggedIn: loggedIn}
-	pageData := models.Pagination{CurrentPage: page, TotalPages: len(pagination)}
-	mainData = models.MainPage{Categories: categories, Posts: postData, Trending: trendData, Metadata: metadata, Pagination: pageData}
+	if userId > 0 {
+		mainData.Metadata.LoggedIn = true
+	}
+	pageData := models.Pagination{CurrentPage: page, TotalPages: pagination}
+	mainData.Categories = categories
+	mainData.Posts = postData
+	mainData.Trending = trendData
+	mainData.Pagination = pageData
 	return mainData, nil
 }
 
-func PostPageData(db *sql.DB, postId, sessionUser int) (models.PostPage, error) {
+func PostPageData(db *sql.DB, postId, userId int) (models.PostPage, error) {
+	var postData models.PostPage
 	post, err := dbaser.PostById(db, postId)
 	if err != nil {
-		return models.PostPage{}, err
+		postData.Metadata.Error = err.Error()
+		return postData, err
 	}
-	data, err := GetPostData(db, post, sessionUser)
+	data, err := GetPostData(db, post, userId)
 	if err != nil {
-		return models.PostPage{}, err
+		postData.Metadata.Error = err.Error()
+		return postData, err
 	}
 	var comments []models.CommentData
 	for _, comment := range data.Comments {
-		commData, err := GetCommentData(db, comment, sessionUser)
+		commData, err := GetCommentData(db, comment, userId)
 		if err != nil {
-			return models.PostPage{}, err
+			postData.Metadata.Error = err.Error()
+			return postData, err
 		}
 		comments = append(comments, commData)
 	}
-	loggedIn, err := dbaser.ValidSession(db, sessionUser)
-	if err != nil {
-		return models.PostPage{}, err
+	if userId > 0 {
+		postData.Metadata.LoggedIn = true
 	}
-	metadata := models.Metadata{LoggedIn: loggedIn}
-	postData := models.PostPage{Post: data, Comments: comments, Metadata: metadata}
+	postData.Post = data
+	postData.Comments = comments
 	return postData, nil
 }
 
-func NumberOfPages(db *sql.DB) ([]int, error) {
+func NumberOfPages(db *sql.DB) (int, error) {
 	nPosts, err := dbaser.NumberOfPosts(db)
 	if err != nil {
-		return []int{}, err
+		return 0, err
 	}
 	var quot, rest int
 	quot = nPosts / 5
 	rest = nPosts % 5
 	if quot == 0 || (quot == 1 && rest == 0) {
-		return []int{1}, nil
+		return 0, nil
 	}
-	var pagination []int
 	if rest != 0 {
 		quot++
 	}
-	for i := 1; i < quot+1; i++ {
-		pagination = append(pagination, i)
-	}
-	return pagination, nil
+	return quot, nil
 }
 
 func CreatePostData(db *sql.DB, id int) (models.MainPage, error) {

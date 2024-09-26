@@ -9,12 +9,6 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
-/* TODO
-   - Add session. OK
-   - Delete session by UUID.
-   - Get user by session UUID. OK
-*/
-
 func AddSession(db *sql.DB, user models.User) (string, error) {
 	stmt, err := db.Prepare("insert into sessions (user_id, uuid, expires) values (?, ?, ?)")
 	if err != nil {
@@ -72,22 +66,22 @@ func SessionUser(db *sql.DB, uuid string) (int, error) {
 	return id, nil
 }
 
-func ValidSession(db *sql.DB, id int) (bool, error) {
-	if id == 0 {
+func ValidSession(db *sql.DB, uuid string) (bool, error) {
+	if uuid == "" {
 		return false, nil
 	}
-	row := db.QueryRow("select expires from sessions where user_id=?", id)
-	var created string
-	if err := row.Scan(&created); err == sql.ErrNoRows {
+	row := db.QueryRow("select expires from sessions where uuid=?", uuid)
+	var expires string
+	if err := row.Scan(&expires); err == sql.ErrNoRows {
 		return false, nil
 	} else if err != nil {
 		return false, err
 	}
-	timeCreated, err := time.Parse(time.RFC3339, created)
+	deadline, err := time.Parse(time.RFC3339, expires)
 	if err != nil {
 		return false, err
 	}
-	if timeCreated.Before(time.Now()) {
+	if deadline.Before(time.Now()) {
 		return false, nil
 	}
 	return true, nil
