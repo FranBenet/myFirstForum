@@ -9,8 +9,8 @@ import (
 )
 
 // Posts created by a specific user.
-func PostsByUser(db *sql.DB, id int) ([]models.Post, error) {
-	row, err := db.Query("select * from posts where user_id=? order by created desc", id)
+func PostsByUser(db *sql.DB, userId int) ([]models.Post, error) {
+	row, err := db.Query("select * from posts where user_id=? order by created desc", userId)
 	if err != nil {
 		return []models.Post{}, err
 	}
@@ -37,8 +37,8 @@ func PostsByUser(db *sql.DB, id int) ([]models.Post, error) {
 }
 
 // All the posts liked by a specific user.
-func UserLikedPosts(db *sql.DB, id int) ([]models.Post, error) {
-	row, err := db.Query("select posts.* from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.id=? and liked=? order by created desc", id, 1)
+func UserLikedPosts(db *sql.DB, userId int) ([]models.Post, error) {
+	row, err := db.Query("select posts.* from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.id=? and liked=? order by created desc", userId, 1)
 	if err != nil {
 		return []models.Post{}, err
 	}
@@ -157,9 +157,9 @@ func TrendingPosts(db *sql.DB, n int) ([]models.Post, error) {
 }
 
 // Retrieve a specific post by its ID.
-func PostById(db *sql.DB, id int) (models.Post, error) {
+func PostById(db *sql.DB, postId int) (models.Post, error) {
 	var result models.Post
-	row := db.QueryRow("select * from posts where id=?", id)
+	row := db.QueryRow("select * from posts where id=?", postId)
 	var created string
 	err := row.Scan(&result.Id, &result.UserId, &result.Title, &result.Content, &created)
 	if err != nil {
