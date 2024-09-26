@@ -77,7 +77,7 @@ func AddCategory(db *sql.DB, name string) (int, error) {
 }
 
 func CategoryExists(db *sql.DB, name string) (bool, error) {
-	row := db.QueryRow("select * from categories where label=?", name)
+	row := db.QueryRow("select label from categories where label=?", name)
 	var label string
 	if err := row.Scan(&label); err == sql.ErrNoRows {
 		return false, nil
