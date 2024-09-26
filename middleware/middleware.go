@@ -43,20 +43,8 @@ func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Hand
 		//	Get the value of the session from the cookie
 		sessionUUID := sessionToken.Value
 
-		//	Get UserID from database
-		userID, err := dbaser.SessionUser(mw.db, sessionUUID)
-		if err != nil {
-			// LOG ERROR
-			log.Printf("Error: %v", err)
-			//	If fail to get the user of the session create a new context with a key-value pair: userID = 0
-			ctx := context.WithValue(r.Context(), models.UserIDKey, 0)
-
-			//	Send the request to the correct handler, using .WithContext() to include the context
-			requestedHandler.ServeHTTP(w, r.WithContext(ctx))
-		}
-
 		//	Check if userID has a valid session
-		exists, err := dbaser.ValidSession(mw.db, userID)
+		exists, err := dbaser.ValidSession(mw.db, sessionUUID)
 		if err != nil {
 			// LOG ERROR
 			log.Printf("Error: %v", err)
@@ -78,6 +66,18 @@ func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Hand
 			requestedHandler.ServeHTTP(w, r.WithContext(ctx))
 		}
 
+		//	Get UserID from database
+		userID, err := dbaser.SessionUser(mw.db, sessionUUID)
+		if err != nil {
+			// LOG ERROR
+			log.Printf("Error: %v", err)
+			//	If fail to get the user of the session create a new context with a key-value pair: userID = 0
+			ctx := context.WithValue(r.Context(), models.UserIDKey, 0)
+
+			//	Send the request to the correct handler, using .WithContext() to include the context
+			requestedHandler.ServeHTTP(w, r.WithContext(ctx))
+		}
+
 		//	Create a new context with a key-value pair containing userID.
 		ctx := context.WithValue(r.Context(), models.UserIDKey, userID)
 
@@ -89,15 +89,9 @@ func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Hand
 
 // FUNCTION PROVISIONAL TO SKIP MIDDLEWARE AND CHECK THAT ITS NOT GENERATING PROBLEMS
 func IsUserLoggedIn(db *sql.DB, sessionUUID string) (int, error) {
-	// Get UserID from database
-	userID, err := dbaser.SessionUser(db, sessionUUID)
-	if err != nil {
-		log.Println(err)
-	}
 
-	log.Println("UserID:", userID, "has a valid session?")
 	// Check if userID has a valid session
-	exists, err := dbaser.ValidSession(db, userID)
+	exists, err := dbaser.ValidSession(db, sessionUUID)
 	fmt.Println(exists, err)
 	if err != nil {
 		return 0, err
@@ -107,5 +101,12 @@ func IsUserLoggedIn(db *sql.DB, sessionUUID string) (int, error) {
 		return 0, err
 	}
 
+	// Get UserID from database
+	userID, err := dbaser.SessionUser(db, sessionUUID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	log.Println("UserID:", userID, "has a valid session?")
 	return userID, nil
 }

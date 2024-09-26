@@ -25,3 +25,8 @@ type Pagination struct {
 	CurrentPage int
 	TotalPages  int
 }
+
+type ProfilePageData struct {
+	User     User
+	Metadata Metadata
+}

@@ -25,6 +25,7 @@ func NewHandler(db *sql.DB) *Handler {
 // To handle "/".
 func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	log.Println("You are in the Homepage Handler")
+
 	if r.URL.Path != "/" {
 		log.Println("Error. Path Not Allowed.")
 		http.Error(w, "Page Not Found", http.StatusNotFound)
@@ -90,6 +91,7 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 
 // To handle "/post/{id}"
 func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
+	log.Println("You are in the GetPost Handler")
 
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
@@ -133,10 +135,9 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		data, err := helpers.PostPageData(h.db, postId, userID)
 		if err != nil {
 			log.Println(err)
+			finalURL := helpers.AddQueryMessage("htttp://localhost:8080/", "error", err.Error())
+			http.Redirect(w, r, finalURL, http.StatusFound)
 		}
-
-		// Parse the query parameters from the URL
-		fmt.Println("URL:", r.URL.Path)
 
 		//	Get messages from the query parameters
 		errorMessage, successMessage, err := helpers.GetQueryMessages(r)
@@ -164,6 +165,7 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 // To handle "/post/create"
 
 func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
+	log.Println("You are in the NewPost Handler")
 	if r.URL.Path != "/post/create" {
 		log.Println("Post Create")
 		log.Println("Error. Path Not Allowed.")
@@ -193,7 +195,6 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
 		}
 	}
-
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
 	//	Check IS USER LOGGED IN?
@@ -203,27 +204,87 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 
-			//	Call a function that returns categories and loggedIn status:
 			data, err := helpers.CreatePostData(h.db, userID)
 			if err != nil {
 				log.Println(err)
 			}
+
+			//	Get messages from the query parameters to embedd in the data and print on screen
+			errorMessage, successMessage, err := helpers.GetQueryMessages(r)
+			if err != nil {
+				log.Println("Error getting Messages: ", err)
+			}
+
+			//	Add Error/success messages to the data.
+			data.Metadata.Error = errorMessage
+			data.Metadata.Success = successMessage
+
 			helpers.RenderTemplate(w, "post-create", data)
 
 		case http.MethodPost:
+			// Parse form values
+			r.ParseForm()
 
 			post := models.Post{
 				UserId:  userID,
 				Title:   r.FormValue("title"),
 				Content: r.FormValue("content"),
 			}
-			//	Save the post into the database
-			dbaser.AddPost(h.db, post)
-			//	Save the categories associated to the post into the database
-			//	Print a Succesful message
+
+			// //	Save the post into the database
+			postID, err := dbaser.AddPost(h.db, post)
+			if err != nil {
+				log.Println(err)
+
+				//	Get the page where user send the request from.
+				referer := r.Referer()
+
+				//	This function includes a query parameter in the URL with an error/success to be printed on screen
+				finalURL := helpers.AddQueryMessage(referer, "error", "Error saving post. Try again later!")
+
+				log.Printf("Redirecting to: %s", finalURL)
+
+				http.Redirect(w, r, finalURL, http.StatusFound)
+
+				return
+			}
+
+			//	Add Categories for the post ID
+			var categories []string
+			var postCategories []string
+			categories = append(categories, r.FormValue("category1"), r.FormValue("category2"), r.FormValue("category3"))
+
+			log.Println("Categories: ", categories)
+			for _, category := range categories {
+				if category != "" {
+					postCategories = append(postCategories, strings.TrimSpace(category))
+				}
+			}
+
+			log.Println("Final Categories: ", postCategories)
+
+			err = dbaser.AddPostCategories(h.db, postCategories, postID)
+			if err != nil {
+				//	Get the page where user send the request from.
+				referer := r.Referer()
+
+				//	This function includes a query parameter in the URL with an error/success to be printed on screen
+				finalURL := helpers.AddQueryMessage(referer, "error", "Error saving categories for the post.")
+
+				log.Printf("Redirecting to: %s", finalURL)
+
+				http.Redirect(w, r, finalURL, http.StatusFound)
+
+				return
+			}
+			//	Get the page where user requested to log in.
 			referer := r.Referer()
-			msg := "Post was created succesfully!"
-			helpers.RenderTemplate(w, referer, msg)
+
+			finalURL := helpers.AddQueryMessage(referer, "success", "Post created succesfully!")
+
+			log.Printf("Redirecting to: %s", finalURL)
+
+			http.Redirect(w, r, finalURL, http.StatusFound)
 
 		default:
 			w.Header().Set("Allow", "GET, POST")
@@ -235,7 +296,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
-
+	log.Println("You are in the Reaction Handler")
 	if r.URL.Path != "/reaction" {
 		log.Println("Post Create")
 		log.Println("Error. Path Not Allowed.")
@@ -250,7 +311,6 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 	//	Get cookie from request
 	var userID int
 	sessionToken, err := r.Cookie("session_token")
-
 	if err != nil {
 		userID = 0
 		log.Println("Error Getting cookie:", err)
@@ -269,8 +329,19 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 	//	Check the request comes from a logged-in user or not and act in consequence
 	if userID == 0 {
+
+		fmt.Println("Are we here?")
+
 		referer := r.Referer()
-		http.Redirect(w, r, referer+"#registerModal", http.StatusForbidden)
+		fmt.Println("Referer:", referer)
+
+		finalURL := helpers.AddQueryMessage(referer, "error", "Need to be logged in for that action")
+
+		fmt.Println(finalURL)
+
+		http.Redirect(w, r, finalURL+"#loginModal", http.StatusFound)
+		// http.Redirect(w, r, finalURL, http.StatusForbidden)
+		return
 
 	} else {
 		switch r.Method {
@@ -309,6 +380,10 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-
 	}
+	fmt.Println("Are we still here?")
+}
+
+func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
+
 }

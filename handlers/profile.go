@@ -3,7 +3,10 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"net/url"
 
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/middleware"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
@@ -16,20 +19,91 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//	Get userID that is making the request
+	// userID := r.Context().Value(models.UserIDKey).(int)
+
+	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
+	//	Get cookie from request
+	var userID int
+	sessionToken, err := r.Cookie("session_token")
+	if err != nil {
+		userID = 0
+		log.Println("Error getting cookie:", err)
+	} else {
+		//	Get session UUID from the cookie
+		sessionUUID := sessionToken.Value
+		log.Println("Session UUID is:", sessionUUID)
+		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
+
 	switch r.Method {
 	case http.MethodGet:
-		//	Get userID that is making the request
-		userID := r.Context().Value(models.UserIDKey).(int)
 
 		if userID == 0 {
-			http.Redirect(w, r, "/login", http.StatusFound)
+			referer := "http://localhost:8080/"
+
+			//	Convert URL to url.url format
+			refererURL, err := url.Parse(referer)
+			if err != nil {
+				log.Println("Failed to parse referer:", err)
+				refererURL = &url.URL{Path: "/"}
+			}
+
+			//	Delete any queries that the url may have
+			refererURL.RawQuery = ""
+
+			// Get the current query values from the referer URL
+			query := refererURL.Query()
+
+			// Add the error to the query.
+			query.Set("error", "Please, log in to access this page.")
+
+			// Set the updated query back to the referer URL
+			refererURL.RawQuery = query.Encode()
+
+			// Convert the modified referer URL back to a string
+			finalURL := refererURL.String()
+
+			log.Printf("Redirecting to: %s", finalURL)
+
+			http.Redirect(w, r, finalURL, http.StatusFound)
 
 		} else {
-			// data, err := helpers.ProfilePageData(h.db, userID)
-			// if err != nil {
-			// 	//	HANDLE ERROR
-			// }
-			// helpers.RenderTemplate(w, "profile.html", data)
+			data, err := helpers.ProfilePageData(h.db, userID)
+			if err != nil {
+				log.Println("Profile Page. Error getting user data:", err)
+
+				referer := "http://localhost:8080/"
+
+				refererURL, err := url.Parse(referer)
+				if err != nil {
+					log.Println("Failed to parse referer:", err)
+					refererURL = &url.URL{Path: "/"}
+				}
+
+				// Get the current query values from the referer URL
+				query := refererURL.Query()
+
+				// Add the error to the query.
+				query.Set("error", "Sorry, could not access your profile.")
+
+				// Set the updated query back to the referer URL
+				refererURL.RawQuery = query.Encode()
+
+				// Convert the modified referer URL back to a string
+				finalURL := refererURL.String()
+
+				log.Printf("Redirecting to: %s", finalURL)
+
+				http.Redirect(w, r, finalURL, http.StatusFound)
+			}
+
+			helpers.RenderTemplate(w, "profile", data)
 		}
 
 	case http.MethodPost:

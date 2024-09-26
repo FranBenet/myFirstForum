@@ -16,7 +16,7 @@
             <section class="post-data">
                 <div class="data">
                     <p class="data-info">
-                        <time datetime="{{.Post.Created}}">{{.Post.Created}}</time>
+                        <time datetime="{{.Post.Created}}">{{.Post.Date}}</time>
                     </p>
                     <p class="data-info">
                         |
@@ -70,7 +70,7 @@
                 <div class="user-info-text">
                     <p class="info-username">{{.Post.User.Name}}</p>
                     <p class="data-info">
-                        <time datetime="{{.Post.Post.Created}}">{{.Post.Post.Created}}</time>
+                        <time datetime="{{.Post.Post.Created}}">{{.Post.Post.Date}}</time>
                     </p>
                 </div>
             </a>
@@ -111,12 +111,12 @@
         {{range .Comments}}
             {{template "comment" .}}
         {{end}}
-        
+        {{ if .Metadata.LoggedIn}}
         <form method="post" action="/post/comment" class="comment-form">
             <textarea class="comment-area" name="new-comment" id="" placeholder="What do you think?" cols="100" rows="2"></textarea>
             <button class="submit">Comment</button>
         </form> 
-        
+        {{end}}
     </div>
 {{end}}
 
@@ -142,6 +142,7 @@
             <p class="data-likes">
                 {{.LikeCount}} Likes
             </p>
+            
             <form action="/reaction" method="post" class="like-container-comment">
                 <input type="hidden" name="post_Id" value="{{.Comment.Id}}">
                 <button name="state" value="like" class="like-comment-button like-button">
@@ -151,6 +152,7 @@
                     <span class="material-symbols-rounded thumbs-icon {{if eq .Liked -1}} active-dislike-icon {{else if eq .Liked 0}} dislike-icon {{end}}">thumb_down</span>
                 </button>
             </form>
+            
         </section>
        
     </div>
