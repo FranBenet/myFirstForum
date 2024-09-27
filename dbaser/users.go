@@ -3,6 +3,8 @@ package dbaser
 import (
 	"database/sql"
 	"errors"
+	"math/rand"
+	"os"
 	"time"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
@@ -23,12 +25,19 @@ func AddUser(db *sql.DB, user models.User) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	stmt, err := db.Prepare("insert into users (email, username, password) values (?, ?, ?)")
+	if user.Avatar == "" {
+		img, err := RandomAvatar()
+		if err != nil {
+			return 0, err
+		}
+		user.Avatar = img
+	}
+	stmt, err := db.Prepare("insert into users (email, username, password, avatar) values (?, ?, ?, ?)")
 	if err != nil {
 		return 0, err
 	}
 	defer stmt.Close()
-	res, err := stmt.Exec(user.Email, user.Name, string(passHash))
+	res, err := stmt.Exec(user.Email, user.Name, string(passHash), user.Avatar)
 	if err != nil {
 		return 0, err
 	}
@@ -127,4 +136,17 @@ func ValidateLogin(db *sql.DB, email, password string) (models.User, error) {
 		return models.User{}, err
 	}
 	return user, nil
+}
+
+func RandomAvatar() (string, error) {
+	imgsPath := "./web/static/img/"
+	dirEntries, err := os.ReadDir(imgsPath)
+	if err != nil {
+		return "", err
+	}
+	var imgs []string
+	for _, img := range dirEntries {
+		imgs = append(imgs, imgsPath+img.Name())
+	}
+	return imgs[rand.Intn(len(imgs))], nil
 }
