@@ -42,6 +42,7 @@ func routes(db *sql.DB) *http.ServeMux {
 
 	mux.HandleFunc("/post/", handler.GetPost)
 	mux.HandleFunc("/post/create", handler.NewPost)
+	mux.HandleFunc("/post/comment", handler.NewComment)
 	mux.HandleFunc("/reaction", handler.Reaction)
 	mux.HandleFunc("/", handler.Homepage)
 
@@ -51,7 +52,7 @@ func routes(db *sql.DB) *http.ServeMux {
 
 	mux.HandleFunc("/search", handler.Search)
 	mux.HandleFunc("/filter", handler.Filter)
-	mux.HandleFunc("/user/{username}/profile", handler.Profile)
+	mux.HandleFunc("/user/", handler.Profile)
 
 	mux.HandleFunc("/profile", handler.Profile)
 	mux.HandleFunc("/profile/edit", handler.Profile)

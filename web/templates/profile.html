@@ -1,44 +1,45 @@
 {{ define "page"}}
 <section class="section-profile">
     {{ template "breadcrumbs".}}
-        <div class="profile-info-container">
-            <span class="profile-info">
-                <img src="../static/img/cat.png" alt="Profile Picture" class="image">
-                <!-- <div class="image"> Img</div> -->
-                <div class="info">
-                    <label for="username">Name:</label>
-                    <input type="text" id="username" name="username" value="{{.User.Name}}" readonly> 
-    
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value="{{.User.Email}}" readonly> 
-
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" value="{{.User.Password}}" readonly>
-
-                </div>
-            </span>
-            <span class="edit-profile-botton">
-                <a href="/profile/edit" class="edit-button">
-                    <p class="edit-text">Edit</p>
-                </a>
-            </span>
-        </div>
+    <div class="profile-info-container">
+        <span class="profile-info">
+            <img src="../static/img/cat.png" alt="Profile Picture" class="image">
+            <!-- <div class="image"> Img</div> -->
+            <div class="info">
+                <span>Name:</span>
+                <span>{{.User.Name}}</span>
+                <span>Email:</span>
+                <span>{{.User.Email}}</span>
+                <span>Password:</span>
+                <span>*********</span>
+            </div>
+        </span>
+        <span class="edit-profile-botton">
+            <a href="/profile/edit" class="edit-button">
+                <p class="edit-text">Edit</p>
+            </a>
+        </span>
+        
+    </div>
 </section>
 {{end}}
 
 
-{{define "ls"}}
+{{ define "editable-form"}}
 <div class="profile-info-container">
     <span class="profile-info">
         <img src="../static/img/cat.png" alt="Profile Picture" class="image">
         <!-- <div class="image"> Img</div> -->
         <div class="info">
-            <span>Name:</span>
-            <span>{{.User.Name}}</span>
-            <span>Email:</span>
-            <span>{{.User.Email}}</span>
-            <span>Password:</span>
-            <span> *********</span>
+            <label for="username">Name:</label>
+            <input type="text" id="username" name="username" value="{{.User.Name}}" readonly> 
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{.User.Email}}" readonly> 
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value="{{.User.Password}}" readonly>
+
         </div>
     </span>
     <span class="edit-profile-botton">
@@ -46,6 +47,5 @@
             <p class="edit-text">Edit</p>
         </a>
     </span>
-    
 </div>
 {{end}}

@@ -4,7 +4,7 @@
             <a href="/user/{{.User.Id}}" class="post-username">{{.User.Name}}</a>
             <div class="post-category-container">
                 {{range .Categories}}
-                    <a href="/category/{{.Id}}" class="post-category">{{.Name}}</a>
+                    <a href="/filter?category={{.Id}}" class="post-category">{{.Name}}</a>
                 {{end}}
             </div>
         </section>
@@ -76,7 +76,7 @@
             </a>
             <div class="post-category-container">
                 {{range .Post.Categories}}
-                    <a href="/category/{{.Id}}" class="post-category">{{.Name}}</a>
+                    <a href="/filter?category={{.Id}}" class="post-category">{{.Name}}</a>
                 {{end}}
             </div>
         </section>
@@ -113,6 +113,7 @@
         {{end}}
         {{ if .Metadata.LoggedIn}}
         <form method="post" action="/post/comment" class="comment-form">
+            <input type="hidden" name="post_Id" value="{{.Post.Post.Id}}">
             <textarea class="comment-area" name="new-comment" id="" placeholder="What do you think?" cols="100" rows="2"></textarea>
             <button class="submit">Comment</button>
         </form> 

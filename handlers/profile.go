@@ -3,7 +3,6 @@ package handlers
 import (
 	"log"
 	"net/http"
-	"net/url"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/middleware"
@@ -47,27 +46,7 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 		if userID == 0 {
 			referer := "http://localhost:8080/"
 
-			//	Convert URL to url.url format
-			refererURL, err := url.Parse(referer)
-			if err != nil {
-				log.Println("Failed to parse referer:", err)
-				refererURL = &url.URL{Path: "/"}
-			}
-
-			//	Delete any queries that the url may have
-			refererURL.RawQuery = ""
-
-			// Get the current query values from the referer URL
-			query := refererURL.Query()
-
-			// Add the error to the query.
-			query.Set("error", "Please, log in to access this page.")
-
-			// Set the updated query back to the referer URL
-			refererURL.RawQuery = query.Encode()
-
-			// Convert the modified referer URL back to a string
-			finalURL := refererURL.String()
+			finalURL := helpers.AddQueryMessage(referer, "error", "Please, log in to access this page.")
 
 			log.Printf("Redirecting to: %s", finalURL)
 
@@ -80,23 +59,7 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 				referer := "http://localhost:8080/"
 
-				refererURL, err := url.Parse(referer)
-				if err != nil {
-					log.Println("Failed to parse referer:", err)
-					refererURL = &url.URL{Path: "/"}
-				}
-
-				// Get the current query values from the referer URL
-				query := refererURL.Query()
-
-				// Add the error to the query.
-				query.Set("error", "Sorry, could not access your profile.")
-
-				// Set the updated query back to the referer URL
-				refererURL.RawQuery = query.Encode()
-
-				// Convert the modified referer URL back to a string
-				finalURL := refererURL.String()
+				finalURL := helpers.AddQueryMessage(referer, "error", "Sorry, could not access your profile.")
 
 				log.Printf("Redirecting to: %s", finalURL)
 

@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 	"net/url"
@@ -137,4 +138,22 @@ func GetRefererPage(r *http.Request) (int, error) {
 	}
 
 	return page, nil
+}
+
+func GetQueryFilter(r *http.Request) (string, error) {
+	// Parse the query parameters from the URL
+	queryParams := r.URL.Query()
+
+	// Example: Get a specific key's value if it exists
+	if category, ok := queryParams["category"]; ok {
+		return category[0], nil
+
+	} else if sortType, ok := queryParams["sort"]; ok {
+		return sortType[0], nil
+
+	} else {
+		err := errors.New("no filter key available")
+		return "", err
+	}
+
 }
