@@ -28,6 +28,12 @@
                         |
                     </p>
                     <p class="data-info">
+                        {{.DislikeCount}} Dislikes
+                    </p>
+                    <p class="data-info">
+                        |
+                    </p>
+                    <p class="data-info">
                         {{len .Comments}} Comments
                     </p>
                 </div>
@@ -65,7 +71,7 @@
         <section class="post-id-header">
             <a href="/user/{.Post.User.Id}" class="post-id-user-info">
                 <div class="user-info-image">
-                    <img src="../static/img/bear.png" alt="Profile Img" class="image-avatar">
+                    <img src="{{.Post.User.Avatar}}" alt="Profile Img" class="image-avatar">
                 </div>
                 <div class="user-info-text">
                     <p class="info-username">{{.Post.User.Name}}</p>
@@ -88,6 +94,12 @@
             <div class="data">
                 <p class="data-info">
                     {{.Post.LikeCount}} Likes
+                </p>
+                <p class="data-info">
+                    |
+                </p>
+                <p class="data-info">
+                    {{.Post.DislikeCount}} Dislikes
                 </p>
                 <p class="data-info">
                     |

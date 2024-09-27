@@ -1,7 +1,7 @@
 {{define "header"}}
     <header class="header">
         <a href="/" class="logo">
-            <img class= "img-logo" src="../static/img/literary_lions_logo.png" alt="Logo literary lions club">
+            <img class= "img-logo" src="../static/img/logo/literary_lions_logo.png" alt="Logo literary lions club">
         </a>
 
         <form class="search-bar" action="/search">
@@ -16,7 +16,7 @@
                 <p class="text-icons">Create Post</p>
             </a>
             <div class="profile-dropdown">
-                <button class="img-dropdown-button"></button>
+                <img src="{{.User.Avatar}}" alt="Profile Image" class="img-dropdown-button">
                 <div class="dropdown-content">
                     <a href="/profile" class="option"> Profile</a>
                     <a href="/liked" class="option"> Liked Posts</a>

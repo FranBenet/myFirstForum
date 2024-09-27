@@ -100,14 +100,18 @@
 .img-dropdown-button {
   border: none;
   cursor: pointer;
-  background-image: url(../img/cat.png);
-  background-size: cover; 
-  background-position: center; 
   width: 70px;
   height: 70px;
-  border-radius: 35px;    
+  object-fit: cover;
+  border-radius: 35px;
+  display: flex;   
+  justify-content: center;
+  align-items: center;
+  background-color: white;
 }
-  
+
+
+
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
   display: none;

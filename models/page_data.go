@@ -7,12 +7,14 @@ type MainPage struct {
 	Trending   []PostData
 	Metadata   Metadata
 	Pagination Pagination
+	User       User
 }
 
 type PostPage struct {
 	Post     PostData
 	Comments []CommentData
 	Metadata Metadata
+	User     User
 }
 
 type Metadata struct {

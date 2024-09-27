@@ -162,14 +162,24 @@ func MainPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
+
 	if userId > 0 {
 		mainData.Metadata.LoggedIn = true
+		userData, err := dbaser.UserById(db, userId)
+		if err != nil {
+			mainData.Metadata.Error = err.Error()
+			return mainData, err
+		}
+		user := models.User{Avatar: userData.Avatar}
+		mainData.User = user
 	}
+
 	pageData := models.Pagination{CurrentPage: page, TotalPages: pagination}
 	mainData.Categories = categories
 	mainData.Posts = postData
 	mainData.Trending = trendData
 	mainData.Pagination = pageData
+
 	return mainData, nil
 }
 
@@ -196,6 +206,13 @@ func PostPageData(db *sql.DB, postId, userId int) (models.PostPage, error) {
 	}
 	if userId > 0 {
 		postData.Metadata.LoggedIn = true
+		userData, err := dbaser.UserById(db, userId)
+		if err != nil {
+			postData.Metadata.Error = err.Error()
+			return postData, err
+		}
+		user := models.User{Avatar: userData.Avatar}
+		postData.User = user
 	}
 	postData.Post = data
 	postData.Comments = comments
