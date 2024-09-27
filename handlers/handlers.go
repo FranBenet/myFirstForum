@@ -10,7 +10,6 @@ import (
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
-	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/middleware"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
@@ -27,7 +26,7 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	log.Println("You are in the Homepage Handler")
 
 	if r.URL.Path != "/" {
-		log.Println("Error. Path Not Allowed.")
+		log.Println("Error. Path / Not Allowed.")
 		http.Error(w, "Page Not Found", http.StatusNotFound)
 		return
 	}
@@ -39,24 +38,24 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//	Get userID that is making the request
-	// userID := r.Context().Value(models.UserIDKey).(int)
+	userID := r.Context().Value(models.UserIDKey).(int)
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 	//	Get cookie from request
-	var userID int
-	sessionToken, err := r.Cookie("session_token")
-	if err != nil {
-		userID = 0
-		log.Println("Error getting cookie:", err)
-	} else {
-		//	Get session UUID from the cookie
-		sessionUUID := sessionToken.Value
-		log.Println("Session UUID is:", sessionUUID)
-		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-		if err != nil {
-			log.Println(err)
-		}
-	}
+	// var userID int
+	// sessionToken, err := r.Cookie("session_token")
+	// if err != nil {
+	// 	userID = 0
+	// 	log.Println("Error getting cookie:", err)
+	// } else {
+	// 	//	Get session UUID from the cookie
+	// 	sessionUUID := sessionToken.Value
+	// 	log.Println("Session UUID is:", sessionUUID)
+	// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 	}
+	// }
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 	//	Get the page number requested if not set the page number to 1.
@@ -87,6 +86,7 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Logged In status: ", data.Metadata.LoggedIn)
 
 	helpers.RenderTemplate(w, "home", data)
+
 }
 
 // To handle "/post/{id}"
@@ -100,25 +100,25 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//	Get userID that is making the request
-	// userID := r.Context().Value(models.UserIDKey).(int)
+	userID := r.Context().Value(models.UserIDKey).(int)
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 	//	Get cookie from request
-	var userID int
+	// var userID int
 
-	sessionToken, err := r.Cookie("session_token")
-	if err != nil {
-		userID = 0
-		log.Println(err)
-	} else {
-		//	Get the value of the session from the cookie
-		sessionUUID := sessionToken.Value
-		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-		if err != nil {
-			userID = 0
-			log.Println(err)
-		}
-	}
+	// sessionToken, err := r.Cookie("session_token")
+	// if err != nil {
+	// 	userID = 0
+	// 	log.Println(err)
+	// } else {
+	// 	//	Get the value of the session from the cookie
+	// 	sessionUUID := sessionToken.Value
+	// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+	// 	if err != nil {
+	// 		userID = 0
+	// 		log.Println(err)
+	// 	}
+	// }
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST END----------------------------------------------------------------------------------------
 
@@ -138,7 +138,7 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 			finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "Page not available.")
 			http.Redirect(w, r, finalURL, http.StatusFound)
 		}
-
+		log.Println("COMMENTS:", data.Comments)
 		//	Get messages from the query parameters
 		errorMessage, successMessage, err := helpers.GetQueryMessages(r)
 		if err != nil {
@@ -152,7 +152,7 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Logged In status: ", data.Metadata.LoggedIn)
 
 		helpers.RenderTemplate(w, "post-id", data)
-
+		return
 	} else {
 		log.Println("Post ID")
 		log.Println("Error. Path Not Allowed.")
@@ -174,27 +174,27 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//	Get userID that is making the request
-	// userID := r.Context().Value(models.UserIDKey).(int)
+	userID := r.Context().Value(models.UserIDKey).(int)
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 	//	Get cookie from request
-	var userID int
-	sessionToken, err := r.Cookie("session_token")
+	// var userID int
+	// sessionToken, err := r.Cookie("session_token")
 
-	if err != nil {
-		userID = 0
-		log.Println("Error Getting cookie:", err)
-	} else {
-		//	Get session UUID from the cookie
-		sessionUUID := sessionToken.Value
-		fmt.Println("session:", sessionUUID)
-		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-		if err != nil {
-			userID = 0
-			log.Println("Error, validating session:", err)
+	// if err != nil {
+	// 	userID = 0
+	// 	log.Println("Error Getting cookie:", err)
+	// } else {
+	// 	//	Get session UUID from the cookie
+	// 	sessionUUID := sessionToken.Value
+	// 	fmt.Println("session:", sessionUUID)
+	// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+	// 	if err != nil {
+	// 		userID = 0
+	// 		log.Println("Error, validating session:", err)
 
-		}
-	}
+	// 	}
+	// }
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
 	//	Check IS USER LOGGED IN?
@@ -305,26 +305,26 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//	Get userID that is making the request
-	// userID := r.Context().Value(models.UserIDKey).(int)
+	userID := r.Context().Value(models.UserIDKey).(int)
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 	//	Get cookie from request
-	var userID int
-	sessionToken, err := r.Cookie("session_token")
-	if err != nil {
-		userID = 0
-		log.Println("Error Getting cookie:", err)
-	} else {
-		//	Get the value of the session from the cookie
-		sessionUUID := sessionToken.Value
-		fmt.Println("session:", sessionUUID)
-		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-		if err != nil {
-			userID = 0
-			log.Println("Error, validating session:", err)
+	// var userID int
+	// sessionToken, err := r.Cookie("session_token")
+	// if err != nil {
+	// 	userID = 0
+	// 	log.Println("Error Getting cookie:", err)
+	// } else {
+	// 	//	Get the value of the session from the cookie
+	// 	sessionUUID := sessionToken.Value
+	// 	fmt.Println("session:", sessionUUID)
+	// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+	// 	if err != nil {
+	// 		userID = 0
+	// 		log.Println("Error, validating session:", err)
 
-		}
-	}
+	// 	}
+	// }
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
 	//	Check the request comes from a logged-in user or not and act in consequence
@@ -343,39 +343,62 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 			// Parse form values
 			r.ParseForm()
 
-			// Get the postID from the hidden input
+			// Get the Post ID
 			id := r.FormValue("post_Id")
-			postID, err := strconv.Atoi(id)
-			if err != nil {
-				log.Println(err)
+			if id != "" {
+				postID, err := strconv.Atoi(id)
+				if err != nil {
+					log.Println(err)
+				}
+
+				// Get the reactionType based on which button was clicked
+				form_reaction := r.FormValue("state")
+
+				var reaction bool
+				switch form_reaction {
+				case "like":
+					reaction = true
+				case "dislike":
+					reaction = false
+				}
+				newReaction := models.PostReaction{PostId: postID, UserId: userID, Liked: reaction}
+				dbaser.AddPostReaction(h.db, newReaction)
 			}
 
-			// Get the reactionType based on which button was clicked
-			form_reaction := r.FormValue("state")
+			//	Get Comment ID
+			id = r.FormValue("comment_Id")
+			if id != "" {
+				commentID, err := strconv.Atoi(id)
+				if err != nil {
+					log.Println(err)
+				}
 
-			var reaction bool
-			switch form_reaction {
-			case "like":
-				reaction = true
-			case "dislike":
-				reaction = false
+				// Get the reactionType based on which button was clicked
+				form_reaction := r.FormValue("state")
+
+				var reaction bool
+				switch form_reaction {
+				case "like":
+					reaction = true
+				case "dislike":
+					reaction = false
+				}
+				newReaction := models.CommentReaction{CommentId: commentID, UserId: userID, Liked: reaction}
+				dbaser.AddCommentReaction(h.db, newReaction)
 			}
-
-			newReaction := models.PostReaction{PostId: postID, UserId: userID, Liked: reaction}
-			dbaser.AddPostReaction(h.db, newReaction)
-
 			//	Get the page where user requested to log in.
 			referer := r.Referer()
 
+			finalURL := helpers.CleanQueryMessages(referer)
+
 			// Redirect to the referer with the error included in the query.
-			http.Redirect(w, r, referer, http.StatusFound)
+			http.Redirect(w, r, finalURL, http.StatusFound)
 		default:
 			w.Header().Set("Allow", "GET, POST")
 			http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 	}
-	fmt.Println("Are we still here?")
 }
 
 func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
@@ -388,27 +411,27 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//	Get userID that is making the request
-	// userID := r.Context().Value(models.UserIDKey).(int)
+	userID := r.Context().Value(models.UserIDKey).(int)
 
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 	//	Get cookie from request
-	var userID int
-	sessionToken, err := r.Cookie("session_token")
+	// var userID int
+	// sessionToken, err := r.Cookie("session_token")
 
-	if err != nil {
-		userID = 0
-		log.Println("Error Getting cookie:", err)
-	} else {
-		//	Get session UUID from the cookie
-		sessionUUID := sessionToken.Value
-		fmt.Println("session:", sessionUUID)
-		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-		if err != nil {
-			userID = 0
-			log.Println("Error, validating session:", err)
+	// if err != nil {
+	// 	userID = 0
+	// 	log.Println("Error Getting cookie:", err)
+	// } else {
+	// 	//	Get session UUID from the cookie
+	// 	sessionUUID := sessionToken.Value
+	// 	fmt.Println("session:", sessionUUID)
+	// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+	// 	if err != nil {
+	// 		userID = 0
+	// 		log.Println("Error, validating session:", err)
 
-		}
-	}
+	// 	}
+	// }
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
 	//	Check IS USER LOGGED IN?

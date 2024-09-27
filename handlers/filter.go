@@ -30,6 +30,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 	//	Get cookie from request
 	var userID int
+	fmt.Println(userID)
 	sessionToken, err := r.Cookie("session_token")
 
 	if err != nil {
@@ -49,11 +50,11 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
 	//	Get the page where user send the request from.
-	referer := r.Referer()
+	// referer := r.Referer()
 
 	// Parse form values
 	r.ParseForm()
-	content := r.FormValue("new-comment")
+	// content := r.FormValue("new-comment")
 
 	// data, err := helpers.MainPageDataFilter(h.db, userID)
 	// if err != nil {
@@ -84,6 +85,7 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 	//	Get cookie from request
 	var userID int
+	fmt.Println(userID)
 	sessionToken, err := r.Cookie("session_token")
 
 	if err != nil {
@@ -97,31 +99,78 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			userID = 0
 			log.Println("Error, validating session:", err)
-
 		}
 	}
 	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
-	filter, err := helpers.GetQueryFilter(r)
+	//	Get the page number requested if not set the page number to 1.
+	requestedPage, err := helpers.GetQueryPage(r)
+	if err != nil {
+		log.Println("No Page Required:", err)
+		requestedPage = 1
+	}
+	fmt.Println(requestedPage)
+
+	filterCategory, err := helpers.GetQueryFilter(r, "category")
 	if err != nil {
 		log.Println(err)
-
-		referer := r.Referer()
-
-		finalURL := helpers.AddQueryMessage(referer, "error", "Please, log in to access this page.")
-
-		log.Printf("Redirecting to: %s", finalURL)
-
-		http.Redirect(w, r, finalURL, http.StatusFound)
 	}
 
-	switch
+	filterSort, err := helpers.GetQueryFilter(r, "sort")
+	if err != nil {
+		log.Println(err)
+	}
 
-	// data, err := helpers.MainPageDataFilter(h.db, userID)
-	// if err != nil {
-	// 	//	HANDLE ERROR
-	// }
-	// helpers.RenderTemplate(w, "home.html", data)
+	if filterSort == "" && filterCategory == "" {
+		log.Println("No Filters on the URL")
+		referer := r.Referer()
+
+		finalURL := helpers.AddQueryMessage(referer, "error", "Filters not available")
+
+		log.Printf("Redirecting to: %s", finalURL)
+		http.Redirect(w, r, "finalURL", http.StatusFound)
+		return
+
+	} else if filterCategory != "" && filterSort == "" {
+		log.Println("Category Filter in the URL")
+
+		// categoryId, err := strconv.Atoi(filterCategory)
+		// if err != nil {
+		// 	log.Println("Category does not exist")
+		// 	referer := r.Referer()
+
+		// 	finalURL := helpers.AddQueryMessage(referer, "error", "This category does not exist")
+
+		// 	log.Printf("Redirecting to: %s", finalURL)
+		// 	http.Redirect(w, r, finalURL, http.StatusFound)
+		// 	return
+		// }
+
+		//	Get data according to the page requested.
+		// data, err := helpers.CollectCategoryData(h.db, userID, requestedPage, categoryId)
+		// if err != nil {
+		// 	log.Println("Error getting category data", err)
+		// }
+
+		// fmt.Println("Logged In status: ", data.Metadata.LoggedIn)
+
+		// helpers.RenderTemplate(w, "home", data)
+
+	} else if filterSort != "" && filterCategory == "" {
+		log.Println("Sort Filter in the URL")
+
+		switch filterSort {
+		case "likes":
+			// data, err := helpers.CollectLikesData(h.db, userID, requestedPage, filterSort)
+		case "dislikes":
+			// data, err := helpers.CollectDislikesData(h.db, userID, requestedPage, filterSort)
+		case "mostrecent":
+			// data, err := helpers.CollectMostRecentData(h.db, userID, requestedPage, filterSort)
+		default:
+		}
+
+	} else {
+	}
 }
 
 // To handle "/users/{username}/profile"

@@ -9,6 +9,7 @@ import (
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/handlers"
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/middleware"
 )
 
 func routes(db *sql.DB) *http.ServeMux {
@@ -18,43 +19,45 @@ func routes(db *sql.DB) *http.ServeMux {
 	handler := handlers.NewHandler(db)
 
 	// Create middleware with the database connection
-	// mw := middleware.NewMiddleware(db)
+	mw := middleware.NewMiddleware(db)
 
 	fileServer := http.FileServer(http.Dir("./web/static"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-	// mux.Handle("/", mw.MiddlewareSession(http.HandlerFunc(handler.Homepage)))
-	// mux.Handle("/post/{id}", mw.MiddlewareSession(http.HandlerFunc(handler.GetPost)))
-	// mux.Handle("/post/create", mw.MiddlewareSession(http.HandlerFunc(handler.NewPost)))
-	// mux.Handle("/reaction", mw.MiddlewareSession(http.HandlerFunc(handler.Reaction)))
+	mux.Handle("/", mw.MiddlewareSession(http.HandlerFunc(handler.Homepage)))
+	mux.Handle("/post/", mw.MiddlewareSession(http.HandlerFunc(handler.GetPost)))
+	mux.Handle("/post/create", mw.MiddlewareSession(http.HandlerFunc(handler.NewPost)))
+	mux.Handle("/post/comment", mw.MiddlewareSession(http.HandlerFunc(handler.NewComment)))
+	mux.Handle("/reaction", mw.MiddlewareSession(http.HandlerFunc(handler.Reaction)))
 
-	// mux.HandleFunc("/login", handler.Login)       //	No need to go through the middleware because never will be a cookie
-	// mux.HandleFunc("/register", handler.Register) //	No need to go through the middleware because never will be a cookie
+	mux.HandleFunc("/login", handler.Login)       //	No need to go through the middleware because never will be a cookie
+	mux.HandleFunc("/register", handler.Register) //	No need to go through the middleware because never will be a cookie
+	mux.HandleFunc("/logout", handler.Logout)     //	No need to go through the middleware because never will be a cookie
 
 	// mux.Handle("/search", mw.MiddlewareSession(http.HandlerFunc(handler.Search)))
 	// mux.Handle("/filter", mw.MiddlewareSession(http.HandlerFunc(handler.Filter)))
 	// mux.Handle("/user/{username}/profile", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
 
-	// mux.Handle("/profile", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
+	mux.Handle("/profile", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
 	// mux.Handle("/profile/edit", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
 	// mux.Handle("/liked", mw.MiddlewareSession(http.HandlerFunc(handler.LikedPosts)))
 	// mux.Handle("/myposts", mw.MiddlewareSession(http.HandlerFunc(handler.MyPosts)))
 
-	mux.HandleFunc("/post/", handler.GetPost)
-	mux.HandleFunc("/post/create", handler.NewPost)
-	mux.HandleFunc("/post/comment", handler.NewComment)
-	mux.HandleFunc("/reaction", handler.Reaction)
-	mux.HandleFunc("/", handler.Homepage)
+	// mux.HandleFunc("/post/", handler.GetPost)
+	// mux.HandleFunc("/post/create", handler.NewPost)
+	// mux.HandleFunc("/post/comment", handler.NewComment)
+	// mux.HandleFunc("/reaction", handler.Reaction)
+	// mux.HandleFunc("/", handler.Homepage)
 
-	mux.HandleFunc("/login", handler.Login)
-	mux.HandleFunc("/register", handler.Register)
-	mux.HandleFunc("/logout", handler.Logout)
+	// mux.HandleFunc("/login", handler.Login)
+	// mux.HandleFunc("/register", handler.Register)
+	// mux.HandleFunc("/logout", handler.Logout)
 
 	mux.HandleFunc("/search", handler.Search)
 	mux.HandleFunc("/filter", handler.Filter)
 	mux.HandleFunc("/user/", handler.Profile)
 
-	mux.HandleFunc("/profile", handler.Profile)
+	// mux.HandleFunc("/profile", handler.Profile)
 	mux.HandleFunc("/profile/edit", handler.Profile)
 	mux.HandleFunc("/liked", handler.LikedPosts)
 	mux.HandleFunc("/myposts", handler.MyPosts)

@@ -26,58 +26,49 @@ func NewMiddleware(db *sql.DB) *Middleware {
 	return &Middleware{db: db}
 }
 
+//	This func checks if there is a cookie with a session UUID.
+//	If there is and the session is valid, embedds the userID for that session in the context of the Request.
+//	For any other cases, sets a userID = 0 in the context of the request. userID = 0 indicates the request comes from a non-logged user.
+
 func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		var userID int
 
 		//	Get cookie from request
 		sessionToken, err := r.Cookie("session_token")
 		if err != nil {
-			log.Println(err)
-			//	If no cookie available, create a new context with a key-value pair: userID = 0
-			ctx := context.WithValue(r.Context(), models.UserIDKey, 0)
+			log.Println("No cookie available:", err)
+			//	If no cookie,
+			userID = 0
 
-			//	Send the request to the correct handler, using .WithContext() to include the context
-			requestedHandler.ServeHTTP(w, r.WithContext(ctx))
+		} else {
+			//	Get the value of the session from the cookie
+			sessionUUID := sessionToken.Value
+
+			//	Check if userID has a valid session
+			exists, err := dbaser.ValidSession(mw.db, sessionUUID)
+			if err != nil {
+				// LOG ERROR
+				log.Printf("No valid session: %v", err)
+				userID = 0
+
+			} else if !exists {
+				// LOG ERROR
+				log.Printf("Session does not exists: %v", err)
+				userID = 0
+
+			} else {
+				//	Get UserID from database
+				userID, err = dbaser.SessionUser(mw.db, sessionUUID)
+				if err != nil {
+					// LOG ERROR
+					log.Printf("Error: %v", err)
+					userID = 0
+				}
+			}
 		}
-
-		//	Get the value of the session from the cookie
-		sessionUUID := sessionToken.Value
-
-		//	Check if userID has a valid session
-		exists, err := dbaser.ValidSession(mw.db, sessionUUID)
-		if err != nil {
-			// LOG ERROR
-			log.Printf("Error: %v", err)
-
-			//	If fail to get the user of the session create a new context with a key-value pair: userID = 0
-			ctx := context.WithValue(r.Context(), models.UserIDKey, 0)
-
-			//	Send the request to the correct handler, using .WithContext() to include the context
-			requestedHandler.ServeHTTP(w, r.WithContext(ctx))
-
-		} else if !exists {
-			// LOG ERROR
-			log.Printf("Error: No session valid for this user. %v", err)
-
-			//	Create a new context with a key-value pair: loggedIn = false
-			ctx := context.WithValue(r.Context(), models.UserIDKey, 0)
-
-			//	Send the request to the correct handler, using .WithContext() to include the context
-			requestedHandler.ServeHTTP(w, r.WithContext(ctx))
-		}
-
-		//	Get UserID from database
-		userID, err := dbaser.SessionUser(mw.db, sessionUUID)
-		if err != nil {
-			// LOG ERROR
-			log.Printf("Error: %v", err)
-			//	If fail to get the user of the session create a new context with a key-value pair: userID = 0
-			ctx := context.WithValue(r.Context(), models.UserIDKey, 0)
-
-			//	Send the request to the correct handler, using .WithContext() to include the context
-			requestedHandler.ServeHTTP(w, r.WithContext(ctx))
-		}
-
+		log.Println("USERID:", userID)
 		//	Create a new context with a key-value pair containing userID.
 		ctx := context.WithValue(r.Context(), models.UserIDKey, userID)
 
