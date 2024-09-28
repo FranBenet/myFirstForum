@@ -238,7 +238,6 @@ func NumberOfPages(db *sql.DB) (int, error) {
 
 func CreatePostData(db *sql.DB, userId int) (models.MainPage, error) {
 	var createPostData models.MainPage
-
 	categories, err := dbaser.Categories(db)
 	if err != nil {
 		return models.MainPage{}, err
@@ -247,6 +246,5 @@ func CreatePostData(db *sql.DB, userId int) (models.MainPage, error) {
 		createPostData.Metadata.LoggedIn = true
 	}
 	createPostData.Categories = categories
-
 	return createPostData, nil
 }
