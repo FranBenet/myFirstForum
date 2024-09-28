@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
+	"errors"
 	"time"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
@@ -31,7 +32,10 @@ func SessionById(db *sql.DB, id int) (models.Session, error) {
 	var result models.Session
 	row := db.QueryRow("select * from sessions where id=?", id)
 	var expiration string
-	if err := row.Scan(&result.Id, &result.UserId, &result.Uuid, &expiration); err != nil {
+	err := row.Scan(&result.Id, &result.UserId, &result.Uuid, &expiration)
+	if err == sql.ErrNoRows {
+		return models.Session{}, errors.New("No session found!")
+	} else if err != nil {
 		return models.Session{}, err
 	}
 	timeCreated, err := time.Parse(time.RFC3339, expiration)
@@ -47,7 +51,7 @@ func DeleteSession(db *sql.DB, uuid string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	id, err := row.LastInsertId()
+	id, err := row.RowsAffected()
 	if err != nil {
 		return 0, err
 	}

@@ -139,7 +139,7 @@ func ValidateLogin(db *sql.DB, email, password string) (models.User, error) {
 }
 
 func RandomAvatar() (string, error) {
-	imgsPath := "./web/static/img/"
+	imgsPath := "/web/static/img/avatars/"
 	dirEntries, err := os.ReadDir(imgsPath)
 	if err != nil {
 		return "", err

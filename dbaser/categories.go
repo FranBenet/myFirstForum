@@ -9,7 +9,9 @@ import (
 func Categories(db *sql.DB) ([]models.Category, error) {
 	var result []models.Category
 	row, err := db.Query("select * from categories")
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return result, nil
+	} else if err != nil {
 		return []models.Category{}, err
 	}
 	for row.Next() {
@@ -31,7 +33,9 @@ func Categories(db *sql.DB) ([]models.Category, error) {
 func PostCategories(db *sql.DB, id int) ([]models.Category, error) {
 	var categories []models.Category
 	row, err := db.Query("select categories.* from categories join post_categs on id=categ_id where post_id=?", id)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return categories, nil
+	} else if err != nil {
 		return []models.Category{}, err
 	}
 	for row.Next() {

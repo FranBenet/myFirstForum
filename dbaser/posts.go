@@ -9,12 +9,15 @@ import (
 )
 
 // Posts created by a specific user.
-func PostsByUser(db *sql.DB, userId int) ([]models.Post, error) {
-	row, err := db.Query("select * from posts where user_id=? order by created desc", userId)
-	if err != nil {
+func PostsByUser(db *sql.DB, userId, page int) ([]models.Post, error) {
+	var result []models.Post
+	offset := (page - 1) * 5
+	row, err := db.Query("select * from posts where user_id=? order by created desc limit 5 offset ?", userId, offset)
+	if err == sql.ErrNoRows {
+		return result, nil
+	} else if err != nil {
 		return []models.Post{}, err
 	}
-	var result []models.Post
 	for row.Next() {
 		var post models.Post
 		var created string
@@ -37,12 +40,15 @@ func PostsByUser(db *sql.DB, userId int) ([]models.Post, error) {
 }
 
 // All the posts liked by a specific user.
-func UserLikedPosts(db *sql.DB, userId int) ([]models.Post, error) {
-	row, err := db.Query("select posts.* from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.id=? and liked=? order by created desc", userId, 1)
-	if err != nil {
+func UserLikedPosts(db *sql.DB, userId, page int) ([]models.Post, error) {
+	var result []models.Post
+	offset := (page - 1) * 5
+	row, err := db.Query("select posts.* from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.id=? and liked=? order by created desc limit 5 offset ?", userId, 1, offset)
+	if err == sql.ErrNoRows {
+		return result, nil
+	} else if err != nil {
 		return []models.Post{}, err
 	}
-	var result []models.Post
 	for row.Next() {
 		var post models.Post
 		var created string
@@ -90,10 +96,13 @@ func MainPagePosts(db *sql.DB, page int) ([]models.Post, error) {
 	return result, nil
 }
 
-func PostsByCategory(db *sql.DB, category models.Category) ([]models.Post, error) {
+func PostsByCategory(db *sql.DB, category models.Category, page int) ([]models.Post, error) {
 	var result []models.Post
-	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category.Id)
-	if err != nil {
+	offset := (page - 1) * 5
+	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc limit 5 offset ?", category.Id, offset)
+	if err == sql.ErrNoRows {
+		return result, nil
+	} else if err != nil {
 		return []models.Post{}, err
 	}
 	for row.Next() {
@@ -133,8 +142,10 @@ func AddPost(db *sql.DB, post models.Post) (int, error) {
 // Posts ranked by most likes.
 func TrendingPosts(db *sql.DB, n int) ([]models.Post, error) {
 	var result []models.Post
-	row, err := db.Query("select posts.*, count(*) as num from posts join post_reactions on posts.id=post_id where liked=? group by post_id order by num desc limit ?", 1, n)
-	if err != nil {
+	row, err := db.Query("select posts.*, count(*) as num from posts join post_reactions on posts.id=post_id where liked=? gproup by post_id order by num desc limit ?", 1, n)
+	if err == sql.ErrNoRows {
+		return result, nil
+	} else if err != nil {
 		return []models.Post{}, err
 	}
 	for row.Next() {

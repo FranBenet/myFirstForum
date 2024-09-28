@@ -3,6 +3,7 @@ package dbaser
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
@@ -111,6 +112,7 @@ func PostReactions(db *sql.DB, id int) (int, int, error) {
 
 func AddCommentReaction(db *sql.DB, reaction models.CommentReaction) (int, error) {
 	exists, err := CommentReactionExists(db, reaction)
+	fmt.Println("Comment reaction exists:", exists)
 	if err != nil {
 		return 0, err
 	} else if exists {
