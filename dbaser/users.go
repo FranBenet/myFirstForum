@@ -139,14 +139,15 @@ func ValidateLogin(db *sql.DB, email, password string) (models.User, error) {
 }
 
 func RandomAvatar() (string, error) {
-	imgsPath := "/static/img/avatars/"
+	imgsPath := "./web/static/img/avatars/"
 	dirEntries, err := os.ReadDir(imgsPath)
 	if err != nil {
 		return "", err
 	}
 	var imgs []string
+	imgPrefix := "/static/img/avatars/"
 	for _, img := range dirEntries {
-		imgs = append(imgs, imgsPath+img.Name())
+		imgs = append(imgs, imgPrefix+img.Name())
 	}
 	return imgs[rand.Intn(len(imgs))], nil
 }
