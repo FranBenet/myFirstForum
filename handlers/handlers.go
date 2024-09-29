@@ -345,6 +345,7 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 			// Get the Post ID
 			id := r.FormValue("post_Id")
+
 			if id != "" {
 				postID, err := strconv.Atoi(id)
 				if err != nil {
@@ -367,7 +368,10 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 			//	Get Comment ID
 			id = r.FormValue("comment_Id")
+			log.Println("User reacted to a comment.")
+			log.Println("The comment ID is: ", id)
 			if id != "" {
+				log.Println("The comment ID is: ", id)
 				commentID, err := strconv.Atoi(id)
 				if err != nil {
 					log.Println(err)
@@ -379,8 +383,10 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 				var reaction bool
 				switch form_reaction {
 				case "like":
+					log.Println("The comment was LIKED")
 					reaction = true
 				case "dislike":
+					log.Println("The comment was DISLIKED")
 					reaction = false
 				}
 				newReaction := models.CommentReaction{CommentId: commentID, UserId: userID, Liked: reaction}
