@@ -289,7 +289,7 @@ func PostPageData(db *sql.DB, postId, sessionUser int) (models.PostPage, error) 
 	return postData, nil
 }
 
-func MyPostsPageData(db *sql.DB, userId, sessionUser, page int) (models.MainPage, error) {
+func MyPostsPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
 	var mainData models.MainPage
 	posts, err := dbaser.PostsByUser(db, userId)
 	if err != nil {
@@ -302,7 +302,7 @@ func MyPostsPageData(db *sql.DB, userId, sessionUser, page int) (models.MainPage
 	posts = posts[start:end]
 	var postData []models.PostData
 	for _, p := range posts {
-		data, err := GetPostData(db, p, sessionUser)
+		data, err := GetPostData(db, p, userId)
 		if err != nil {
 			mainData.Metadata.Error = err.Error()
 			return mainData, err
@@ -314,9 +314,9 @@ func MyPostsPageData(db *sql.DB, userId, sessionUser, page int) (models.MainPage
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
-	if sessionUser > 0 {
+	if userId > 0 {
 		mainData.Metadata.LoggedIn = true
-		userData, err := dbaser.UserById(db, sessionUser)
+		userData, err := dbaser.UserById(db, userId)
 		if err != nil {
 			mainData.Metadata.Error = err.Error()
 			return mainData, err
@@ -331,7 +331,7 @@ func MyPostsPageData(db *sql.DB, userId, sessionUser, page int) (models.MainPage
 	return mainData, nil
 }
 
-func MyLikedPostsPageData(db *sql.DB, userId, sessionUser, page int) (models.MainPage, error) {
+func MyLikedPostsPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
 	var mainData models.MainPage
 	posts, err := dbaser.UserLikedPosts(db, userId)
 	if err != nil {
@@ -344,7 +344,7 @@ func MyLikedPostsPageData(db *sql.DB, userId, sessionUser, page int) (models.Mai
 	posts = posts[start:end]
 	var postData []models.PostData
 	for _, p := range posts {
-		data, err := GetPostData(db, p, sessionUser)
+		data, err := GetPostData(db, p, userId)
 		if err != nil {
 			mainData.Metadata.Error = err.Error()
 			return mainData, err
@@ -356,9 +356,9 @@ func MyLikedPostsPageData(db *sql.DB, userId, sessionUser, page int) (models.Mai
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
-	if sessionUser > 0 {
+	if userId > 0 {
 		mainData.Metadata.LoggedIn = true
-		userData, err := dbaser.UserById(db, sessionUser)
+		userData, err := dbaser.UserById(db, userId)
 		if err != nil {
 			mainData.Metadata.Error = err.Error()
 			return mainData, err
