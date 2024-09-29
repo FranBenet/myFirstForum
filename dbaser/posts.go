@@ -8,6 +8,31 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
+// All posts in the database.
+func Posts(db *sql.DB) ([]models.Post, error) {
+	var result []models.Post
+	row, err := db.Query("select * from posts order by created desc")
+	if err != nil {
+		return []models.Post{}, err
+	}
+	for row.Next() {
+		var created string
+		var post models.Post
+		err := row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &created)
+		timeCreated, err := time.Parse(time.RFC3339, created)
+		if err != nil {
+			log.Fatal("Error parsing post creation time")
+		}
+		post.Created = timeCreated
+		result = append(result, post)
+	}
+	err = row.Err()
+	if err != nil {
+		return []models.Post{}, err
+	}
+	return result, nil
+}
+
 // Posts created by a specific user.
 func PostsByUser(db *sql.DB, userId, page int) ([]models.Post, error) {
 	var result []models.Post
@@ -70,7 +95,7 @@ func UserLikedPosts(db *sql.DB, userId, page int) ([]models.Post, error) {
 	return result, nil
 }
 
-// Posts for the main page. We've decided to display 5 posts at a time and include some pagination at the footer.
+// Posts for the main page. We've decided to display 5 posts at a time and include pagination in the footer.
 func MainPagePosts(db *sql.DB, page int) ([]models.Post, error) {
 	var result []models.Post
 	offset := (page - 1) * 5
