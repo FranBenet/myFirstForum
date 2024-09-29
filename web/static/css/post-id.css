@@ -22,10 +22,11 @@
     display: flex;
     flex-flow: column nowrap;
     box-sizing: border-box;
-    padding: 40px 110px 30px 110px;
+    padding: 40px 50px 30px 50px;
     margin-bottom: 30px;
     position: relative;
     /* border: 1px solid rgb(0, 0, 0); */
+    overflow: scroll;
 }
 
 .post-id-header{
@@ -260,11 +261,11 @@
 
 .comment-form{
     margin-top: 60px;
-    margin-left: 80px;
+    margin-left: 65px;
     position:relative;
     border-radius: 16px;
     border: 2px solid var(--primary-color);
-    width: 850px;
+    width: 90%;
     
 }
 
