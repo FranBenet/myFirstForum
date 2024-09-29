@@ -12,12 +12,6 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
-//	THE MIDDLEWARE CHECKS IF THE REQUEST HAS AN OPEN SESSION.
-//	THEN ADDS A KEY-VALUE INFORMATION IN THE CONTEXT() OF THE REQUEST SPECIFYING
-//	TRUE -> SESSION EXISTS AND IS VALID
-//	FALSE -> SESSION DOES NOT EXISTS OR IS NOT VALID
-//	THE REQUEST WITH THE NEW CONTEXT INFORMATION IS PASSED TO THE NEXT HANDLER
-
 type Middleware struct {
 	db *sql.DB
 }
@@ -26,9 +20,10 @@ func NewMiddleware(db *sql.DB) *Middleware {
 	return &Middleware{db: db}
 }
 
-//	This func checks if there is a cookie with a session UUID.
-//	If there is and the session is valid, embedds the userID for that session in the context of the Request.
-//	For any other cases, sets a userID = 0 in the context of the request. userID = 0 indicates the request comes from a non-logged user.
+//	Middleware checks if there is a cookie with a valid session UUID.
+// 	If there is not, userID is set to 0.
+//	If there is, userID is set to its corresponding value.
+//	Then embedds the userID in the context of the Request and passes the request to the relevant handler.
 
 func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -39,36 +34,33 @@ func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Hand
 		sessionToken, err := r.Cookie("session_token")
 		if err != nil {
 			log.Println("No cookie available:", err)
-			//	If no cookie,
 			userID = 0
 
 		} else {
+
 			//	Get the value of the session from the cookie
 			sessionUUID := sessionToken.Value
 
 			//	Check if userID has a valid session
 			exists, err := dbaser.ValidSession(mw.db, sessionUUID)
 			if err != nil {
-				// LOG ERROR
 				log.Printf("No valid session: %v", err)
 				userID = 0
 
 			} else if !exists {
-				// LOG ERROR
-				log.Printf("Session does not exists: %v", err)
+				log.Printf("Session does not exist: %v", err)
 				userID = 0
 
 			} else {
 				//	Get UserID from database
 				userID, err = dbaser.SessionUser(mw.db, sessionUUID)
 				if err != nil {
-					// LOG ERROR
-					log.Printf("Error: %v", err)
+					log.Printf("Error getting user ID: %v", err)
 					userID = 0
 				}
 			}
 		}
-		log.Println("USERID:", userID)
+
 		//	Create a new context with a key-value pair containing userID.
 		ctx := context.WithValue(r.Context(), models.UserIDKey, userID)
 

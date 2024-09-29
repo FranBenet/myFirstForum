@@ -55,6 +55,7 @@
     display: flex;   
     justify-content: center;
     align-items: center;
+    text-decoration: none;
                
 }
 
@@ -86,6 +87,7 @@
     margin: 0px;
     color: rgb(85, 85, 85);
     font-weight: 400;
+    text-decoration: none;
 }
 
 .post-id-category{
@@ -185,6 +187,8 @@
     display: flex;
     flex-flow: row nowrap;
     gap: 10px;
+    text-decoration: none;
+    color: black;
 
 }
 

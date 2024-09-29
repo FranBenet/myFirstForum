@@ -102,14 +102,14 @@
     {{if .Metadata.Success}}
     <div class="background-informative-message">
         <div class="informative-message">
-            <h4 class="success-text"> INFORMATIVE MESSAGE!</h4>
+            <h4 class="success-text"> SUCCESS!</h4>
                 <h4 class="success-text" style="color:green;">{{.Metadata.Success}}</h4>
         </div>
     </div>
     {{else if .Metadata.Error}}
     <div class="background-informative-message">
         <div class="informative-message">
-            <h4 class="success-text"> INFORMATIVE MESSAGE!</h4>
+            <h4 class="success-text" > ERROR!</h4>
                 <h4 class="error-text" style="color:red;">{{.Metadata.Error}}</h4>
         </div>
     </div>

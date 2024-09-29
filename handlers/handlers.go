@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -23,10 +24,10 @@ func NewHandler(db *sql.DB) *Handler {
 
 // To handle "/".
 func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
-	log.Println("You are in the Homepage Handler")
+	log.Println("Requested: Homepage Handler")
 
 	if r.URL.Path != "/" {
-		log.Println("Error. Path / Not Allowed.")
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
 		http.Error(w, "Page Not Found", http.StatusNotFound)
 		return
 	}
@@ -37,28 +38,10 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//	Get userID that is making the request
+	//	Get userID from the context request. If 0 > user is not logged in.
 	userID := r.Context().Value(models.UserIDKey).(int)
 
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-	//	Get cookie from request
-	// var userID int
-	// sessionToken, err := r.Cookie("session_token")
-	// if err != nil {
-	// 	userID = 0
-	// 	log.Println("Error getting cookie:", err)
-	// } else {
-	// 	//	Get session UUID from the cookie
-	// 	sessionUUID := sessionToken.Value
-	// 	log.Println("Session UUID is:", sessionUUID)
-	// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 	}
-	// }
-
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-	//	Get the page number requested if not set the page number to 1.
+	//	Get the number of page requested from the query parameters of the URL.
 	requestedPage, err := helpers.GetQueryPage(r)
 	if err != nil {
 		log.Println("No Page Required:", err)
@@ -71,9 +54,13 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	data, err := helpers.MainPageData(h.db, userID, requestedPage)
 	if err != nil {
 		log.Println("Error getting data", err)
+
+		http.Redirect(w, r, "/404", http.StatusFound)
+
+		return
 	}
 
-	//	Get messages from the query parameters
+	//	Get error/successful messages from the query parameters
 	errorMessage, successMessage, err := helpers.GetQueryMessages(r)
 	if err != nil {
 		log.Println("Error getting Messages: ", err)
@@ -83,15 +70,13 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	data.Metadata.Error = errorMessage
 	data.Metadata.Success = successMessage
 
-	fmt.Println("Logged In status: ", data.Metadata.LoggedIn)
-
+	//	Rendering tempaltes and sending Response.
 	helpers.RenderTemplate(w, "home", data)
-
 }
 
 // To handle "/post/{id}"
 func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
-	log.Println("You are in the GetPost Handler")
+	log.Println("Requested: GetPost Handler")
 
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
@@ -99,28 +84,8 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//	Get userID that is making the request
+	//	Get userID from the context request. If 0 > user is not logged in.
 	userID := r.Context().Value(models.UserIDKey).(int)
-
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-	//	Get cookie from request
-	// var userID int
-
-	// sessionToken, err := r.Cookie("session_token")
-	// if err != nil {
-	// 	userID = 0
-	// 	log.Println(err)
-	// } else {
-	// 	//	Get the value of the session from the cookie
-	// 	sessionUUID := sessionToken.Value
-	// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-	// 	if err != nil {
-	// 		userID = 0
-	// 		log.Println(err)
-	// 	}
-	// }
-
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST END----------------------------------------------------------------------------------------
 
 	path := r.URL.Path
 	pathDivide := strings.Split(path, "/")
@@ -129,17 +94,26 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 		postId, err := strconv.Atoi(pathDivide[2])
 		if err != nil {
-			http.Error(w, "ID for the post is not a number", http.StatusBadRequest)
+			log.Println("ID for the post is not a number. ", err)
+
+			//	This function includes a query parameter in the URL with an error/success to be printed on screen
+			finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "ID for the post is not a number")
+
+			log.Printf("Redirecting to: %s", finalURL)
+
+			http.Redirect(w, r, finalURL, http.StatusFound)
+			return
+
 		}
 
 		data, err := helpers.PostPageData(h.db, postId, userID)
 		if err != nil {
 			log.Println(err)
-			finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "Page not available.")
+			finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "Post does not exist.")
 			http.Redirect(w, r, finalURL, http.StatusFound)
 		}
-		log.Println("COMMENTS:", data.Comments)
-		//	Get messages from the query parameters
+
+		//	Get error/successful messages from the query parameters
 		errorMessage, successMessage, err := helpers.GetQueryMessages(r)
 		if err != nil {
 			log.Println("Error getting Messages: ", err)
@@ -149,57 +123,39 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		data.Metadata.Error = errorMessage
 		data.Metadata.Success = successMessage
 
-		fmt.Println("Logged In status: ", data.Metadata.LoggedIn)
-
 		helpers.RenderTemplate(w, "post-id", data)
 		return
+
 	} else {
-		log.Println("Post ID")
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
-		return
+		log.Println("Path Not Allowed.")
+
+		//	This function includes a query parameter in the URL with an error/success to be printed on screen
+		finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "Path does not exist.")
+
+		log.Printf("Redirecting to: %s", finalURL)
+
+		http.Redirect(w, r, finalURL, http.StatusFound)
 	}
 
 }
 
 // To handle "/post/create"
-
 func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
-	log.Println("You are in the NewPost Handler")
+	log.Println("Requested: NewPost Handler")
+
 	if r.URL.Path != "/post/create" {
-		log.Println("Post Create")
 		log.Println("Error. Path Not Allowed.")
 		http.Error(w, "Page Not Found", http.StatusNotFound)
 		return
 	}
 
-	//	Get userID that is making the request
+	//	Get userID from the context request. If 0 > user is not logged in.
 	userID := r.Context().Value(models.UserIDKey).(int)
 
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-	//	Get cookie from request
-	// var userID int
-	// sessionToken, err := r.Cookie("session_token")
-
-	// if err != nil {
-	// 	userID = 0
-	// 	log.Println("Error Getting cookie:", err)
-	// } else {
-	// 	//	Get session UUID from the cookie
-	// 	sessionUUID := sessionToken.Value
-	// 	fmt.Println("session:", sessionUUID)
-	// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-	// 	if err != nil {
-	// 		userID = 0
-	// 		log.Println("Error, validating session:", err)
-
-	// 	}
-	// }
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-
-	//	Check IS USER LOGGED IN?
 	if userID == 0 {
+
 		http.Redirect(w, r, "/#registerModal", http.StatusForbidden)
+
 	} else {
 		switch r.Method {
 		case http.MethodGet:
@@ -207,9 +163,17 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 			data, err := helpers.CreatePostData(h.db, userID)
 			if err != nil {
 				log.Println(err)
+
+				//	This function includes a query parameter in the URL with an error/success to be printed on screen
+				finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "Ups! Something happened! \n Please, try again later.")
+
+				log.Printf("Redirecting to: %s", finalURL)
+
+				http.Redirect(w, r, finalURL, http.StatusFound)
+				return
 			}
 
-			//	Get messages from the query parameters to embedd in the data and print on screen
+			//	Get error/successful messages from the query parameters
 			errorMessage, successMessage, err := helpers.GetQueryMessages(r)
 			if err != nil {
 				log.Println("Error getting Messages: ", err)
@@ -240,7 +204,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 				referer := r.Referer()
 
 				//	This function includes a query parameter in the URL with an error/success to be printed on screen
-				finalURL := helpers.AddQueryMessage(referer, "error", "Error saving post. Try again later!")
+				finalURL := helpers.AddQueryMessage(referer, "error", "Error saving post. Try again later.")
 
 				log.Printf("Redirecting to: %s", finalURL)
 
@@ -254,14 +218,11 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 			var postCategories []string
 			categories = append(categories, r.FormValue("category1"), r.FormValue("category2"), r.FormValue("category3"))
 
-			log.Println("Categories: ", categories)
 			for _, category := range categories {
 				if category != "" {
 					postCategories = append(postCategories, strings.TrimSpace(category))
 				}
 			}
-
-			log.Println("Final Categories: ", postCategories)
 
 			err = dbaser.AddPostCategories(h.db, postCategories, postID)
 			if err != nil {
@@ -296,36 +257,16 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
-	log.Println("You are in the Reaction Handler")
+	log.Println("Requested: Reaction Handler")
+
 	if r.URL.Path != "/reaction" {
-		log.Println("Post Create")
 		log.Println("Error. Path Not Allowed.")
 		http.Error(w, "Page Not Found", http.StatusNotFound)
 		return
 	}
 
-	//	Get userID that is making the request
+	//	Get userID from the context request. If 0 > user is not logged in.
 	userID := r.Context().Value(models.UserIDKey).(int)
-
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-	//	Get cookie from request
-	// var userID int
-	// sessionToken, err := r.Cookie("session_token")
-	// if err != nil {
-	// 	userID = 0
-	// 	log.Println("Error Getting cookie:", err)
-	// } else {
-	// 	//	Get the value of the session from the cookie
-	// 	sessionUUID := sessionToken.Value
-	// 	fmt.Println("session:", sessionUUID)
-	// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-	// 	if err != nil {
-	// 		userID = 0
-	// 		log.Println("Error, validating session:", err)
-
-	// 	}
-	// }
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
 	//	Check the request comes from a logged-in user or not and act in consequence
 	if userID == 0 {
@@ -334,7 +275,7 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 		finalURL := helpers.AddQueryMessage(referer, "error", "Need to be logged in for that action")
 
 		http.Redirect(w, r, finalURL+"#loginModal", http.StatusFound)
-		// http.Redirect(w, r, finalURL, http.StatusForbidden)
+
 		return
 
 	} else {
@@ -347,9 +288,18 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 			id := r.FormValue("post_Id")
 
 			if id != "" {
+				log.Println("User reacted to a Post. Id = ", id)
 				postID, err := strconv.Atoi(id)
 				if err != nil {
 					log.Println(err)
+
+					referer := r.Referer()
+
+					finalURL := helpers.AddQueryMessage(referer, "error", "Ups! Something happened. Try again later.")
+
+					http.Redirect(w, r, finalURL, http.StatusFound)
+
+					return
 				}
 
 				// Get the reactionType based on which button was clicked
@@ -368,13 +318,21 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 			//	Get Comment ID
 			id = r.FormValue("comment_Id")
-			log.Println("User reacted to a comment.")
-			log.Println("The comment ID is: ", id)
+
 			if id != "" {
-				log.Println("The comment ID is: ", id)
+				log.Println("User reacted to a Comment. Id = ", id)
+
 				commentID, err := strconv.Atoi(id)
 				if err != nil {
 					log.Println(err)
+
+					referer := r.Referer()
+
+					finalURL := helpers.AddQueryMessage(referer, "error", "Ups! Something happened. Try again later.")
+
+					http.Redirect(w, r, finalURL, http.StatusFound)
+
+					return
 				}
 
 				// Get the reactionType based on which button was clicked
@@ -383,15 +341,14 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 				var reaction bool
 				switch form_reaction {
 				case "like":
-					log.Println("The comment was LIKED")
 					reaction = true
 				case "dislike":
-					log.Println("The comment was DISLIKED")
 					reaction = false
 				}
 				newReaction := models.CommentReaction{CommentId: commentID, UserId: userID, Liked: reaction}
 				dbaser.AddCommentReaction(h.db, newReaction)
 			}
+
 			//	Get the page where user requested to log in.
 			referer := r.Referer()
 
@@ -399,6 +356,7 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 			// Redirect to the referer with the error included in the query.
 			http.Redirect(w, r, finalURL, http.StatusFound)
+
 		default:
 			w.Header().Set("Allow", "GET, POST")
 			http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
@@ -408,41 +366,22 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
-	log.Println("You are in the NewComment Handler")
+	log.Println("Requested: NewComment Handler")
+
 	if r.URL.Path != "/post/comment" {
-		log.Println("Post Create")
 		log.Println("Error. Path Not Allowed.")
 		http.Error(w, "Page Not Found", http.StatusNotFound)
 		return
 	}
 
-	//	Get userID that is making the request
+	// Get userID from the context request. If 0 > user is not logged in.
 	userID := r.Context().Value(models.UserIDKey).(int)
-
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-	//	Get cookie from request
-	// var userID int
-	// sessionToken, err := r.Cookie("session_token")
-
-	// if err != nil {
-	// 	userID = 0
-	// 	log.Println("Error Getting cookie:", err)
-	// } else {
-	// 	//	Get session UUID from the cookie
-	// 	sessionUUID := sessionToken.Value
-	// 	fmt.Println("session:", sessionUUID)
-	// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-	// 	if err != nil {
-	// 		userID = 0
-	// 		log.Println("Error, validating session:", err)
-
-	// 	}
-	// }
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
 
 	//	Check IS USER LOGGED IN?
 	if userID == 0 {
+
 		http.Redirect(w, r, "/#registerModal", http.StatusForbidden)
+
 	} else {
 		switch r.Method {
 		case http.MethodPost:
@@ -455,9 +394,11 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 
 			// Get the postID from the hidden input
 			id := r.FormValue("post_Id")
+
 			postID, err := strconv.Atoi(id)
 			if err != nil {
 				log.Println(err)
+
 				//	This function includes a query parameter in the URL with an error/success to be printed on screen
 				finalURL := helpers.AddQueryMessage(referer, "error", "Error saving comment. Try again later!")
 
@@ -485,7 +426,7 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			finalURL := helpers.AddQueryMessage(referer, "success", "Post created succesfully!")
+			finalURL := helpers.AddQueryMessage(referer, "success", "Comment created succesfully!")
 
 			log.Printf("Redirecting to: %s", finalURL)
 
@@ -499,3 +440,55 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 
 	}
 }
+
+// To handle "/".
+func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
+	log.Println("Requested: NotFound Handler")
+
+	if r.URL.Path != "/404" {
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Error(w, "Page Not Found", http.StatusNotFound)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("web/templates/404.html")
+	if err != nil {
+		fmt.Printf("Error Parsing Template: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	err = tmpl.ExecuteTemplate(w, "404.html", nil)
+	if err != nil {
+		fmt.Printf("Error Executing Template: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+}
+
+// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
+//	Get cookie from request
+// var userID int
+// sessionToken, err := r.Cookie("session_token")
+// if err != nil {
+// 	userID = 0
+// 	log.Println("Error getting cookie:", err)
+// } else {
+// 	//	Get session UUID from the cookie
+// 	sessionUUID := sessionToken.Value
+// 	log.Println("Session UUID is:", sessionUUID)
+// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// }
+
+// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------

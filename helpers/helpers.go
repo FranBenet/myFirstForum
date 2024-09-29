@@ -10,6 +10,7 @@ import (
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
+// Set of functions used within the html templates.
 var funcMap = template.FuncMap{
 	"sub": func(a, b int) int {
 		return a - b
@@ -41,11 +42,11 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 	//	Adding to the Templates the needed html page to be sent for each specific page request.
 	htmlTemplates = append(htmlTemplates, "web/templates/"+name+".html")
 
+	//	funcMap is a set of functions that are embedd in the htmls to be used within html.
 	tmpl := template.Must(template.New("base.html").Funcs(funcMap).ParseFiles(htmlTemplates...))
 
 	err := tmpl.ExecuteTemplate(w, "base.html", data)
 	if err != nil {
-		log.Println("ERROR EXECUTING TEMPLATES")
 		log.Printf("Error Executing Template: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

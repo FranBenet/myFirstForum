@@ -1,0 +1,67 @@
+:root {
+    --primary-color: #3c2532;
+    --primary-color-op: #3c253221;
+    --secondary-color: #ffffff;
+    --third-color: #f7f0de;
+    --typography-family: "Ubuntu", sans-serif;
+    --typography-large: 26px;
+    --typography-medium: 16px;
+}
+
+.background-informative-message{
+    display: block;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* animation: fadeOut 2s forwards; */
+    
+    
+  }
+  
+  .informative-message{
+    position: fixed;
+    z-index: 1;
+    background-color: var(--secondary-color);
+    box-shadow: 2px 2px 10px 1px var(--primary-color-op);
+    border: 1px solid #888;
+    border-radius: 30px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    margin: 15% auto; /* Center the modal */
+    width: 500px;
+    height: 360px;
+    padding: 30px;
+    gap: 10px;
+  
+    /* animation: fadeOut 2s forwards; */
+  }
+  .img-logo {
+    width: 150px;
+    height: 150px;
+    border-radius: 75px;
+    margin-bottom: 20px;
+}
+  .home-link{
+    color: #3c2532;
+    text-decoration: underline;
+    margin-top: 10px;
+  }
+  .text-title{
+    margin: 0px;
+    font-size: 20px;
+    color:red;
+
+  }
+  .text-content{
+    margin: 0px;
+     font-size: 16px;
+
+  }

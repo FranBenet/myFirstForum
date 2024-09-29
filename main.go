@@ -56,6 +56,7 @@ func routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/search", handler.Search)
 	mux.HandleFunc("/filter", handler.Filter)
 	mux.HandleFunc("/user/", handler.Profile)
+	mux.HandleFunc("/404", handler.NotFound)
 
 	// mux.HandleFunc("/profile", handler.Profile)
 	mux.HandleFunc("/profile/edit", handler.Profile)

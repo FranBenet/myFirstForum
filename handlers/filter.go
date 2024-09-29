@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
-	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/middleware"
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
 
 // To handle "/search"
 func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
+	log.Println("Requested: Search Handler")
+
 	if r.URL.Path != "/search" {
 		log.Println("Seach")
 		log.Println("Error. Path Not Allowed.")
@@ -24,34 +28,17 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//	Get userID that is making the request
-	// userID := r.Context().Value(models.UserIDKey).(int)
+	// Get userID from the context request. If 0 > user is not logged in.
+	userID := r.Context().Value(models.UserIDKey).(int)
 
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-	//	Get cookie from request
-	var userID int
-	fmt.Println(userID)
-	sessionToken, err := r.Cookie("session_token")
-
+	//	Get the page number requested if not set the page number to 1.
+	requestedPage, err := helpers.GetQueryPage(r)
 	if err != nil {
-		userID = 0
-		log.Println("Error Getting cookie:", err)
-	} else {
-		//	Get session UUID from the cookie
-		sessionUUID := sessionToken.Value
-		fmt.Println("session:", sessionUUID)
-		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-		if err != nil {
-			userID = 0
-			log.Println("Error, validating session:", err)
-
-		}
+		log.Println("No Page Required:", err)
+		requestedPage = 1
 	}
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-
-	//	Get the page where user send the request from.
-	// referer := r.Referer()
-
+	fmt.Println(requestedPage)
+	fmt.Println(userID)
 	// Parse form values
 	r.ParseForm()
 	// content := r.FormValue("new-comment")
@@ -65,7 +52,8 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 
 // To handle "/filter"
 func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
-	log.Println("You are in the Filter Handler")
+	log.Println("Requested: Filter Handler")
+
 	if r.URL.Path != "/filter" {
 		log.Println("Filter")
 		log.Println("Error. Path Not Allowed.")
@@ -79,29 +67,8 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//	Get userID that is making the request
-	// userID := r.Context().Value(models.UserIDKey).(int)
-
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-	//	Get cookie from request
-	var userID int
-	fmt.Println(userID)
-	sessionToken, err := r.Cookie("session_token")
-
-	if err != nil {
-		userID = 0
-		log.Println("Error Getting cookie:", err)
-	} else {
-		//	Get session UUID from the cookie
-		sessionUUID := sessionToken.Value
-		fmt.Println("session:", sessionUUID)
-		userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-		if err != nil {
-			userID = 0
-			log.Println("Error, validating session:", err)
-		}
-	}
-	// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
+	// Get userID from the context request. If 0 > user is not logged in.
+	userID := r.Context().Value(models.UserIDKey).(int)
 
 	//	Get the page number requested if not set the page number to 1.
 	requestedPage, err := helpers.GetQueryPage(r)
@@ -122,72 +89,97 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if filterSort == "" && filterCategory == "" {
-		log.Println("No Filters on the URL")
+		log.Println("No Filter Applied")
+
 		referer := r.Referer()
 
-		finalURL := helpers.AddQueryMessage(referer, "error", "Filters not available")
+		finalURL := helpers.AddQueryMessage(referer, "error", "No filters applied")
 
 		log.Printf("Redirecting to: %s", finalURL)
+
 		http.Redirect(w, r, "finalURL", http.StatusFound)
 		return
 
 	} else if filterCategory != "" && filterSort == "" {
-		log.Println("Category Filter in the URL")
+		log.Println("UserID:", userID, "Requested Filter by: ", filterCategory, "Page number: ", requestedPage)
 
-		// categoryId, err := strconv.Atoi(filterCategory)
-		// if err != nil {
-		// 	log.Println("Category does not exist")
-		// 	referer := r.Referer()
+		categoryId, err := strconv.Atoi(filterCategory)
+		if err != nil {
+			log.Println("Category requested does not exist")
 
-		// 	finalURL := helpers.AddQueryMessage(referer, "error", "This category does not exist")
+			referer := r.Referer()
 
-		// 	log.Printf("Redirecting to: %s", finalURL)
-		// 	http.Redirect(w, r, finalURL, http.StatusFound)
-		// 	return
-		// }
+			finalURL := helpers.AddQueryMessage(referer, "error", "This category does not exist")
 
-		//	Get data according to the page requested.
+			log.Printf("Redirecting to: %s", finalURL)
+
+			http.Redirect(w, r, finalURL, http.StatusFound)
+
+			return
+		}
+
+		fmt.Println(categoryId)
+
+		// Get data according to the page requested.
 		// data, err := helpers.CollectCategoryData(h.db, userID, requestedPage, categoryId)
 		// if err != nil {
 		// 	log.Println("Error getting category data", err)
 		// }
 
-		// fmt.Println("Logged In status: ", data.Metadata.LoggedIn)
-
 		// helpers.RenderTemplate(w, "home", data)
 
 	} else if filterSort != "" && filterCategory == "" {
-		log.Println("Sort Filter in the URL")
+		log.Println("UserID:", userID, "Requested Filter by: ", filterSort, "Page number: ", requestedPage)
 
 		switch filterSort {
 		case "likes":
 			// data, err := helpers.CollectLikesData(h.db, userID, requestedPage, filterSort)
+			// helpers.RenderTemplate(w, "home", data)
 		case "dislikes":
 			// data, err := helpers.CollectDislikesData(h.db, userID, requestedPage, filterSort)
+			// helpers.RenderTemplate(w, "home", data)
 		case "mostrecent":
 			// data, err := helpers.CollectMostRecentData(h.db, userID, requestedPage, filterSort)
+			// helpers.RenderTemplate(w, "home", data)
 		default:
 		}
 
 	} else {
+		log.Println("UserID:", userID, "Requested too many filters.")
+
+		referer := r.Referer()
+
+		finalURL := helpers.AddQueryMessage(referer, "error", "Too many filters applied")
+
+		log.Printf("Redirecting to: %s", finalURL)
+
+		http.Redirect(w, r, "finalURL", http.StatusFound)
+
+		return
 	}
 }
 
 // To handle "/users/{username}/profile"
-// func (h *Handler)UsersPost(w http.ResponseWriter, r *http.Request) {
-// 	if r.URL.Path != "/users/{username}/profile" {
-// 		log.Println("Users Post")
-// 		log.Println("Error. Path Not Allowed.")
-// 		http.Error(w, "Page Not Found", http.StatusNotFound)
-// 		return
-// 	}
+func (h *Handler) UsersPost(w http.ResponseWriter, r *http.Request) {
+	log.Println("Requested: UsersPost Handler")
 
-// 	if r.Method != http.MethodGet {
-// 		w.Header().Set("Allow", http.MethodGet)
-// 		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
-// 		return
-// 	}
+	if r.URL.Path != "/users/" {
+		log.Println("Error. Path Not Allowed.")
+		http.Error(w, "Page Not Found", http.StatusNotFound)
+		return
+	}
 
-// 	data := helpers.GetData()
-// 	helpers.RenderTemplate(w, "", data)
-// }
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	path := r.URL.Path
+	pathDivide := strings.Split(path, "/")
+	user := pathDivide[3]
+
+	fmt.Println(user)
+	// data := helpers.GetData()
+	// helpers.RenderTemplate(w, "", data)
+}

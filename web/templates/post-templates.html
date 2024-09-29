@@ -1,7 +1,7 @@
 {{define "post-overview"}}
     <div class="post-section">
         <section class="header-container">
-            <a href="/user/{{.User.Id}}" class="post-username">{{.User.Name}}</a>
+            <a href="/user/{{.User.Name}}" class="post-username">{{.User.Name}}</a>
             <div class="post-category-container">
                 {{range .Categories}}
                     <a href="/filter?category={{.Id}}" class="post-category">{{.Name}}</a>
@@ -69,7 +69,7 @@
     
     <div class="post-id-container">
         <section class="post-id-header">
-            <a href="/user/{.Post.User.Id}" class="post-id-user-info">
+            <a href="/user/{{.Post.User.Name}}" class="post-id-user-info">
                 <div class="user-info-image">
                     <img src="{{.Post.User.Avatar}}" alt="Profile Img" class="image-avatar">
                 </div>
@@ -138,15 +138,15 @@
 {{ define "comment"}}
     <div class="comment-id">
         <section class="comment-id-header">
-            <div class="comment-id-user-info">
+            <a href="/user/{{.User.Name}}" class="comment-id-user-info">
                 <div class="user-info-image">
                     <img src="{{.User.Avatar}}" alt="Profile Img" class="image-avatar">
                 </div>
-                <div class="user-info-text">
+                <div class= "user-info-text" >
                     <p class="info-username">{{.User.Name}}</p>
-                    <p class="info-date">Created on <time datetime="{{.Comment.Created}}">{{.Comment.Created}}</time></p>
+                    <p class="data-info">Created on <time datetime="{{.Comment.Created}}">{{.Comment.Date}}</time></p>
                 </div>
-            </div>
+            </a>
         </section>
         <section class="comment-id-content">
             <p class="comment-id-description">{{.Comment.Content}}</p>
