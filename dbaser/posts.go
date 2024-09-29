@@ -142,7 +142,7 @@ func AddPost(db *sql.DB, post models.Post) (int, error) {
 // Posts ranked by most likes.
 func TrendingPosts(db *sql.DB, n int) ([]models.Post, error) {
 	var result []models.Post
-	row, err := db.Query("select posts.*, count(*) as num from posts join post_reactions on posts.id=post_id where liked=? gproup by post_id order by num desc limit ?", 1, n)
+	row, err := db.Query("select posts.*, count(*) as num from posts join post_reactions on posts.id=post_id where liked=? group by post_id order by num desc limit ?", 1, n)
 	if err == sql.ErrNoRows {
 		return result, nil
 	} else if err != nil {
