@@ -33,7 +33,6 @@ func Posts(db *sql.DB) ([]models.Post, error) {
 	return result, nil
 }
 
-// Posts created by a specific user.
 func PostsByUser(db *sql.DB, userId int) ([]models.Post, error) {
 	var result []models.Post
 	row, err := db.Query("select * from posts where user_id=? order by created desc", userId)
@@ -93,36 +92,9 @@ func UserLikedPosts(db *sql.DB, userId int) ([]models.Post, error) {
 	return result, nil
 }
 
-// Posts for the main page. We've decided to display 5 posts at a time and include pagination in the footer.
-func MainPagePosts(db *sql.DB, page int) ([]models.Post, error) {
-	var result []models.Post
-	offset := (page - 1) * 5
-	row, err := db.Query("select * from posts order by created desc limit 5 offset ?", offset)
-	if err != nil {
-		return []models.Post{}, err
-	}
-	for row.Next() {
-		var created string
-		var post models.Post
-		err := row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &created)
-		timeCreated, err := time.Parse(time.RFC3339, created)
-		if err != nil {
-			log.Fatal("Error parsing post creation time")
-		}
-		post.Created = timeCreated
-		result = append(result, post)
-	}
-	err = row.Err()
-	if err != nil {
-		return []models.Post{}, err
-	}
-	return result, nil
-}
-
 func PostsByCategory(db *sql.DB, category models.Category, page int) ([]models.Post, error) {
 	var result []models.Post
-	offset := (page - 1) * 5
-	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc limit 5 offset ?", category.Id, offset)
+	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category.Id)
 	if err == sql.ErrNoRows {
 		return result, nil
 	} else if err != nil {
@@ -190,7 +162,6 @@ func TrendingPosts(db *sql.DB, n int) ([]models.Post, error) {
 	return result, nil
 }
 
-// Retrieve a specific post by its ID.
 func PostById(db *sql.DB, postId int) (models.Post, error) {
 	var result models.Post
 	row := db.QueryRow("select * from posts where id=?", postId)
