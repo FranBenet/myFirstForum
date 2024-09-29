@@ -395,9 +395,9 @@ func NumberOfPages(nPosts int) int {
 	var quot, rest int
 	quot = nPosts / 5
 	rest = nPosts % 5
-	if quot == 0 || (quot == 1 && rest == 0) {
-		return 0
-	}
+	// if quot == 0 || (quot == 1 && rest == 0) {
+	// 	return 0
+	// }
 	if rest != 0 {
 		quot++
 	}
