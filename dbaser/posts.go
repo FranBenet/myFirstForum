@@ -34,10 +34,9 @@ func Posts(db *sql.DB) ([]models.Post, error) {
 }
 
 // Posts created by a specific user.
-func PostsByUser(db *sql.DB, userId, page int) ([]models.Post, error) {
+func PostsByUser(db *sql.DB, userId int) ([]models.Post, error) {
 	var result []models.Post
-	offset := (page - 1) * 5
-	row, err := db.Query("select * from posts where user_id=? order by created desc limit 5 offset ?", userId, offset)
+	row, err := db.Query("select * from posts where user_id=? order by created desc", userId)
 	if err == sql.ErrNoRows {
 		return result, nil
 	} else if err != nil {
@@ -65,10 +64,9 @@ func PostsByUser(db *sql.DB, userId, page int) ([]models.Post, error) {
 }
 
 // All the posts liked by a specific user.
-func UserLikedPosts(db *sql.DB, userId, page int) ([]models.Post, error) {
+func UserLikedPosts(db *sql.DB, userId int) ([]models.Post, error) {
 	var result []models.Post
-	offset := (page - 1) * 5
-	row, err := db.Query("select posts.* from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.id=? and liked=? order by created desc limit 5 offset ?", userId, 1, offset)
+	row, err := db.Query("select posts.* from posts join post_reactions on posts.id=post_id join users on post_reactions.user_id=users.id where users.id=? and liked=? order by created desc", userId, 1)
 	if err == sql.ErrNoRows {
 		return result, nil
 	} else if err != nil {

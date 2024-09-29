@@ -288,9 +288,51 @@ func PostPageData(db *sql.DB, postId, sessionUser int) (models.PostPage, error) 
 	return postData, nil
 }
 
-func MyPostsPageData(db *sql.DB, authorId, sessionUser, page int) (models.MainPage, error) {
+func MyPostsPageData(db *sql.DB, userId, sessionUser, page int) (models.MainPage, error) {
 	var mainData models.MainPage
-	posts, err := dbaser.PostsByUser(db, authorId, page)
+	posts, err := dbaser.PostsByUser(db, userId)
+	if err != nil {
+		log.Print(err)
+		mainData.Metadata.Error = err.Error()
+		return mainData, err
+	}
+	pagination := NumberOfPages(len(posts))
+	start, end := PostSlice(len(posts), page)
+	posts = posts[start:end]
+	var postData []models.PostData
+	for _, p := range posts {
+		data, err := GetPostData(db, p, sessionUser)
+		if err != nil {
+			mainData.Metadata.Error = err.Error()
+			return mainData, err
+		}
+		postData = append(postData, data)
+	}
+	categories, err := dbaser.Categories(db)
+	if err != nil {
+		mainData.Metadata.Error = err.Error()
+		return mainData, err
+	}
+	if sessionUser > 0 {
+		mainData.Metadata.LoggedIn = true
+		userData, err := dbaser.UserById(db, sessionUser)
+		if err != nil {
+			mainData.Metadata.Error = err.Error()
+			return mainData, err
+		}
+		user := models.User{Avatar: userData.Avatar}
+		mainData.User = user
+	}
+	pageData := models.Pagination{CurrentPage: page, TotalPages: pagination}
+	mainData.Categories = categories
+	mainData.Posts = postData
+	mainData.Pagination = pageData
+	return mainData, nil
+}
+
+func MyLikedPostsPageData(db *sql.DB, userId, sessionUser, page int) (models.MainPage, error) {
+	var mainData models.MainPage
+	posts, err := dbaser.UserLikedPosts(db, userId)
 	if err != nil {
 		log.Print(err)
 		mainData.Metadata.Error = err.Error()
