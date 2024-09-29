@@ -2,6 +2,9 @@
         <section class="posts-section">
             {{ template "breadcrumbs".}}
             {{template "main-gallery" .}}
-            {{template "pagination-likedposts" .Pagination}}
+            {{if gt .Pagination.TotalPages 1}}
+                {{template "pagination-likedposts" .Pagination}}
+            {{end}}
         </section>
+
 {{end}}

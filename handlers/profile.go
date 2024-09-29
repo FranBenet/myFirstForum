@@ -102,8 +102,6 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println("Error getting user's posts: ", err)
 
-			data.Metadata.Error = "Sorry, we couldn't get your posts. Try again later!"
-
 			referer := r.Referer()
 
 			finalURL := helpers.AddQueryMessage(referer, "error", "Sorry, we couldn't get your posts. Try again later!")
@@ -112,10 +110,8 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 
 			http.Redirect(w, r, finalURL, http.StatusFound)
 		}
-		log.Println("Data collected succesfully")
-		log.Println("CurrentPage", data.Pagination.CurrentPage)
-		log.Println("Total PAges: ", data.Pagination.TotalPages)
-		data.Pagination.TotalPages = 0
+
+		log.Println("Liked Posts collected succesfully")
 
 		helpers.RenderTemplate(w, "liked", data)
 	}
@@ -159,20 +155,22 @@ func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		// data, err := helpers.SomeFunction(h.db, userID, requestedPage)
-		// if err != nil {
-		// 	log.Println("Error getting user's posts: ", err)
+		data, err := helpers.MyPostsPageData(h.db, userID, requestedPage)
+		log.Println("Posts to display", len(data.Posts))
+		if err != nil {
+			log.Println("Error getting user's posts: ", err)
 
-		// 	data.Metadata.Error = "Sorry, we couldn't get your posts. Try again later!"
-		// 	referer := r.Referer()
+			referer := r.Referer()
 
-		// 	finalURL := helpers.AddQueryMessage(referer, "error", "Sorry, we couldn't get your posts. Try again later!")
+			finalURL := helpers.AddQueryMessage(referer, "error", "Sorry, we couldn't get your posts. Try again later!")
 
-		// 	log.Printf("Redirecting to: %s", finalURL)
+			log.Printf("Redirecting to: %s", finalURL)
 
-		// 	http.Redirect(w, r, finalURL, http.StatusFound)
-		// }
-		// log.Println(data)
-		// helpers.RenderTemplate(w, "myPosts", data)
+			http.Redirect(w, r, finalURL, http.StatusFound)
+		}
+
+		log.Printf("Posts for user: %v collected succesfully", userID)
+
+		helpers.RenderTemplate(w, "myPosts", data)
 	}
 }

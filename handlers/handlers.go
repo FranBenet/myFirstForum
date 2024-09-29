@@ -223,7 +223,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 					postCategories = append(postCategories, strings.TrimSpace(category))
 				}
 			}
-
+			log.Println("Categories for this post", postCategories)
 			err = dbaser.AddPostCategories(h.db, postCategories, postID)
 			if err != nil {
 				//	Get the page where user send the request from.

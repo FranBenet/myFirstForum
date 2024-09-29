@@ -421,6 +421,13 @@ func CreatePostData(db *sql.DB, userId int) (models.MainPage, error) {
 	}
 	if userId > 0 {
 		createPostData.Metadata.LoggedIn = true
+		userData, err := dbaser.UserById(db, userId)
+		if err != nil {
+			createPostData.Metadata.Error = err.Error()
+			return createPostData, err
+		}
+		user := models.User{Avatar: userData.Avatar}
+		createPostData.User = user
 	}
 	createPostData.Categories = categories
 	return createPostData, nil
