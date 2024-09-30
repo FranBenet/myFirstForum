@@ -3,6 +3,7 @@ package dbaser
 import (
 	"database/sql"
 	"log"
+	"strings"
 	"time"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
@@ -185,4 +186,23 @@ func NumberOfPosts(db *sql.DB) (int, error) {
 		return 0, err
 	}
 	return num, nil
+}
+
+func Search(db *sql.DB, query string) ([]models.Post, error) {
+	var result []models.Post
+	if query == "" {
+		return result, nil
+	}
+	posts, err := Posts(db)
+	if err != nil {
+		return result, err
+	}
+	for _, post := range posts {
+		title := strings.ToLower(post.Title)
+		content := strings.ToLower(post.Content)
+		if strings.Contains(title, query) || strings.Contains(content, query) {
+			result = append(result, post)
+		}
+	}
+	return result, nil
 }
