@@ -16,7 +16,6 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: Search Handler")
 
 	if r.URL.Path != "/search" {
-		log.Println("Seach")
 		log.Println("Error. Path Not Allowed.")
 		http.Error(w, "Page Not Found", http.StatusNotFound)
 		return
@@ -34,7 +33,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 	//	Get the page number requested if not set the page number to 1.
 	requestedPage, err := helpers.GetQueryPage(r)
 	if err != nil {
-		log.Println("No Page Required:", err)
+		log.Println("Page is not available or specified")
 		requestedPage = 1
 	}
 	fmt.Println(requestedPage)

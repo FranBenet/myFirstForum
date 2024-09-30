@@ -34,6 +34,7 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 			data, err := helpers.ProfilePageData(h.db, userID)
+
 			if err != nil {
 
 				log.Println(err)

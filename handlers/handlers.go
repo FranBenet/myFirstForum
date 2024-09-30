@@ -22,7 +22,6 @@ func NewHandler(db *sql.DB) *Handler {
 	return &Handler{db: db}
 }
 
-// To handle "/".
 func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: Homepage Handler")
 
@@ -44,7 +43,7 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	//	Get the number of page requested from the query parameters of the URL.
 	requestedPage, err := helpers.GetQueryPage(r)
 	if err != nil {
-		log.Println("No Page Required:", err)
+		log.Println("Page is not available or specified")
 		requestedPage = 1
 	}
 
@@ -74,7 +73,6 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	helpers.RenderTemplate(w, "home", data)
 }
 
-// To handle "/post/{id}"
 func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: GetPost Handler")
 
@@ -136,10 +134,8 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, finalURL, http.StatusFound)
 	}
-
 }
 
-// To handle "/post/create"
 func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: NewPost Handler")
 
@@ -358,7 +354,7 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, finalURL, http.StatusFound)
 
 		default:
-			w.Header().Set("Allow", "GET, POST")
+			w.Header().Set("Allow", "POST")
 			http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
 			return
 		}
@@ -433,7 +429,7 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, finalURL, http.StatusFound)
 
 		default:
-			w.Header().Set("Allow", "GET, POST")
+			w.Header().Set("Allow", "POST")
 			http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
 			return
 		}
@@ -441,7 +437,6 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// To handle "/".
 func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: NotFound Handler")
 
@@ -471,24 +466,4 @@ func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
 }
-
-// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
-//	Get cookie from request
-// var userID int
-// sessionToken, err := r.Cookie("session_token")
-// if err != nil {
-// 	userID = 0
-// 	log.Println("Error getting cookie:", err)
-// } else {
-// 	//	Get session UUID from the cookie
-// 	sessionUUID := sessionToken.Value
-// 	log.Println("Session UUID is:", sessionUUID)
-// 	userID, err = middleware.IsUserLoggedIn(h.db, sessionUUID)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// }
-
-// ---------------------------------------------------PROVISIONAL CODE FOR TEST----------------------------------------------------------------------------------------
