@@ -54,7 +54,7 @@ func PostCategories(db *sql.DB, id int) ([]models.Category, error) {
 }
 
 func AddPostCategory(db *sql.DB, category models.PostCategory) error {
-	stmt, err := db.Prepare("insert into post_categs values (?, ?)")
+	stmt, err := db.Prepare("insert or ignore into post_categs values (?, ?)")
 	if err != nil {
 		return err
 	}
