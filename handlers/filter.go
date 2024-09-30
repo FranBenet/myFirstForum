@@ -16,8 +16,8 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: Search Handler")
 
 	if r.URL.Path != "/search" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 
@@ -51,11 +51,11 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 
 		referer := r.Referer()
 
-		finalURL := helpers.AddQueryMessage(referer, "error", "Something happends and  we couldn't get posts for that search. Try again later!")
+		finalURL := helpers.AddQueryMessage(referer, "error", "Something happend and  we couldn't get posts for that search. Try again later!")
 
 		log.Printf("Redirecting to: %s", finalURL)
 
-		http.Redirect(w, r, finalURL, http.StatusFound)
+		http.Redirect(w, r, finalURL, http.StatusSeeOther)
 	}
 	log.Println("Posts to be displayed: ", len(data.Posts))
 
@@ -67,9 +67,8 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: Filter Handler")
 
 	if r.URL.Path != "/filter" {
-		log.Println("Filter")
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 
@@ -109,7 +108,7 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Redirecting to: %s", finalURL)
 
-		http.Redirect(w, r, "finalURL", http.StatusFound)
+		http.Redirect(w, r, "finalURL", http.StatusSeeOther)
 		return
 
 	} else if filterCategory != "" && filterSort == "" {
@@ -125,7 +124,7 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 
 			log.Printf("Redirecting to: %s", finalURL)
 
-			http.Redirect(w, r, finalURL, http.StatusFound)
+			http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 			return
 		}
@@ -165,7 +164,7 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Redirecting to: %s", finalURL)
 
-		http.Redirect(w, r, "finalURL", http.StatusFound)
+		http.Redirect(w, r, "finalURL", http.StatusSeeOther)
 
 		return
 	}
@@ -176,8 +175,8 @@ func (h *Handler) UsersPost(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: UsersPost Handler")
 
 	if r.URL.Path != "/users/" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 

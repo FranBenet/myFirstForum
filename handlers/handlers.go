@@ -27,7 +27,8 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path != "/" {
 		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
+
 		return
 	}
 
@@ -54,7 +55,7 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Error getting data", err)
 
-		http.Redirect(w, r, "/404", http.StatusFound)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 
 		return
 	}
@@ -99,7 +100,7 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 			log.Printf("Redirecting to: %s", finalURL)
 
-			http.Redirect(w, r, finalURL, http.StatusFound)
+			http.Redirect(w, r, finalURL, http.StatusSeeOther)
 			return
 
 		}
@@ -108,7 +109,7 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 			finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "Post does not exist.")
-			http.Redirect(w, r, finalURL, http.StatusFound)
+			http.Redirect(w, r, finalURL, http.StatusSeeOther)
 		}
 
 		//	Get error/successful messages from the query parameters
@@ -132,7 +133,7 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Redirecting to: %s", finalURL)
 
-		http.Redirect(w, r, finalURL, http.StatusFound)
+		http.Redirect(w, r, finalURL, http.StatusSeeOther)
 	}
 }
 
@@ -140,8 +141,8 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: NewPost Handler")
 
 	if r.URL.Path != "/post/create" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 
@@ -165,7 +166,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
 				log.Printf("Redirecting to: %s", finalURL)
 
-				http.Redirect(w, r, finalURL, http.StatusFound)
+				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 				return
 			}
 
@@ -204,7 +205,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
 				log.Printf("Redirecting to: %s", finalURL)
 
-				http.Redirect(w, r, finalURL, http.StatusFound)
+				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 				return
 			}
@@ -230,7 +231,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
 				log.Printf("Redirecting to: %s", finalURL)
 
-				http.Redirect(w, r, finalURL, http.StatusFound)
+				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 				return
 			}
@@ -256,8 +257,8 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: Reaction Handler")
 
 	if r.URL.Path != "/reaction" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 
@@ -270,7 +271,7 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 		finalURL := helpers.AddQueryMessage(referer, "error", "Need to be logged in for that action")
 
-		http.Redirect(w, r, finalURL+"#loginModal", http.StatusFound)
+		http.Redirect(w, r, finalURL+"#loginModal", http.StatusForbidden)
 
 		return
 
@@ -293,7 +294,7 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 					finalURL := helpers.AddQueryMessage(referer, "error", "Ups! Something happened. Try again later.")
 
-					http.Redirect(w, r, finalURL, http.StatusFound)
+					http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 					return
 				}
@@ -326,7 +327,7 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 					finalURL := helpers.AddQueryMessage(referer, "error", "Ups! Something happened. Try again later.")
 
-					http.Redirect(w, r, finalURL, http.StatusFound)
+					http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 					return
 				}
@@ -365,8 +366,8 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: NewComment Handler")
 
 	if r.URL.Path != "/post/comment" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 
@@ -400,7 +401,7 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 
 				log.Printf("Redirecting to: %s", finalURL)
 
-				http.Redirect(w, r, finalURL, http.StatusFound)
+				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 				return
 			}
@@ -417,7 +418,7 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 
 				log.Printf("Redirecting to: %s", finalURL)
 
-				http.Redirect(w, r, finalURL, http.StatusFound)
+				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 				return
 			}
@@ -459,7 +460,40 @@ func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+	w.WriteHeader(http.StatusNotFound)
 	err = tmpl.ExecuteTemplate(w, "404.html", nil)
+	if err != nil {
+		fmt.Printf("Error Executing Template: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *Handler) InternalError(w http.ResponseWriter, r *http.Request) {
+	log.Println("Requested: NotFound Handler")
+
+	if r.URL.Path != "/500" {
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Error(w, "Page Not Found", http.StatusNotFound)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("web/templates/500.html")
+	if err != nil {
+		fmt.Printf("Error Parsing Template: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusInternalServerError)
+	err = tmpl.ExecuteTemplate(w, "500.html", nil)
 	if err != nil {
 		fmt.Printf("Error Executing Template: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)

@@ -13,8 +13,8 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: Profile Handler")
 
 	if r.URL.Path != "/profile" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 
@@ -30,7 +30,7 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 			log.Printf("Redirecting to: %s", finalURL)
 
-			http.Redirect(w, r, finalURL, http.StatusFound)
+			http.Redirect(w, r, finalURL, http.StatusForbidden)
 
 		} else {
 			data, err := helpers.ProfilePageData(h.db, userID)
@@ -43,7 +43,7 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 				log.Printf("Redirecting to: %s", finalURL)
 
-				http.Redirect(w, r, finalURL, http.StatusFound)
+				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 			}
 
 			helpers.RenderTemplate(w, "profile", data)
@@ -64,8 +64,8 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: LikedPosts Handler")
 
 	if r.URL.Path != "/liked" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 
@@ -95,7 +95,7 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Redirecting to: %s", finalURL)
 
-		http.Redirect(w, r, finalURL, http.StatusFound)
+		http.Redirect(w, r, finalURL, http.StatusForbidden)
 
 	} else {
 		log.Println("Let's get Data: ", err)
@@ -109,7 +109,7 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 
 			log.Printf("Redirecting to: %s", finalURL)
 
-			http.Redirect(w, r, finalURL, http.StatusFound)
+			http.Redirect(w, r, finalURL, http.StatusSeeOther)
 		}
 
 		log.Println("Liked Posts collected succesfully")
@@ -123,8 +123,8 @@ func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: MyPosts Handler")
 
 	if r.URL.Path != "/myposts" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 
@@ -152,7 +152,7 @@ func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Redirecting to: %s", finalURL)
 
-		http.Redirect(w, r, finalURL, http.StatusFound)
+		http.Redirect(w, r, finalURL, http.StatusForbidden)
 
 	} else {
 
@@ -167,7 +167,7 @@ func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 
 			log.Printf("Redirecting to: %s", finalURL)
 
-			http.Redirect(w, r, finalURL, http.StatusFound)
+			http.Redirect(w, r, finalURL, http.StatusSeeOther)
 		}
 
 		log.Printf("Posts for user: %v collected succesfully", userID)

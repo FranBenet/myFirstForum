@@ -126,7 +126,7 @@
         {{ if .Metadata.LoggedIn}}
         <form method="post" action="/post/comment" class="comment-form">
             <input type="hidden" name="post_Id" value="{{.Post.Post.Id}}">
-            <textarea class="comment-area" name="new-comment" id="" placeholder="What do you think?" cols="100" rows="2"></textarea>
+            <textarea class="comment-area" name="new-comment" id="" placeholder="What do you think?" cols="100" rows="2" required></textarea>
             <button class="submit">Comment</button>
         </form> 
         {{end}}

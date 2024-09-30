@@ -15,8 +15,8 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: Register Handler")
 
 	if r.URL.Path != "/register" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 
@@ -47,7 +47,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Redirecting to: %s", finalURL)
 
 			// Redirect to the referer with the error included in the query.
-			http.Redirect(w, r, finalURL+"#registerModal", http.StatusFound)
+			http.Redirect(w, r, finalURL+"#registerModal", http.StatusSeeOther)
 			return
 
 		} else {
@@ -77,8 +77,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: Login Handler")
 
 	if r.URL.Path != "/login" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 
@@ -110,7 +110,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Redirecting to: %s", finalURL)
 
 			// Redirect to the referer with the error included in the query.
-			http.Redirect(w, r, finalURL, http.StatusFound)
+			http.Redirect(w, r, finalURL, http.StatusSeeOther)
 			return
 		}
 
@@ -130,7 +130,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Redirecting to: %s", finalURL)
 
 			// Redirect to the referer with the error included in the query.
-			http.Redirect(w, r, finalURL, http.StatusFound)
+			http.Redirect(w, r, finalURL, http.StatusSeeOther)
 			return
 		}
 
@@ -174,8 +174,8 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: Logout Handler")
 
 	if r.URL.Path != "/logout" {
-		log.Println("Error. Path Not Allowed.")
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
 		return
 	}
 

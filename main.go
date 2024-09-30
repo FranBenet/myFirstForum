@@ -30,38 +30,19 @@ func routes(db *sql.DB) *http.ServeMux {
 	mux.Handle("/post/comment", mw.MiddlewareSession(http.HandlerFunc(handler.NewComment)))
 	mux.Handle("/reaction", mw.MiddlewareSession(http.HandlerFunc(handler.Reaction)))
 
-	mux.HandleFunc("/login", handler.Login)       //	No need to go through the middleware because never will be a cookie
-	mux.HandleFunc("/register", handler.Register) //	No need to go through the middleware because never will be a cookie
-	mux.HandleFunc("/logout", handler.Logout)     //	No need to go through the middleware because never will be a cookie
-
 	mux.Handle("/search", mw.MiddlewareSession(http.HandlerFunc(handler.Search)))
 	mux.Handle("/filter", mw.MiddlewareSession(http.HandlerFunc(handler.Filter)))
 	mux.Handle("/user/", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
 
 	mux.Handle("/profile", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
-	// mux.Handle("/profile/edit", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
 	mux.Handle("/liked", mw.MiddlewareSession(http.HandlerFunc(handler.LikedPosts)))
 	mux.Handle("/myposts", mw.MiddlewareSession(http.HandlerFunc(handler.MyPosts)))
 
-	// mux.HandleFunc("/post/", handler.GetPost)
-	// mux.HandleFunc("/post/create", handler.NewPost)
-	// mux.HandleFunc("/post/comment", handler.NewComment)
-	// mux.HandleFunc("/reaction", handler.Reaction)
-	// mux.HandleFunc("/", handler.Homepage)
-
-	// mux.HandleFunc("/login", handler.Login)
-	// mux.HandleFunc("/register", handler.Register)
-	// mux.HandleFunc("/logout", handler.Logout)
-
-	// mux.HandleFunc("/search", handler.Search)
-	// mux.HandleFunc("/filter", handler.Filter)
-	// mux.HandleFunc("/user/", handler.Profile)
-	mux.HandleFunc("/404", handler.NotFound)
-
-	// mux.HandleFunc("/profile", handler.Profile)
-	mux.HandleFunc("/profile/edit", handler.Profile)
-	// mux.HandleFunc("/liked", handler.LikedPosts)
-	// mux.HandleFunc("/myposts", handler.MyPosts)
+	mux.HandleFunc("/login", handler.Login)       //	No need to go through the middleware because never will be a cookie
+	mux.HandleFunc("/register", handler.Register) //	No need to go through the middleware because never will be a cookie
+	mux.HandleFunc("/logout", handler.Logout)     //	No need to go through the middleware because never will be a cookie
+	mux.HandleFunc("/404", handler.NotFound)      //	No need to go through the middleware because never will be a cookie
+	mux.HandleFunc("/500", handler.InternalError) //	No need to go through the middleware because never will be a cookie
 
 	return mux
 }
