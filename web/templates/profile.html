@@ -14,14 +14,58 @@
                 <span>*********</span>
             </div>
         </span>
-        <span class="edit-profile-botton">
-            <a href="/profile/edit" class="edit-button">
-                <p class="edit-text">Edit</p>
+        <span class="change-avatar">
+            <a href="#avatarModal" class="change-avatar-button">
+                <p class="change-text">Change Avatar</p>
             </a>
         </span>
         
     </div>
 </section>
+
+<!-- The Modal -->
+<div id="avatarModal" class="avatar-modal">
+    <div class="avatar-modal-content">
+        <a href="#" id="closeModal" class="avatar-modal-close">&times;</a>
+        
+        <form action="/profile" method="post" class="avatar-modal-form">
+            <div class="avatar-modal-title">
+                <h2>Select Your Avatar</h2>                
+            </div>
+
+            <div class="avatar-grid">
+                <label class="avatar-item">
+                    <input type="radio" name="avatar" value="avatar1">
+                    <img src="/static/img/avatars/bear.png" alt="Avatar 1" class="avatar">
+                </label>
+                <label class="avatar-item">
+                    <input type="radio" name="avatar" value="avatar2">
+                    <img src="/static/img/avatars/cat.png" alt="Avatar 2" class="avatar">
+                </label>
+                <label class="avatar-item">
+                    <input type="radio" name="avatar" value="avatar2">
+                    <img src="/static/img/avatars/dog.png" alt="Avatar 2" class="avatar">
+                </label>
+                <label class="avatar-item">
+                    <input type="radio" name="avatar" value="avatar2">
+                    <img src="/static/img/avatars/dog2.png" alt="Avatar 2" class="avatar">
+                </label>
+                <label class="avatar-item">
+                    <input type="radio" name="avatar" value="avatar2">
+                    <img src="/static/img/avatars/meerkat.png" alt="Avatar 2" class="avatar">
+                </label>
+                <label class="avatar-item">
+                    <input type="radio" name="avatar" value="avatar2">
+                    <img src="/static/img/avatars/rabbit.png" alt="Avatar 2" class="avatar">
+                </label>
+                <!-- Add more avatars as needed -->
+            </div>
+            <button type="submit" class="avatar-submit">Select Avatar</button>
+        </form>    
+    </div>
+</div>
+
+
 {{end}}
 
 
