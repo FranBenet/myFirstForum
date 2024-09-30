@@ -37,6 +37,7 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 		"web/templates/main-gallery.html",
 		"web/templates/post-templates.html",
 		"web/templates/pagination.html",
+		"web/templates/pagination-likedposts.html",
 	}
 
 	//	Adding to the Templates the needed html page to be sent for each specific page request.
@@ -224,6 +225,13 @@ func CreatePostData(db *sql.DB, userId int) (models.MainPage, error) {
 	}
 	if userId > 0 {
 		createPostData.Metadata.LoggedIn = true
+		userData, err := dbaser.UserById(db, userId)
+		if err != nil {
+			createPostData.Metadata.Error = err.Error()
+			return createPostData, err
+		}
+		user := models.User{Avatar: userData.Avatar}
+		createPostData.User = user
 	}
 	createPostData.Categories = categories
 	return createPostData, nil

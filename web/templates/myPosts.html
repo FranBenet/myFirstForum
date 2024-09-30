@@ -1,12 +1,9 @@
 {{ define "page" }}
         <section class="posts-section">
             {{ template "breadcrumbs".}}
-            {{if eq .Pagination.TotalPages 0}}
-                <div>You haven't create any posts yet.</div>
-            {{else}}
-                {{template "main-gallery" .}}
-                {{template "pagination" .Pagination}}
+            {{template "main-gallery" .}}
+            {{if gt .Pagination.TotalPages 1}}
+                {{template "pagination-myposts" .Pagination}}
             {{end}}
-           
         </section>
 {{end}}

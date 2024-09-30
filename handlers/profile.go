@@ -62,7 +62,7 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: LikedPosts Handler")
 
-	if r.URL.Path != "/posts/liked" {
+	if r.URL.Path != "/liked" {
 		log.Println("Error. Path Not Allowed.")
 		http.Error(w, "Page Not Found", http.StatusNotFound)
 		return
@@ -76,6 +76,8 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 
 	// Get userID from the context request. If 0 > user is not logged in.
 	userID := r.Context().Value(models.UserIDKey).(int)
+
+	log.Println("UserID: ", userID)
 
 	//	Get the number of page requested from the query parameters of the URL.
 	requestedPage, err := helpers.GetQueryPage(r)
@@ -95,22 +97,23 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, finalURL, http.StatusFound)
 
 	} else {
+		log.Println("Let's get Data: ", err)
+		data, err := helpers.MyLikedPostsPageData(h.db, userID, requestedPage)
+		if err != nil {
+			log.Println("Error getting user's posts: ", err)
 
-		// data, err := helpers.SomeFunction(h.db, userID, requestedPage)
-		// if err != nil {
-		// 	log.Println("Error getting user's posts: ", err)
+			referer := r.Referer()
 
-		// 	data.Metadata.Error = "Sorry, we couldn't get your posts. Try again later!"
-		// 	referer := r.Referer()
+			finalURL := helpers.AddQueryMessage(referer, "error", "Sorry, we couldn't get your posts. Try again later!")
 
-		// 	finalURL := helpers.AddQueryMessage(referer, "error", "Sorry, we couldn't get your posts. Try again later!")
+			log.Printf("Redirecting to: %s", finalURL)
 
-		// 	log.Printf("Redirecting to: %s", finalURL)
+			http.Redirect(w, r, finalURL, http.StatusFound)
+		}
 
-		// 	http.Redirect(w, r, finalURL, http.StatusFound)
-		// }
-		// log.Println(data)
-		// helpers.RenderTemplate(w, "liked", data)
+		log.Println("Liked Posts collected succesfully")
+
+		helpers.RenderTemplate(w, "liked", data)
 	}
 }
 
@@ -152,20 +155,22 @@ func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		// data, err := helpers.SomeFunction(h.db, userID, requestedPage)
-		// if err != nil {
-		// 	log.Println("Error getting user's posts: ", err)
+		data, err := helpers.MyPostsPageData(h.db, userID, requestedPage)
+		log.Println("Posts to display", len(data.Posts))
+		if err != nil {
+			log.Println("Error getting user's posts: ", err)
 
-		// 	data.Metadata.Error = "Sorry, we couldn't get your posts. Try again later!"
-		// 	referer := r.Referer()
+			referer := r.Referer()
 
-		// 	finalURL := helpers.AddQueryMessage(referer, "error", "Sorry, we couldn't get your posts. Try again later!")
+			finalURL := helpers.AddQueryMessage(referer, "error", "Sorry, we couldn't get your posts. Try again later!")
 
-		// 	log.Printf("Redirecting to: %s", finalURL)
+			log.Printf("Redirecting to: %s", finalURL)
 
-		// 	http.Redirect(w, r, finalURL, http.StatusFound)
-		// }
-		// log.Println(data)
-		// helpers.RenderTemplate(w, "myPosts", data)
+			http.Redirect(w, r, finalURL, http.StatusFound)
+		}
+
+		log.Printf("Posts for user: %v collected succesfully", userID)
+
+		helpers.RenderTemplate(w, "myPosts", data)
 	}
 }
