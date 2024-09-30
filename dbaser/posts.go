@@ -93,9 +93,9 @@ func UserLikedPosts(db *sql.DB, userId int) ([]models.Post, error) {
 	return result, nil
 }
 
-func PostsByCategory(db *sql.DB, category models.Category, page int) ([]models.Post, error) {
+func PostsByCategory(db *sql.DB, categoryId, page int) ([]models.Post, error) {
 	var result []models.Post
-	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", category.Id)
+	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", categoryId)
 	if err == sql.ErrNoRows {
 		return result, nil
 	} else if err != nil {
@@ -203,6 +203,33 @@ func Search(db *sql.DB, query string) ([]models.Post, error) {
 		if strings.Contains(title, query) || strings.Contains(content, query) {
 			result = append(result, post)
 		}
+	}
+	return result, nil
+}
+
+func UntrendingPosts(db *sql.DB) ([]models.Post, error) {
+	var result []models.Post
+	row, err := db.Query("select posts.*, count(*) as num from posts join post_reactions on posts.id=post_id where liked=? group by post_id order by num desc", 0)
+	if err == sql.ErrNoRows {
+		return result, nil
+	} else if err != nil {
+		return []models.Post{}, err
+	}
+	for row.Next() {
+		var created string
+		var post models.Post
+		var count int
+		err := row.Scan(&post.Id, &post.UserId, &post.Title, &post.Content, &created, &count)
+		timeCreated, err := time.Parse(time.RFC3339, created)
+		if err != nil {
+			return []models.Post{}, err
+		}
+		post.Created = timeCreated
+		result = append(result, post)
+	}
+	err = row.Err()
+	if err != nil {
+		return []models.Post{}, err
 	}
 	return result, nil
 }
