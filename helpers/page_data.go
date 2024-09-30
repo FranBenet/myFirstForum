@@ -207,6 +207,20 @@ func SearchPageData(db *sql.DB, query string, userId, page int) (models.MainPage
 		}
 		postData = append(postData, data)
 	}
+	trending, err := dbaser.TrendingPosts(db, 3)
+	if err != nil {
+		mainData.Metadata.Error = err.Error()
+		return mainData, err
+	}
+	var trendData []models.PostData
+	for _, p := range trending {
+		data, err := GetPostData(db, p, userId)
+		if err != nil {
+			mainData.Metadata.Error = err.Error()
+			return mainData, err
+		}
+		trendData = append(trendData, data)
+	}
 	categories, err := dbaser.Categories(db)
 	if err != nil {
 		mainData.Metadata.Error = err.Error()
@@ -225,6 +239,7 @@ func SearchPageData(db *sql.DB, query string, userId, page int) (models.MainPage
 	pageData := models.Pagination{CurrentPage: page, TotalPages: pagination}
 	mainData.Categories = categories
 	mainData.Posts = postData
+	mainData.Trending = trendData
 	mainData.Pagination = pageData
 	return mainData, nil
 }
