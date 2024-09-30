@@ -1,7 +1,11 @@
 {{define "main-gallery"}}
     <section class="main-gallery">
-        {{range .Posts}}
-            {{template "post-overview" .}}
+        {{if gt .Pagination.TotalPages 0}}
+            {{range .Posts}}
+                {{template "post-overview" .}}
+            {{end}}
+        {{else}}
+            <h2 class="no-results"> No results available</h2>
         {{end}}
     </section>
 {{end}}

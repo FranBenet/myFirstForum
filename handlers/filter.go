@@ -36,17 +36,30 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 		log.Println("Page is not available or specified")
 		requestedPage = 1
 	}
-	fmt.Println(requestedPage)
-	fmt.Println(userID)
+
+	log.Println("UserID:", userID, "Requested page number: ", requestedPage)
+
 	// Parse form values
 	r.ParseForm()
-	// content := r.FormValue("new-comment")
+	query := r.FormValue("search")
 
-	// data, err := helpers.MainPageDataFilter(h.db, userID)
-	// if err != nil {
-	// 	//	HANDLE ERROR
-	// }
-	// helpers.RenderTemplate(w, "home.html", data)
+	log.Println("User requesting search posts for: ", query)
+
+	data, err := helpers.SearchPageData(h.db, query, userID, requestedPage)
+	if err != nil {
+		log.Println("Error getting searched posts: ", err)
+
+		referer := r.Referer()
+
+		finalURL := helpers.AddQueryMessage(referer, "error", "Something happends and  we couldn't get posts for that search. Try again later!")
+
+		log.Printf("Redirecting to: %s", finalURL)
+
+		http.Redirect(w, r, finalURL, http.StatusFound)
+	}
+	log.Println("Posts to be displayed: ", len(data.Posts))
+
+	helpers.RenderTemplate(w, "home", data)
 }
 
 // To handle "/filter"

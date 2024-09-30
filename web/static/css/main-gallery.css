@@ -151,6 +151,12 @@
     line-height: 1.61;
 }
 
+.no-results{
+    color: var(--primary-color);
+    color: blue;
+    font-size: 20px;
+}
+
 .thumbs-icon {
     color: black;
     font-variation-settings:
