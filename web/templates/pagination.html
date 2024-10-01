@@ -21,3 +21,124 @@
         </ul>
     </nav>
 {{ end }}
+
+{{ define "pagination-search" }}
+    <nav aria-label="Page navigation" class="page-navigation">
+        <ul class="paginations">
+        {{ if gt .CurrentPage 1 }}        
+        <li class="page-item">
+                <a class="page-link" href="/search?page={{sub .CurrentPage 1}}" aria-label="Previous">&laquo;</a>
+        </li>
+        {{end}}
+
+        {{ range $i := (seq 1 .TotalPages) }}
+        <li class="page-item active">
+                <a class="{{ if eq $i $.CurrentPage}} page-link-active {{else}} page-link {{end}}" href="/search?page={{$i}}">{{$i}}</a>
+        </li>   
+        {{end}}
+
+        {{if lt .CurrentPage .TotalPages}}
+        <li class="page-item">
+                <a class="page-link" href="/search?page={{add .CurrentPage 1}}" aria-label="Next">&raquo;</a>
+        </li>
+        {{end}}
+        </ul>
+    </nav>
+{{ end }}
+
+{{ define "pagination-filter-liked" }}
+    <nav aria-label="Page navigation" class="page-navigation">
+        <ul class="paginations">
+        {{ if gt .CurrentPage 1 }}        
+        <li class="page-item">
+                <a class="page-link" href="/filter?page={{sub .CurrentPage 1}}&sort=likes" aria-label="Previous">&laquo;</a>
+        </li>
+        {{end}}
+
+        {{ range $i := (seq 1 .TotalPages) }}
+        <li class="page-item active">
+                <a class="{{ if eq $i $.CurrentPage}} page-link-active {{else}} page-link {{end}}" href="/filter?page={{$i}}&sort=likes">{{$i}}</a>
+        </li>   
+        {{end}}
+
+        {{if lt .CurrentPage .TotalPages}}
+        <li class="page-item">
+                <a class="page-link" href="/filter?page={{add .CurrentPage 1}}&sort=likes" aria-label="Next">&raquo;</a>
+        </li>
+        {{end}}
+        </ul>
+    </nav>
+{{ end }}
+
+{{ define "pagination-filter-disliked" }}
+    <nav aria-label="Page navigation" class="page-navigation">
+        <ul class="paginations">
+        {{ if gt .CurrentPage 1 }}        
+        <li class="page-item">
+                <a class="page-link" href="/filter?page={{sub .CurrentPage 1}}&sort=dislikes" aria-label="Previous">&laquo;</a>
+        </li>
+        {{end}}
+
+        {{ range $i := (seq 1 .TotalPages) }}
+        <li class="page-item active">
+                <a class="{{ if eq $i $.CurrentPage}} page-link-active {{else}} page-link {{end}}" href="/filter?page={{$i}}&sort=dislikes">{{$i}}</a>
+        </li>   
+        {{end}}
+
+        {{if lt .CurrentPage .TotalPages}}
+        <li class="page-item">
+                <a class="page-link" href="/filter?page={{add .CurrentPage 1}}&sort=dislikes" aria-label="Next">&raquo;</a>
+        </li>
+        {{end}}
+        </ul>
+    </nav>
+{{ end }}
+
+
+{{ define "pagination-likedposts" }}
+    <nav aria-label="Page navigation" class="page-navigation">
+        <ul class="paginations">
+        {{ if gt .CurrentPage 1 }}        
+        <li class="page-item">
+            <a class="page-link" href="/liked?page={{sub .CurrentPage 1}}" aria-label="Previous">&laquo;</a>
+        </li>
+        {{end}}
+
+        {{ range $i := (seq 1 .TotalPages)}}
+        <li class="page-item active">
+            <a class="{{ if eq $i $.CurrentPage}} page-link-active {{else}} page-link {{end}}" href="/liked?page={{$i}}">{{$i}}</a>
+        </li>   
+        {{end}}
+
+        {{if lt .CurrentPage .TotalPages}}
+        <li class="page-item">
+            <a class="page-link" href="/liked?page={{add .CurrentPage 1}}" aria-label="Next">&raquo;</a>
+        </li>
+        {{end}}
+        </ul>
+    </nav>
+{{end}}
+
+{{ define "pagination-myposts" }}
+    <nav aria-label="Page navigation" class="page-navigation">
+        <ul class="paginations">
+        {{ if gt .CurrentPage 1 }}        
+        <li class="page-item">
+            <a class="page-link" href="/myposts?page={{sub .CurrentPage 1}}" aria-label="Previous">&laquo;</a>
+        </li>
+        {{end}}
+
+        {{ range $i := (seq 1 .TotalPages)}}
+        <li class="page-item active">
+            <a class="{{ if eq $i $.CurrentPage}} page-link-active {{else}} page-link {{end}}" href="/myposts?page={{$i}}">{{$i}}</a>
+        </li>   
+        {{end}}
+
+        {{if lt .CurrentPage .TotalPages}}
+        <li class="page-item">
+            <a class="page-link" href="/myposts?page={{add .CurrentPage 1}}" aria-label="Next">&raquo;</a>
+        </li>
+        {{end}}
+        </ul>
+    </nav>
+{{end}}

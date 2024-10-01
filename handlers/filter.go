@@ -87,7 +87,8 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 		log.Println("No Page Required:", err)
 		requestedPage = 1
 	}
-	fmt.Println(requestedPage)
+
+	log.Println("UserID:", userID, "Requested page number: ", requestedPage)
 
 	filterCategory, err := helpers.GetQueryFilter(r, "category")
 	if err != nil {
@@ -144,15 +145,38 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 
 		switch filterSort {
 		case "likes":
-			// data, err := helpers.CollectLikesData(h.db, userID, requestedPage, filterSort)
-			// helpers.RenderTemplate(w, "home", data)
+			data, err := helpers.TrendingPageData(h.db, userID, requestedPage)
+			if err != nil {
+				log.Println("Error getting trend posts: ", err)
+
+				referer := r.Referer()
+
+				finalURL := helpers.AddQueryMessage(referer, "error", "Something happend and  we couldn't get posts for that filter. Try again later!")
+
+				log.Printf("Redirecting to: %s", finalURL)
+
+				http.Redirect(w, r, finalURL, http.StatusSeeOther)
+			}
+			helpers.RenderTemplate(w, "filter_liked_page", data)
+
 		case "dislikes":
-			// data, err := helpers.CollectDislikesData(h.db, userID, requestedPage, filterSort)
-			// helpers.RenderTemplate(w, "home", data)
-		case "mostrecent":
-			// data, err := helpers.CollectMostRecentData(h.db, userID, requestedPage, filterSort)
-			// helpers.RenderTemplate(w, "home", data)
+			data, err := helpers.UntrendingPageData(h.db, userID, requestedPage)
+			if err != nil {
+				log.Println("Error getting untrend posts: ", err)
+
+				referer := r.Referer()
+
+				finalURL := helpers.AddQueryMessage(referer, "error", "Something happend and  we couldn't get posts for that filter. Try again later!")
+
+				log.Printf("Redirecting to: %s", finalURL)
+
+				http.Redirect(w, r, finalURL, http.StatusSeeOther)
+			}
+
+			helpers.RenderTemplate(w, "filter_dislikes_page", data)
+
 		default:
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 
 	} else {

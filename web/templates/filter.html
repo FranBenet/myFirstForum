@@ -1,3 +1,15 @@
+{{ define "page" }}
+        <section class="posts-section">
+                {{template "filter" .}}
+                {{template "main-gallery" .}}
+                {{template "pagination" .Pagination}}
+        </section>
+        <section class="sidebar-section">
+                {{template "sidebar" .}}
+        </section>
+        
+{{end}}
+
 {{ define "filter" }}
     <section class="filter-section">
         <div class="category-filter-dropdown">
@@ -26,3 +38,4 @@
         </div>
     </section>
 {{end}}
+
