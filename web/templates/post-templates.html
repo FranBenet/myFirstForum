@@ -1,7 +1,7 @@
 {{define "post-overview"}}
     <div class="post-section">
         <section class="header-container">
-            <a href="/user/{{.User.Name}}" class="post-username">{{.User.Name}}</a>
+            <a href="/user/{{.User.Id}}" class="post-username">{{.User.Name}}</a>
             <div class="post-category-container">
                 {{range .Categories}}
                     <a href="/filter?category={{.Id}}" class="post-category">{{.Name}}</a>
@@ -69,7 +69,7 @@
     
     <div class="post-id-container">
         <section class="post-id-header">
-            <a href="/user/{{.Post.User.Name}}" class="post-id-user-info">
+            <a href="/user/{{.Post.User.Id}}" class="post-id-user-info">
                 <div class="user-info-image">
                     <img src="{{.Post.User.Avatar}}" alt="Profile Img" class="image-avatar">
                 </div>
@@ -138,7 +138,7 @@
 {{ define "comment"}}
     <div class="comment-id">
         <section class="comment-id-header">
-            <a href="/user/{{.User.Name}}" class="comment-id-user-info">
+            <a href="/user/{{.User.Id}}" class="comment-id-user-info">
                 <div class="user-info-image">
                     <img src="{{.User.Avatar}}" alt="Profile Img" class="image-avatar">
                 </div>
@@ -170,81 +170,3 @@
        
     </div>
 {{end}}
-
-
-
-
-
-{{define "shit"}}
-
-<section class="post-id-comments">
-    <!-- {{template "comment".}} -->
-    <div class="comment-id">
-     <section class="comment-id-header">
-         <div class="comment-id-user-info">
-             <div class="user-info-image">
-                 <img src="../static/img/rabbit.png" alt="Profile Img" class="image">
-             </div>
-             <div class="user-info-text">
-                 <p class="info-username">BookLover92</p>
-                 <p class="data-info">
-                     <time datetime="{{.PostCreated}}">{{.PostCreated}}</time>
-                 </p>
-             </div>
-         </div>
-     </section>
-     <section class="comment-id-content">
-         <p class="comment-id-description">I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!
-             /n I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!</p>
-     </section>
-     <section class="comment-id-data">
-         <p class="date">
-             6 Likes
-         </p>
-     </section>
- </div>
- <div class="comment-id">
-     <section class="comment-id-header">
-         <div class="comment-id-user-info">
-             <div class="user-info-image">
-                 <img src="../static/img/dog2.png" alt="Profile Img" class="image">
-             </div>
-             <div class="user-info-text">
-                 <p class="info-username">BookLover92</p>
-                 <p class="info-date">Created on <time datetime="2026-02-03"> 3 February 2026</time></p>
-             </div>
-         </div>
-     </section>
-     <section class="comment-id-content">
-         <p class="comment-id-description">I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!
-             /n I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!</p>
-     </section>
-     <section class="comment-id-data">
-         <p class="date">
-             5 Likes
-         </p>
-     </section>
- </div>
- <div class="comment-id">
-     <section class="comment-id-header">
-         <div class="comment-id-user-info">
-             <div class="user-info-image">
-                 <img src="../static/img/bear.png" alt="Profile Img" class="image">
-             </div>
-             <div class="user-info-text">
-                 <p class="info-username">BookLover92</p>
-                 <p class="info-date">Created on <time datetime="2026-02-03"> 3 February 2026</time></p>
-             </div>
-         </div>
-     </section>
-     <section class="comment-id-content">
-         <p class="comment-id-description">I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!
-             /n I've been re-reading To Kill a Mockingbird, and I'm amazed by how Harper Lee crafted such complex and relatable characters. Especially Atticus Finch—his moral compass and calm demeanor really resonate with me. How do you think Lee's portrayal of these characters reflects the social issues of the time? Also, who is your favorite character and why? Would love to hear your thoughts!</p>
-     </section>
-     <section class="comment-id-data">
-         <p class="date">
-             16 Likes
-         </p>
-     </section>
- </div>
- {{end}}

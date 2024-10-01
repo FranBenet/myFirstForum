@@ -50,7 +50,14 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case http.MethodPost:
-		//	To edit password and name if finally implemented
+		referer := r.Referer()
+
+		r.ParseForm()
+		newAvatar := r.FormValue("avatar")
+
+		log.Printf("User selected avatar: %v ", newAvatar)
+
+		http.Redirect(w, r, referer, http.StatusSeeOther)
 
 	default:
 		w.Header().Set("Allow", "GET, POST")

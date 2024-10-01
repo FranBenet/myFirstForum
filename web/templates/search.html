@@ -1,0 +1,11 @@
+{{ define "page" }}
+        <section class="posts-section">
+                {{template "filter" .}}
+                {{template "main-gallery" .}}
+                {{template "pagination-search" .Pagination}}
+        </section>
+        <section class="sidebar-section">
+                {{template "sidebar" .}}
+        </section>
+        
+{{end}}
