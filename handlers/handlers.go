@@ -151,7 +151,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
 	if userID == 0 {
 
-		http.Redirect(w, r, "/#registerModal", http.StatusForbidden)
+		http.Redirect(w, r, "/#registerModal", http.StatusSeeOther)
 
 	} else {
 		switch r.Method {
@@ -265,13 +265,15 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 	//	Get userID from the context request. If 0 > user is not logged in.
 	userID := r.Context().Value(models.UserIDKey).(int)
 
+	log.Println("UserID:", userID, "reacted to a post.")
+
 	//	Check the request comes from a logged-in user or not and act in consequence
 	if userID == 0 {
 		referer := r.Referer()
 
 		finalURL := helpers.AddQueryMessage(referer, "error", "Need to be logged in for that action")
 
-		http.Redirect(w, r, finalURL+"#loginModal", http.StatusForbidden)
+		http.Redirect(w, r, finalURL+"#loginModal", http.StatusSeeOther)
 
 		return
 
@@ -377,7 +379,7 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 	//	Check IS USER LOGGED IN?
 	if userID == 0 {
 
-		http.Redirect(w, r, "/#registerModal", http.StatusForbidden)
+		http.Redirect(w, r, "/#registerModal", http.StatusSeeOther)
 
 	} else {
 		switch r.Method {

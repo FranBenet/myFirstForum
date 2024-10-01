@@ -30,7 +30,7 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 			log.Printf("Redirecting to: %s", finalURL)
 
-			http.Redirect(w, r, finalURL, http.StatusForbidden)
+			http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 		} else {
 			data, err := helpers.ProfilePageData(h.db, userID)
@@ -95,7 +95,7 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Redirecting to: %s", finalURL)
 
-		http.Redirect(w, r, finalURL, http.StatusForbidden)
+		http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 	} else {
 		log.Println("Let's get Data: ", err)
@@ -152,7 +152,7 @@ func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Redirecting to: %s", finalURL)
 
-		http.Redirect(w, r, finalURL, http.StatusForbidden)
+		http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 	} else {
 
