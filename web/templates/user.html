@@ -1,12 +1,11 @@
 {{ define "page" }}
-        <section class="posts-section">
-            {{ template "breadcrumbs".}}
-            {{if eq .Pagination.TotalPages 0}}
-                <div>You haven't create any posts yet.</div>
-            {{else}}
-                {{template "main-gallery" .}}
-                {{template "pagination-users" .Pagination}}
-            {{end}}
-           
-        </section>
+    <section class="posts-section">
+        {{template "filter" .}}
+        {{template "main-gallery" .}}
+        {{template "pagination-user" .Pagination}}
+    </section>
+    <section class="sidebar-section">
+        {{template "sidebar" .}}
+    </section>
 {{end}}
+

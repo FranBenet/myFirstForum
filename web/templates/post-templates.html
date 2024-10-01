@@ -1,7 +1,7 @@
 {{define "post-overview"}}
     <div class="post-section">
         <section class="header-container">
-            <a href="/user/{{.User.Id}}" class="post-username">{{.User.Name}}</a>
+            <a href="/user?user={{.User.Id}}" class="post-username">{{.User.Name}}</a>
             <div class="post-category-container">
                 {{range .Categories}}
                     <a href="/filter?category={{.Id}}" class="post-category">{{.Name}}</a>
@@ -69,7 +69,7 @@
     
     <div class="post-id-container">
         <section class="post-id-header">
-            <a href="/user/{{.Post.User.Id}}" class="post-id-user-info">
+            <a href="/user?user={{.Post.User.Id}}" class="post-id-user-info">
                 <div class="user-info-image">
                     <img src="{{.Post.User.Avatar}}" alt="Profile Img" class="image-avatar">
                 </div>
@@ -138,7 +138,7 @@
 {{ define "comment"}}
     <div class="comment-id">
         <section class="comment-id-header">
-            <a href="/user/{{.User.Id}}" class="comment-id-user-info">
+            <a href="/user?user={{.User.Id}}" class="comment-id-user-info">
                 <div class="user-info-image">
                     <img src="{{.User.Avatar}}" alt="Profile Img" class="image-avatar">
                 </div>

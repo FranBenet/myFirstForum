@@ -18,7 +18,7 @@ func ProfilePageData(db *sql.DB, userId int) (models.ProfilePageData, error) {
 	if err != nil {
 		return models.ProfilePageData{}, err
 	}
-	// date := user.Date
+
 	profilePageData.User = models.User{Avatar: user.Avatar, Name: user.Name, Email: user.Email}
 	profilePageData.Metadata.LoggedIn = true
 

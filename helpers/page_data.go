@@ -253,7 +253,7 @@ func TrendingPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
-	mainData, err = PageData(db, posts, "", userId, page)
+	mainData, err = PageData(db, posts, "main", userId, page)
 	if err != nil {
 		return mainData, err
 	}
@@ -268,7 +268,7 @@ func UntrendingPageData(db *sql.DB, userId, page int) (models.MainPage, error) {
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
-	mainData, err = PageData(db, posts, "", userId, page)
+	mainData, err = PageData(db, posts, "main", userId, page)
 	if err != nil {
 		return mainData, err
 	}
@@ -329,5 +329,51 @@ func PageData(db *sql.DB, posts []models.Post, style string, userId, page int) (
 	mainData.Posts = postData
 	mainData.Trending = trendData
 	mainData.Pagination = pageData
+	return mainData, nil
+}
+
+func UsersPageData(db *sql.DB, userId, userIdRequested, page int) (models.MainPage, error) {
+	var mainData models.MainPage
+	posts, err := dbaser.PostsByUser(db, userIdRequested)
+	if err != nil {
+		log.Print(err)
+		mainData.Metadata.Error = err.Error()
+		return mainData, err
+	}
+	mainData, err = PageData(db, posts, "", userId, page)
+	if err != nil {
+		return mainData, err
+	}
+	// pagination := NumberOfPages(len(posts))
+	// start, end := PostSlice(len(posts), page)
+	// posts = posts[start:end]
+	// var postData []models.PostData
+	// for _, p := range posts {
+	// 	data, err := GetPostData(db, p, userId)
+	// 	if err != nil {
+	// 		mainData.Metadata.Error = err.Error()
+	// 		return mainData, err
+	// 	}
+	// 	postData = append(postData, data)
+	// }
+	// categories, err := dbaser.Categories(db)
+	// if err != nil {
+	// 	mainData.Metadata.Error = err.Error()
+	// 	return mainData, err
+	// }
+	// if userId > 0 {
+	// 	mainData.Metadata.LoggedIn = true
+	// 	userData, err := dbaser.UserById(db, userId)
+	// 	if err != nil {
+	// 		mainData.Metadata.Error = err.Error()
+	// 		return mainData, err
+	// 	}
+	// 	user := models.User{Avatar: userData.Avatar}
+	// 	mainData.User = user
+	// }
+	// pageData := models.Pagination{CurrentPage: page, TotalPages: pagination}
+	// mainData.Categories = categories
+	// mainData.Posts = postData
+	// mainData.Pagination = pageData
 	return mainData, nil
 }

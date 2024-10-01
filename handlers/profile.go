@@ -54,7 +54,7 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 		r.ParseForm()
 		newAvatar := r.FormValue("avatar")
-
+		//	CALL FUNCTION TO UPDATE AVATAR PATH
 		log.Printf("User selected avatar: %v ", newAvatar)
 
 		http.Redirect(w, r, referer, http.StatusSeeOther)

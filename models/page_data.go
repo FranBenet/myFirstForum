@@ -24,8 +24,9 @@ type Metadata struct {
 }
 
 type Pagination struct {
-	CurrentPage int
-	TotalPages  int
+	CurrentPage   int
+	TotalPages    int
+	UserRequested string
 }
 
 type ProfilePageData struct {

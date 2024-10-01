@@ -37,7 +37,7 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 		"web/templates/main-gallery.html",
 		"web/templates/post-templates.html",
 		"web/templates/pagination.html",
-		"web/templates/pagination-likedposts.html",
+		// "web/templates/pagination-likedposts.html",
 	}
 
 	//	Adding to the Templates the needed html page to be sent for each specific page request.

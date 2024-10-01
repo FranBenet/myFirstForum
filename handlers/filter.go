@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
@@ -198,6 +197,13 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) UsersPost(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: UsersPost Handler")
 
+	if r.URL.Path != "/user" {
+		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+		http.Redirect(w, r, "/404", http.StatusSeeOther)
+
+		return
+	}
+
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
 		http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
@@ -213,53 +219,44 @@ func (h *Handler) UsersPost(w http.ResponseWriter, r *http.Request) {
 		log.Println("No Page Required:", err)
 		requestedPage = 1
 	}
+	userIdRequested, err := helpers.GetQueryFilter(r, "user")
+	if err != nil {
+		log.Println("No user Id required:", err)
+	}
 
-	log.Println("UserID:", userID, "Requested page number: ", requestedPage)
+	log.Println("UserID:", userID, "Requested page number: ", requestedPage, "for post from userID: ", userIdRequested)
 
-	path := r.URL.Path
-	pathDivide := strings.Split(path, "/")
-	log.Println(pathDivide)
-	if len(pathDivide) == 3 && pathDivide[1] == "user" && pathDivide[0] == "" {
-		userIdRequested, err := strconv.Atoi(pathDivide[2])
-		if err != nil {
-			log.Println("ID for the user is not a number. ", err)
-
-			//	This function includes a query parameter in the URL with an error/success to be printed on screen
-			finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "ID for the user is not a number")
-
-			log.Printf("Redirecting to: %s", finalURL)
-
-			http.Redirect(w, r, finalURL, http.StatusSeeOther)
-			return
-
-		}
-		log.Println(userIdRequested)
-		// data, err := helpers.MyPostsPageData(h.db, userID, userIdRequested, requestedPage)
-		// log.Println("Posts to display", len(data.Posts))
-		// if err != nil {
-		// 	log.Println("Error getting user's posts: ", err)
-
-		// 	referer := r.Referer()
-
-		// 	finalURL := helpers.AddQueryMessage(referer, "error", "Sorry, we couldn't get your posts. Try again later!")
-
-		// 	log.Printf("Redirecting to: %s", finalURL)
-
-		// 	http.Redirect(w, r, finalURL, http.StatusSeeOther)
-		// }
-
-	} else {
-		log.Printf("Error. Path %v Not Allowed.", r.URL.Path)
+	//	Convert userIdRequested to string
+	userIdReqInt, err := strconv.Atoi(userIdRequested)
+	if err != nil {
+		log.Println("ID for the user is not a number. ", err)
 
 		//	This function includes a query parameter in the URL with an error/success to be printed on screen
-		finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "User does not exist.")
+		finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "ID for the user is not a number")
 
 		log.Printf("Redirecting to: %s", finalURL)
 
 		http.Redirect(w, r, finalURL, http.StatusSeeOther)
 		return
+
 	}
 
-	// helpers.RenderTemplate(w, "user", data)
+	data, err := helpers.UsersPageData(h.db, userID, userIdReqInt, requestedPage)
+	if err != nil {
+		log.Println("Error getting user's posts: ", err)
 
+		referer := r.Referer()
+
+		finalURL := helpers.AddQueryMessage(referer, "error", "Sorry, we couldn't get your posts. Try again later!")
+
+		log.Printf("Redirecting to: %s", finalURL)
+
+		http.Redirect(w, r, finalURL, http.StatusSeeOther)
+	}
+
+	data.Pagination.UserRequested = userIdRequested
+
+	log.Println(data.Pagination.UserRequested)
+
+	helpers.RenderTemplate(w, "user", data)
 }

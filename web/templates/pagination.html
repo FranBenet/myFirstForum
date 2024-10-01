@@ -142,3 +142,27 @@
         </ul>
     </nav>
 {{end}}
+
+{{ define "pagination-user" }}
+    <nav aria-label="Page navigation" class="page-navigation">
+        <ul class="paginations">
+        {{ if gt .CurrentPage 1 }}        
+        <li class="page-item">
+            <a class="page-link" href="/user?page={{sub .CurrentPage 1}}&user={{.UserRequested}}" aria-label="Previous">&laquo;</a>
+        </li>
+        {{end}}
+
+        {{ range $i := (seq 1 .TotalPages)}}
+        <li class="page-item active">
+            <a class="{{ if eq $i $.CurrentPage}} page-link-active {{else}} page-link {{end}}" href="/user?page={{$i}}&user={{.UserRequested}}">{{$i}}</a>
+        </li>   
+        {{end}}
+
+        {{if lt .CurrentPage .TotalPages}}
+        <li class="page-item">
+            <a class="page-link" href="/user?page={{add .CurrentPage 1}}&user={{.UserRequested}}" aria-label="Next">&raquo;</a>
+        </li>
+        {{end}}
+        </ul>
+    </nav>
+{{end}}

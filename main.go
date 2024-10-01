@@ -32,7 +32,7 @@ func routes(db *sql.DB) *http.ServeMux {
 
 	mux.Handle("/search", mw.MiddlewareSession(http.HandlerFunc(handler.Search)))
 	mux.Handle("/filter", mw.MiddlewareSession(http.HandlerFunc(handler.Filter)))
-	mux.Handle("/user/", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
+	mux.Handle("/user", mw.MiddlewareSession(http.HandlerFunc(handler.UsersPost)))
 
 	mux.Handle("/profile", mw.MiddlewareSession(http.HandlerFunc(handler.Profile)))
 	mux.Handle("/liked", mw.MiddlewareSession(http.HandlerFunc(handler.LikedPosts)))
