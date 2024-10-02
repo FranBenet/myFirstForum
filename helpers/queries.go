@@ -1,29 +1,12 @@
 package helpers
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 	"strconv"
-
-	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
-	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
-
-func ProfilePageData(db *sql.DB, userId int) (models.ProfilePageData, error) {
-	var profilePageData models.ProfilePageData
-	user, err := dbaser.UserById(db, userId)
-	if err != nil {
-		return models.ProfilePageData{}, err
-	}
-
-	profilePageData.User = models.User{Avatar: user.Avatar, Name: user.Name, Email: user.Email}
-	profilePageData.Metadata.LoggedIn = true
-
-	return profilePageData, nil
-}
 
 // Adds a new "error" or "success" message to a given url (referer). You need to specify the key for the query parameter (error or success).
 func AddQueryMessage(referer string, key string, message string) string {
