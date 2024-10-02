@@ -56,6 +56,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
 	// valid, err := dbaser.ValidateLogin(db, "PageTurner@example.com", "SbdfbWE345$")
 	// uuid, err := dbaser.GenerateUuid(32)
 	// fmt.Println(uuid, err)

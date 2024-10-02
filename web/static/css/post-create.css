@@ -65,6 +65,7 @@
     flex-flow: row nowrap;
     gap: 60px;
 }
+
 .form-category-selector-container{
     width: 350px;
     background-color: var(--primary-color-op);
@@ -77,6 +78,7 @@
    
 
  }
+
 .form-category-selector{
     top: 14px;
     left: 10px;
@@ -96,8 +98,6 @@
 .form-categories-area{
     width:350px
 }
-
-
 
 .form-buttons{
     align-self: center;
@@ -129,9 +129,6 @@
     border: 2px solid var(--primary-color);
     color: var(--primary-color);
 }
-
-
-
 
 .dropdown {
     position: relative;

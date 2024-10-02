@@ -44,11 +44,8 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 	//	Get the number of page requested from the query parameters of the URL.
 	requestedPage, err := helpers.GetQueryPage(r)
 	if err != nil {
-		log.Println("Page is not available or specified")
 		requestedPage = 1
 	}
-
-	log.Println("UserID:", userID, "Requested page number: ", requestedPage)
 
 	//	Get data according to the page requested.
 	data, err := helpers.MainPageData(h.db, userID, requestedPage)
@@ -59,6 +56,8 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
+	log.Println("Data for Homepage succesfully collected")
 
 	//	Get error/successful messages from the query parameters
 	errorMessage, successMessage, err := helpers.GetQueryMessages(r)
@@ -72,6 +71,7 @@ func (h *Handler) Homepage(w http.ResponseWriter, r *http.Request) {
 
 	//	Rendering tempaltes and sending Response.
 	helpers.RenderTemplate(w, "home", data)
+	log.Println("Homepage succesfully served")
 }
 
 func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
@@ -101,16 +101,22 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Redirecting to: %s", finalURL)
 
 			http.Redirect(w, r, finalURL, http.StatusSeeOther)
-			return
 
+			return
 		}
 
 		data, err := helpers.PostPageData(h.db, postId, userID)
 		if err != nil {
 			log.Println(err)
+
 			finalURL := helpers.AddQueryMessage("http://localhost:8080/", "error", "Post does not exist.")
+
 			http.Redirect(w, r, finalURL, http.StatusSeeOther)
+
+			return
 		}
+
+		log.Println("Data for GetPost succesfully collected")
 
 		//	Get error/successful messages from the query parameters
 		errorMessage, successMessage, err := helpers.GetQueryMessages(r)
@@ -121,10 +127,12 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		//	Add Error/success messages to the data.
 		data.Metadata.Error = errorMessage
 		data.Metadata.Success = successMessage
-
+		data.Metadata.CurrentPage = "/post/"
 		helpers.RenderTemplate(w, "post-id", data)
-		return
 
+		log.Println("GetPost succesfully served")
+
+		return
 	} else {
 		log.Println("Path Not Allowed.")
 
@@ -134,6 +142,8 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Redirecting to: %s", finalURL)
 
 		http.Redirect(w, r, finalURL, http.StatusSeeOther)
+
+		return
 	}
 }
 
@@ -153,6 +163,7 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, "/#registerModal", http.StatusSeeOther)
 
+		return
 	} else {
 		switch r.Method {
 		case http.MethodGet:
@@ -170,6 +181,8 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			log.Println("Data for NewPost succesfully collected")
+
 			//	Get error/successful messages from the query parameters
 			errorMessage, successMessage, err := helpers.GetQueryMessages(r)
 			if err != nil {
@@ -179,9 +192,13 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 			//	Add Error/success messages to the data.
 			data.Metadata.Error = errorMessage
 			data.Metadata.Success = successMessage
+			data.Metadata.CurrentPage = "/post/create"
 
 			helpers.RenderTemplate(w, "post-create", data)
 
+			log.Println("NewPost succesfully served")
+
+			return
 		case http.MethodPost:
 			// Parse form values
 			r.ParseForm()
@@ -235,6 +252,9 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 
 				return
 			}
+
+			log.Println("Data for NewPost succesfully added in the database.")
+
 			//	Get the page where user requested to log in.
 			referer := r.Referer()
 
@@ -243,6 +263,10 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Redirecting to: %s", finalURL)
 
 			http.Redirect(w, r, finalURL, http.StatusFound)
+
+			log.Println("NewPost succesfully served")
+
+			return
 
 		default:
 			w.Header().Set("Allow", "GET, POST")
@@ -265,8 +289,6 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 	//	Get userID from the context request. If 0 > user is not logged in.
 	userID := r.Context().Value(models.UserIDKey).(int)
 
-	log.Println("UserID:", userID, "reacted to a post.")
-
 	//	Check the request comes from a logged-in user or not and act in consequence
 	if userID == 0 {
 		referer := r.Referer()
@@ -285,11 +307,12 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 			// Parse form values
 			r.ParseForm()
 
-			// Get the Post ID
+			// Get the Post ID that was reacted
 			id := r.FormValue("post_Id")
 
 			if id != "" {
-				log.Println("User reacted to a Post. Id = ", id)
+				log.Println("User reacted to the Post.Id = ", id)
+
 				postID, err := strconv.Atoi(id)
 				if err != nil {
 					log.Println(err)
@@ -316,7 +339,22 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 					reaction = false
 				}
 				newReaction := models.PostReaction{PostId: postID, UserId: userID, Liked: reaction}
-				dbaser.AddPostReaction(h.db, newReaction)
+
+				_, err = dbaser.AddPostReaction(h.db, newReaction)
+				if err != nil {
+					log.Println("We could not save this reaction", err)
+
+					referer := r.Referer()
+
+					finalURL := helpers.AddQueryMessage(referer, "error", "Ups! Something happened. Try again later.")
+
+					log.Printf("Redirecting to: %s", finalURL)
+
+					http.Redirect(w, r, finalURL, http.StatusSeeOther)
+
+					return
+				}
+				log.Println("Reaction succesfully included in the data base")
 			}
 
 			//	Get Comment ID
@@ -351,7 +389,23 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 					reaction = false
 				}
 				newReaction := models.CommentReaction{CommentId: commentID, UserId: userID, Liked: reaction}
-				dbaser.AddCommentReaction(h.db, newReaction)
+
+				_, err = dbaser.AddCommentReaction(h.db, newReaction)
+				if err != nil {
+					log.Println("We could not save this reaction", err)
+
+					referer := r.Referer()
+
+					finalURL := helpers.AddQueryMessage(referer, "error", "Ups! Something happened. Try again later.")
+
+					log.Printf("Redirecting to: %s", finalURL)
+
+					http.Redirect(w, r, finalURL, http.StatusSeeOther)
+
+					return
+				}
+
+				log.Println("Reaction succesfully included in the data base")
 			}
 
 			//	Get the page where user requested to log in.
@@ -363,6 +417,7 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 			// Redirect to the referer with the error included in the query.
 			http.Redirect(w, r, finalURL, http.StatusFound)
 
+			return
 		default:
 			w.Header().Set("Allow", "POST")
 			http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
@@ -432,12 +487,15 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			log.Println("Comment succesfully added to the database")
+
 			finalURL := helpers.AddQueryMessage(referer, "success", "Comment created succesfully!")
 
 			log.Printf("Redirecting to: %s", finalURL)
 
 			http.Redirect(w, r, finalURL, http.StatusFound)
 
+			return
 		default:
 			w.Header().Set("Allow", "POST")
 			http.Error(w, "Method is not allowed", http.StatusMethodNotAllowed)
@@ -477,6 +535,7 @@ func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+
 }
 
 func (h *Handler) InternalError(w http.ResponseWriter, r *http.Request) {

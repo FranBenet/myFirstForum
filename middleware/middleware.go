@@ -42,18 +42,18 @@ func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Hand
 			//	Check if userID has a valid session
 			exists, err := dbaser.ValidSession(mw.db, sessionUUID)
 			if err != nil {
-				log.Printf("No valid session: %v", err)
+				log.Printf("Middleware: No valid session. %v", err)
 				userID = 0
 
 			} else if !exists {
-				log.Printf("Session does not exist: %v", err)
+				log.Printf("Middleware: Session does not exist. %v", err)
 				userID = 0
 
 			} else {
 				//	Get UserID from database
 				userID, err = dbaser.SessionUser(mw.db, sessionUUID)
 				if err != nil {
-					log.Printf("Error getting user ID: %v", err)
+					log.Printf("Middleware: Error getting user ID. %v", err)
 					userID = 0
 				}
 			}

@@ -2,13 +2,10 @@
     width: 95%;
     border-radius: 40px;
     margin-top: 40px;
-    /* align-self: start; */
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-    gap: 30px;
-    /* background-color: green; */
-   
+    gap: 30px; 
 }
 
 /* POST - OVERVIEW STYLE */
@@ -16,8 +13,7 @@
     position: relative;
     width: 100%;
     display: flex;
-    flex-flow: column nowrap;
-    
+    flex-flow: column nowrap;    
 }
 
 .header-container{
@@ -31,7 +27,6 @@
     justify-content: space-between;
     align-items: center;
     width: 80%;
-
 }
 
 .post-username{
@@ -42,17 +37,18 @@
     font-size: 14px;
     font-weight: 700;
     line-height: 1.61;
-
     margin: 0px;
     margin-bottom: 0px;
     padding: 8px 10px;
     border-radius: 5px;
 }
+
 .post-category-container{
     display: flex;
     flex-flow: row nowrap;
     gap: 0px 30px;
 }
+
 .post-category{
     margin:0px;
     text-transform: uppercase;
@@ -61,7 +57,6 @@
     font-size: 14px;
     line-height: 1.61;
     color: black;
-
 }
 
 .post-container {
@@ -78,8 +73,7 @@
     color: black;
 }
 
-.like-container{
-    
+.like-container{    
     display: flex;
     flex-flow: row nowrap;
     gap: 30px;
@@ -97,7 +91,6 @@
 .post-title{
     margin:0px;
     margin-bottom: 32px;
-
     font-family: "Ubuntu", sans-serif;
     font-weight: 700 ;
     font-size: 48px;
@@ -108,8 +101,6 @@
 .post-description{
     margin:0px;
     margin-bottom: 35px;
-
-    text-transform: capitalize ;
     font-family: "Ubuntu", sans-serif;
     font-weight: 400 ;
     font-size: 16px;

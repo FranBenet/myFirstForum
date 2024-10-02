@@ -33,6 +33,10 @@ var funcMap = template.FuncMap{
 			return "My liked Posts"
 		case "/profile":
 			return "Profile"
+		case "/post/create":
+			return "Create Post"
+		case "/post/":
+			return "Post"
 		default:
 			return "Current Page"
 		}

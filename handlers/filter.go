@@ -55,9 +55,12 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, finalURL, http.StatusSeeOther)
 	}
-	log.Println("Posts to be displayed: ", len(data.Posts))
+
+	log.Println("Searched Posts data succesfully collected")
 
 	helpers.RenderTemplate(w, "search", data)
+
+	log.Println("Searched Posts succesfully served")
 }
 
 // To handle "/filter"
@@ -141,6 +144,8 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 
 			http.Redirect(w, r, finalURL, http.StatusSeeOther)
 		}
+		log.Println("Category Posts data succesfully collected")
+
 		// Get error/successful messages from the query parameters
 		errorMessage, successMessage, err := helpers.GetQueryMessages(r)
 		if err != nil {
@@ -153,6 +158,8 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 		data.Pagination.IdRequested = filterCategory
 		// log.Println(data.Trending)
 		helpers.RenderTemplate(w, "category_page", data)
+
+		log.Println("Category Posts succesfully served")
 
 	} else if filterSort != "" && filterCategory == "" {
 		log.Println("UserID:", userID, "Requested Filter by: ", filterSort, "Page number: ", requestedPage)
@@ -171,7 +178,21 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 
 				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 			}
+			log.Println("Trend Posts succesfully collected")
+
+			// Get error/successful messages from the query parameters
+			errorMessage, successMessage, err := helpers.GetQueryMessages(r)
+			if err != nil {
+				log.Println("Error getting Messages: ", err)
+			}
+
+			// Add Error/success messages to the data.
+			data.Metadata.Error = errorMessage
+			data.Metadata.Success = successMessage
+
 			helpers.RenderTemplate(w, "filter_liked_page", data)
+
+			log.Println("Trend Posts succesfully served")
 
 		case "dislikes":
 			data, err := helpers.UntrendingPageData(h.db, userID, requestedPage)
@@ -186,6 +207,9 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 
 				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 			}
+
+			log.Println("Disliked Posts succesfully collected")
+
 			// Get error/successful messages from the query parameters
 			errorMessage, successMessage, err := helpers.GetQueryMessages(r)
 			if err != nil {
@@ -196,6 +220,7 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 			data.Metadata.Error = errorMessage
 			data.Metadata.Success = successMessage
 			helpers.RenderTemplate(w, "filter_dislikes_page", data)
+			log.Println("Disliked Posts succesfully served")
 
 		default:
 			http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -276,10 +301,12 @@ func (h *Handler) UsersPost(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, finalURL, http.StatusSeeOther)
 	}
+	log.Println("Users Posts succesfully collected")
 
 	data.Pagination.IdRequested = userIdRequested
 
 	log.Println(data.Pagination.IdRequested)
 
 	helpers.RenderTemplate(w, "user", data)
+	log.Println("Users Posts succesfully served")
 }

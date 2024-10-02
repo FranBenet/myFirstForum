@@ -4,7 +4,6 @@
     box-shadow: 2px 2px 6px 1px var(--primary-color-op);
     padding: 1em;
     width: 95%;
-
     background-color: var(--secondary-color);
     cursor: pointer;
     position:relative;
@@ -23,11 +22,7 @@
     margin:auto;
 }
 
-
-
-
 .filter-section{
-    /* background-color: red; */
     width: 100%;
     display: flex;
     flex-flow: row nowrap;
@@ -37,35 +32,33 @@
 
 /* Dropdown menu for profile */
 
-/* The container <div> - needed to position the dropdown content */
 .category-filter-dropdown {
     position: relative;
-    /* display: inline-block; */
 }
 
 /* Style The Dropdown Button */
 .category-filter-dropdown-box {
-background-color: var(--secondary-color);
-box-shadow: 2px 2px 6px 1px var(--primary-color-op);
-box-sizing:border-box;
-border-radius: 10px;
-border: none; 
-padding: 1em;
-cursor: pointer;
-min-width: 260px;
+    background-color: var(--secondary-color);
+    box-shadow: 2px 2px 6px 1px var(--primary-color-op);
+    box-sizing:border-box;
+    border-radius: 10px;
+    border: none; 
+    padding: 1em;
+    cursor: pointer;
+    min-width: 260px;
 }
  
 /* Dropdown Content (Hidden by Default) */
 .category-filter-content {
-display: none;
-position: absolute;
-background-color: #f9f9f9;
-min-width: 260px;
-box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-z-index: 1;
-border-radius: 10px;
-max-height: 376px;
-overflow: auto;
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 260px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 10px;
+    max-height: 376px;
+    overflow: auto;
 }
 
 /* Links inside the dropdown */
@@ -90,30 +83,23 @@ overflow: auto;
 
 /* Show the dropdown menu on hover */
 .category-filter-dropdown:hover .category-filter-content {
-display: flex;
-flex-flow: column nowrap;
-
+    display: flex;
+    flex-flow: column nowrap;
 }
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .category-filter-dropdown:hover .category-filter-dropdown-box {
-background-color: var(--secondary-color);
+    background-color: var(--secondary-color);
 }
 
 /* Color the whole horizontal area */
 .category-option {
-width: 100%;
-margin: 0px;
+    width: 100%;
+    margin: 0px;
 }
-
-
-
-
-
 
 .other-filter-dropdown {
     position: relative;
-    /* display: inline-block; */
 }
 
 .other-filter-dropdown-box {
@@ -125,7 +111,6 @@ margin: 0px;
     min-width: 260px;
     padding: 1em;
     cursor: pointer;
-    
 }
 
 .other-filter-content {
@@ -135,7 +120,6 @@ margin: 0px;
     min-width: 260px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-
     border-radius: 10px;
     max-height: 376px;
     overflow: auto;
@@ -150,6 +134,7 @@ margin: 0px;
     box-sizing: border-box;
     border: 2px solid #f9f9f9;
 }
+
 /* Change color of dropdown links on hover */
 .other-filter-content a:hover {
     background-color: var(--primary-color);
@@ -158,6 +143,7 @@ margin: 0px;
     color: white;
     font-weight: 500;
 }
+
 .other-filter-dropdown:hover .other-filter-content {
     display: flex;
     flex-flow: column nowrap;
@@ -170,6 +156,4 @@ margin: 0px;
 
 .other-option {
     width: 100%;
-    /* margin: 0px; */
-
 }

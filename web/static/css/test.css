@@ -29,14 +29,10 @@
   
 .trending-section-xx {
     grid-area: miniatures;
-    /* margin-right: 20px;    */
     display: flex;
     flex-flow: row nowrap;
     gap: 40px;
     background-color: rgb(238, 255, 0);
-    /* justify-self: center; */
-    /* width: 460px; */
-    /* align-items: start; */
 }
   
   

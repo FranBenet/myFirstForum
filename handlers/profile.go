@@ -46,8 +46,13 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 			}
+			log.Println("Profile data succesfully collected")
+
 			data.Metadata.CurrentPage = "/profile"
+
 			helpers.RenderTemplate(w, "profile", data)
+
+			log.Println("Profile succesfully served")
 		}
 
 	case http.MethodPost:
@@ -64,6 +69,8 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		log.Printf("User selected avatar: %v ", newAvatar)
+
+		log.Println("Avatar succesfully updated")
 
 		log.Printf("Redirecting to: %s", finalURL)
 
@@ -132,6 +139,7 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 		log.Println("Liked Posts collected succesfully")
 		data.Metadata.CurrentPage = "/liked"
 		helpers.RenderTemplate(w, "liked", data)
+		log.Println("Liked Posts succesfully served")
 	}
 }
 
@@ -189,6 +197,9 @@ func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Posts for user: %v collected succesfully", userID)
 
 		data.Metadata.CurrentPage = "/myposts"
+
 		helpers.RenderTemplate(w, "myPosts", data)
+
+		log.Println("My Posts collected served")
 	}
 }

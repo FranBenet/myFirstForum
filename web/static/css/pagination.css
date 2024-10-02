@@ -43,12 +43,6 @@
     pointer-events: none;
 }
 
-/* Style for the current active page button. */
-/* .page-item :hover:not(.active) {
-    background-color: var(--primary-color-op);
-    border-radius: 5px;
-} */
-
 .page-item.active .page-link {
     color: var(--secondary-color);
     background-color: var(--primary-color);
