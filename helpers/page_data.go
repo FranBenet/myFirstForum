@@ -206,3 +206,18 @@ func UsersPageData(db *sql.DB, userId, userIdRequested, page int) (models.MainPa
 	}
 	return mainData, nil
 }
+
+func CategoryFilterPageData(db *sql.DB, categoryId, userId, page int) (models.MainPage, error) {
+	var mainData models.MainPage
+	posts, err := dbaser.PostsByCategory(db, categoryId)
+	if err != nil {
+		log.Print(err)
+		mainData.Metadata.Error = err.Error()
+		return mainData, err
+	}
+	mainData, err = PageData(db, posts, "category", userId, page)
+	if err != nil {
+		return mainData, err
+	}
+	return mainData, nil
+}

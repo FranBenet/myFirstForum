@@ -138,6 +138,23 @@ func ValidateLogin(db *sql.DB, email, password string) (models.User, error) {
 	return user, nil
 }
 
+func UpdateAvatar(db *sql.DB, userId int, path string) (int, error) {
+	stmt, err := db.Prepare("update users set avatar=? where id=?")
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+	res, err := stmt.Exec(path, userId)
+	if err != nil {
+		return 0, err
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+	return int(rows), nil
+}
+
 func RandomAvatar() (string, error) {
 	imgsPath := "./web/static/img/avatars/"
 	dirEntries, err := os.ReadDir(imgsPath)
