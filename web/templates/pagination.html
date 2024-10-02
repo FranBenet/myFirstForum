@@ -154,7 +154,7 @@
 
         {{ range $i := (seq 1 .TotalPages)}}
         <li class="page-item active">
-            <a class="{{ if eq $i $.CurrentPage}} page-link-active {{else}} page-link {{end}}" href="/user?page={{$i}}&user={{.UserRequested}}">{{$i}}</a>
+            <a class="{{ if eq $i $.CurrentPage}} page-link-active {{else}} page-link {{end}}" href="/user?page={{$i}}&user={{$.UserRequested}}">{{$i}}</a>
         </li>   
         {{end}}
 

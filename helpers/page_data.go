@@ -200,7 +200,7 @@ func UsersPageData(db *sql.DB, userId, userIdRequested, page int) (models.MainPa
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
-	mainData, err = PageData(db, posts, "", userId, page)
+	mainData, err = PageData(db, posts, "main", userId, page)
 	if err != nil {
 		return mainData, err
 	}
