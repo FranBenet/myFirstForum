@@ -215,7 +215,7 @@ func CategoryFilterPageData(db *sql.DB, categoryId, userId, page int) (models.Ma
 		mainData.Metadata.Error = err.Error()
 		return mainData, err
 	}
-	mainData, err = PageData(db, posts, "category", userId, page)
+	mainData, err = PageData(db, posts, "main", userId, page)
 	if err != nil {
 		return mainData, err
 	}
