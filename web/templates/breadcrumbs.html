@@ -2,7 +2,7 @@
     <nav class="breadcrumb-navigation-menu">
         <ul class="breadcrumb">
             <li><a href="/">Home</a></li>
-                <li>Current Page</li>
+                <li><a href="{{.Metadata.CurrentPage}}">{{comp .Metadata.CurrentPage}}</a></li>
         </ul>
     </nav>
 {{end}}

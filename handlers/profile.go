@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/helpers"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
 )
@@ -45,17 +46,26 @@ func (h *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 			}
-
+			data.Metadata.CurrentPage = "/profile"
 			helpers.RenderTemplate(w, "profile", data)
 		}
 
 	case http.MethodPost:
 		referer := r.Referer()
-
+		finalURL := referer
 		r.ParseForm()
 		newAvatar := r.FormValue("avatar")
-		//	CALL FUNCTION TO UPDATE AVATAR PATH
+
+		_, err := dbaser.UpdateAvatar(h.db, userID, newAvatar)
+		if err != nil {
+			log.Println(err)
+
+			finalURL = helpers.AddQueryMessage(referer, "error", "Sorry, we could not update your avatar picture. Try again later.")
+		}
+
 		log.Printf("User selected avatar: %v ", newAvatar)
+
+		log.Printf("Redirecting to: %s", finalURL)
 
 		http.Redirect(w, r, referer, http.StatusSeeOther)
 
@@ -120,12 +130,11 @@ func (h *Handler) LikedPosts(w http.ResponseWriter, r *http.Request) {
 		}
 
 		log.Println("Liked Posts collected succesfully")
-
+		data.Metadata.CurrentPage = "/liked"
 		helpers.RenderTemplate(w, "liked", data)
 	}
 }
 
-// To handle "/posts/mined"
 func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 	log.Println("Requested: MyPosts Handler")
 
@@ -179,6 +188,7 @@ func (h *Handler) MyPosts(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Posts for user: %v collected succesfully", userID)
 
+		data.Metadata.CurrentPage = "/myposts"
 		helpers.RenderTemplate(w, "myPosts", data)
 	}
 }

@@ -18,15 +18,16 @@ type PostPage struct {
 }
 
 type Metadata struct {
-	Success  string
-	Error    string
-	LoggedIn bool
+	Success     string
+	Error       string
+	LoggedIn    bool
+	CurrentPage string
 }
 
 type Pagination struct {
-	CurrentPage   int
-	TotalPages    int
-	UserRequested string
+	CurrentPage int
+	TotalPages  int
+	IdRequested string
 }
 
 type ProfilePageData struct {

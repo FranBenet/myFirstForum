@@ -221,3 +221,16 @@ func CategoryFilterPageData(db *sql.DB, categoryId, userId, page int) (models.Ma
 	}
 	return mainData, nil
 }
+
+func ProfilePageData(db *sql.DB, userId int) (models.ProfilePageData, error) {
+	var profilePageData models.ProfilePageData
+	user, err := dbaser.UserById(db, userId)
+	if err != nil {
+		return models.ProfilePageData{}, err
+	}
+
+	profilePageData.User = models.User{Avatar: user.Avatar, Name: user.Name, Email: user.Email}
+	profilePageData.Metadata.LoggedIn = true
+
+	return profilePageData, nil
+}
