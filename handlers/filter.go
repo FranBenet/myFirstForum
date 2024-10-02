@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -87,8 +86,6 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 		requestedPage = 1
 	}
 
-	log.Println("UserID:", userID, "Requested page number: ", requestedPage)
-
 	filterCategory, err := helpers.GetQueryFilter(r, "category")
 	if err != nil {
 		log.Println(err)
@@ -98,6 +95,8 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
+
+	log.Println("UserID:", userID, "Requested Filter: ", filterCategory, filterSort, "Page number: ", requestedPage)
 
 	if filterSort == "" && filterCategory == "" {
 		log.Println("No Filter Applied")
@@ -112,7 +111,7 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 		return
 
 	} else if filterCategory != "" && filterSort == "" {
-		log.Println("UserID:", userID, "Requested Filter by: ", filterCategory, "Page number: ", requestedPage)
+		log.Println("UserID:", userID, "Requested Category: ", filterCategory, "Page number: ", requestedPage)
 
 		categoryId, err := strconv.Atoi(filterCategory)
 		if err != nil {
@@ -129,15 +128,31 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println(categoryId)
-
 		// Get data according to the page requested.
-		// data, err := helpers.CollectCategoryData(h.db, userID, requestedPage, categoryId)
-		// if err != nil {
-		// 	log.Println("Error getting category data", err)
-		// }
+		data, err := helpers.CategoryFilterPageData(h.db, categoryId, userID, requestedPage)
+		if err != nil {
+			log.Println("Error getting Category posts: ", err)
 
-		// helpers.RenderTemplate(w, "home", data)
+			referer := r.Referer()
+
+			finalURL := helpers.AddQueryMessage(referer, "error", "Something happend and  we couldn't get posts for that category. Try again later!")
+
+			log.Printf("Redirecting to: %s", finalURL)
+
+			http.Redirect(w, r, finalURL, http.StatusSeeOther)
+		}
+		// Get error/successful messages from the query parameters
+		errorMessage, successMessage, err := helpers.GetQueryMessages(r)
+		if err != nil {
+			log.Println("Error getting Messages: ", err)
+		}
+
+		// Add Error/success messages to the data.
+		data.Metadata.Error = errorMessage
+		data.Metadata.Success = successMessage
+		data.Pagination.IdRequested = filterCategory
+		// log.Println(data.Trending)
+		helpers.RenderTemplate(w, "category_page", data)
 
 	} else if filterSort != "" && filterCategory == "" {
 		log.Println("UserID:", userID, "Requested Filter by: ", filterSort, "Page number: ", requestedPage)
@@ -171,7 +186,15 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 
 				http.Redirect(w, r, finalURL, http.StatusSeeOther)
 			}
+			// Get error/successful messages from the query parameters
+			errorMessage, successMessage, err := helpers.GetQueryMessages(r)
+			if err != nil {
+				log.Println("Error getting Messages: ", err)
+			}
 
+			// Add Error/success messages to the data.
+			data.Metadata.Error = errorMessage
+			data.Metadata.Success = successMessage
 			helpers.RenderTemplate(w, "filter_dislikes_page", data)
 
 		default:
@@ -254,9 +277,9 @@ func (h *Handler) UsersPost(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, finalURL, http.StatusSeeOther)
 	}
 
-	data.Pagination.UserRequested = userIdRequested
+	data.Pagination.IdRequested = userIdRequested
 
-	log.Println(data.Pagination.UserRequested)
+	log.Println(data.Pagination.IdRequested)
 
 	helpers.RenderTemplate(w, "user", data)
 }

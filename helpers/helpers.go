@@ -25,6 +25,18 @@ var funcMap = template.FuncMap{
 		}
 		return s
 	},
+	"comp": func(a string) string {
+		switch a {
+		case "/myposts":
+			return "My Posts"
+		case "/liked":
+			return "My liked Posts"
+		case "/profile":
+			return "Profile"
+		default:
+			return "Current Page"
+		}
+	},
 }
 
 func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
@@ -37,7 +49,6 @@ func RenderTemplate(w http.ResponseWriter, name string, data interface{}) {
 		"web/templates/main-gallery.html",
 		"web/templates/post-templates.html",
 		"web/templates/pagination.html",
-		// "web/templates/pagination-likedposts.html",
 	}
 
 	//	Adding to the Templates the needed html page to be sent for each specific page request.

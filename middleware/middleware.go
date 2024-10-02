@@ -31,7 +31,7 @@ func (mw *Middleware) MiddlewareSession(requestedHandler http.Handler) http.Hand
 		//	Get cookie from request
 		sessionToken, err := r.Cookie("session_token")
 		if err != nil {
-			log.Println("No cookie available:", err)
+			log.Println("Middleware: No cookie available:", err)
 			userID = 0
 
 		} else {

@@ -273,6 +273,8 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 		finalURL := helpers.AddQueryMessage(referer, "error", "Need to be logged in for that action")
 
+		log.Printf("Redirecting to: %s", finalURL)
+
 		http.Redirect(w, r, finalURL+"#loginModal", http.StatusSeeOther)
 
 		return
@@ -295,6 +297,8 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 					referer := r.Referer()
 
 					finalURL := helpers.AddQueryMessage(referer, "error", "Ups! Something happened. Try again later.")
+
+					log.Printf("Redirecting to: %s", finalURL)
 
 					http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
@@ -329,6 +333,8 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 					finalURL := helpers.AddQueryMessage(referer, "error", "Ups! Something happened. Try again later.")
 
+					log.Printf("Redirecting to: %s", finalURL)
+
 					http.Redirect(w, r, finalURL, http.StatusSeeOther)
 
 					return
@@ -353,6 +359,7 @@ func (h *Handler) Reaction(w http.ResponseWriter, r *http.Request) {
 
 			finalURL := helpers.CleanQueryMessages(referer)
 
+			log.Printf("Redirecting to: %s", finalURL)
 			// Redirect to the referer with the error included in the query.
 			http.Redirect(w, r, finalURL, http.StatusFound)
 

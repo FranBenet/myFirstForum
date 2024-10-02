@@ -36,7 +36,7 @@ func AddQueryMessage(referer string, key string, message string) string {
 	}
 
 	//	Delete any queries that the url may have
-	refererURL.RawQuery = ""
+	// refererURL.RawQuery = ""
 
 	// Get the current query values from the referer URL
 	query := refererURL.Query()
