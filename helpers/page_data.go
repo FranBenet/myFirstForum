@@ -209,7 +209,7 @@ func UsersPageData(db *sql.DB, userId, userIdRequested, page int) (models.MainPa
 
 func CategoryFilterPageData(db *sql.DB, categoryId, userId, page int) (models.MainPage, error) {
 	var mainData models.MainPage
-	posts, err := dbaser.PostsByCategory(db, categoryId)
+	posts, err := dbaser.PostsByCategory(db, categoryId, page)
 	if err != nil {
 		log.Print(err)
 		mainData.Metadata.Error = err.Error()

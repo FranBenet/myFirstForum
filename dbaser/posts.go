@@ -95,7 +95,7 @@ func UserLikedPosts(db *sql.DB, userId int) ([]models.Post, error) {
 
 func PostsByCategory(db *sql.DB, categoryId, page int) ([]models.Post, error) {
 	var result []models.Post
-	row, err := db.Query("select * from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", categoryId)
+	row, err := db.Query("select posts.* from posts join post_categs on post_id=posts.id where categ_id=? order by created desc", categoryId)
 	if err == sql.ErrNoRows {
 		return result, nil
 	} else if err != nil {
