@@ -34,9 +34,19 @@ Alternatively, you can use Docker to set up and run the application:
 
 
 Build the Docker image:
-
+`docker build -t <image name> .`
 
 Run the Docker container:
+`docker run -p 8080:8080 [--name <optional container name>] -it <image name>`
+
+After closing the application, remember to stop the container:
+`docker container stop <container name>`
+
+If you didn't specify a name for the container, you can check its name by:
+`docker container ls`
+
+To remove (delete) the container:
+`docker container rm <container name>`
 
 ### Summarized Description:
 
