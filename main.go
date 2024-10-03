@@ -48,9 +48,6 @@ func routes(db *sql.DB) *http.ServeMux {
 }
 
 func main() {
-	// dbaser.InitDb()
-	// dbaser.PopulateDb()
-	// user := models.User{"madrabbit@matrix.com", "whiterabbit", "Rz_;*$78)"}
 	db, err := dbaser.DbHandle("./forum.db")
 	if err != nil {
 		log.Fatal(err)
