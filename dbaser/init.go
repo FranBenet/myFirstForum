@@ -100,24 +100,24 @@ func InitDb(path string) error {
 	return nil
 }
 
-func PopulateDb() {
-	db, err := sql.Open("sqlite3", "./forum.db")
-	if err != nil {
-		log.Fatal("Error opening database file")
-	}
-	defer db.Close()
-	// Insert data.
-	for table, statement := range insertStatements {
-		stmt, err := db.Prepare(statement)
-		if err != nil {
-			log.Fatal("Error preparing DB statement: ", statement)
-		}
-		defer stmt.Close()
-		res, err := stmt.Exec()
-		if err != nil {
-			log.Fatal("Error inserting data: ", err)
-		}
-		nrow, _ := res.RowsAffected()
-		log.Printf("Number of rows inserted into table %s: %d\n", table, nrow)
-	}
-}
+// func PopulateDb() {
+// 	db, err := sql.Open("sqlite3", "./forum.db")
+// 	if err != nil {
+// 		log.Fatal("Error opening database file")
+// 	}
+// 	defer db.Close()
+// 	// Insert data.
+// 	for table, statement := range insertStatements {
+// 		stmt, err := db.Prepare(statement)
+// 		if err != nil {
+// 			log.Fatal("Error preparing DB statement: ", statement)
+// 		}
+// 		defer stmt.Close()
+// 		res, err := stmt.Exec()
+// 		if err != nil {
+// 			log.Fatal("Error inserting data: ", err)
+// 		}
+// 		nrow, _ := res.RowsAffected()
+// 		log.Printf("Number of rows inserted into table %s: %d\n", table, nrow)
+// 	}
+// }

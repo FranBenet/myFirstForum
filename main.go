@@ -53,8 +53,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	//	PROVISIONAL STARTING WEB SERVER CODE
+
 	mux := routes(db)
+
 	// Creating a server
 	server := &http.Server{
 		Addr:     ":8080",
@@ -62,6 +63,7 @@ func main() {
 		ErrorLog: log.New(os.Stderr, "server: ", log.LstdFlags),
 	}
 	fmt.Println("Server Running in port 8080...")
+
 	// Listen and Serve the server. If error, Fatal error.
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
