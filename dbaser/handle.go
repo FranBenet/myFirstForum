@@ -7,10 +7,12 @@ import (
 )
 
 func DbHandle(path string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s", path))
+	log.Println("Initialising database...")
+	err := InitDb(path)
 	if err != nil {
-		log.Println("Error opening database file")
 		return nil, err
 	}
+	//}
+	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s", path))
 	return db, nil
 }

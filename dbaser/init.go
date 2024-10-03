@@ -3,6 +3,7 @@ package dbaser
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"io/fs"
 	"log"
 	"os"
@@ -67,31 +68,36 @@ expires datetime
 );`,
 }
 
-func InitDb() {
-	db, err := sql.Open("sqlite3", "./forum.db")
+func InitDb(path string) error {
+	db, err := sql.Open("sqlite3", fmt.Sprintf("file:%s", path))
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
-			os.Create("forum.db")
-			db, err = sql.Open("sqlite3", "./forum.db")
+			log.Println("Creating database file:", path)
+			os.Create(path)
+			db, err = sql.Open("sqlite3", fmt.Sprintf("file:%s", path))
 			if err != nil {
-				log.Fatal("Error opening database file")
-			} else {
-				log.Fatal("Error opening database file")
+				return err
 			}
+			log.Println("Database file created!")
 		}
 	}
 	defer db.Close()
 	// Create tables.
+	log.Println("Creating tables...")
 	for _, statement := range createStatements {
 		stmt, err := db.Prepare(statement)
 		if err != nil {
-			log.Fatal("Error preparing DB statement: ", statement)
+			log.Println("Error preparing DB statement: ", statement)
+			return err
 		}
 		defer stmt.Close()
 		if _, err = stmt.Exec(); err != nil {
-			log.Fatal("Error creating database table: ", err)
+			log.Println("Error creating database table: ", err)
+			return err
 		}
 	}
+	log.Println("Tables created successfully!")
+	return nil
 }
 
 func PopulateDb() {
