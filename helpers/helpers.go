@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/dbaser"
 	"gitea.koodsisu.fi/josepfrancescbenetmorella/literary-lions/models"
@@ -180,4 +181,8 @@ func CreatePostData(db *sql.DB, userId int) (models.MainPage, error) {
 	}
 	createPostData.Categories = categories
 	return createPostData, nil
+}
+
+func IsEmptyString(content string) bool {
+	return strings.TrimSpace(content) == ""
 }

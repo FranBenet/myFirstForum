@@ -209,6 +209,22 @@ func (h *Handler) NewPost(w http.ResponseWriter, r *http.Request) {
 				Content: r.FormValue("content"),
 			}
 
+			if helpers.IsEmptyString(r.FormValue("title")) || helpers.IsEmptyString(r.FormValue("content")) {
+				log.Println("Error: Post not created succesfully because title or description was empty.")
+
+				//	Get the page where user send the request from.
+				referer := r.Referer()
+
+				//	This function includes a query parameter in the URL with an error/success to be printed on screen
+				finalURL := helpers.AddQueryMessage(referer, "error", "Error saving post. Title and Description needs to contain characters.")
+
+				log.Printf("Redirecting to: %s", finalURL)
+
+				http.Redirect(w, r, finalURL, http.StatusSeeOther)
+
+				return
+			}
+
 			// //	Save the post into the database
 			postID, err := dbaser.AddPost(h.db, post)
 			if err != nil {
@@ -452,6 +468,22 @@ func (h *Handler) NewComment(w http.ResponseWriter, r *http.Request) {
 			// Parse form values
 			r.ParseForm()
 			content := r.FormValue("new-comment")
+
+			if helpers.IsEmptyString(r.FormValue("new-comment")) {
+				log.Println("Error: Comment is empty.")
+
+				//	Get the page where user send the request from.
+				referer := r.Referer()
+
+				//	This function includes a query parameter in the URL with an error/success to be printed on screen
+				finalURL := helpers.AddQueryMessage(referer, "error", "Error saving comment. Comment needs to contain characters.")
+
+				log.Printf("Redirecting to: %s", finalURL)
+
+				http.Redirect(w, r, finalURL, http.StatusSeeOther)
+
+				return
+			}
 
 			// Get the postID from the hidden input
 			id := r.FormValue("post_Id")
