@@ -83,20 +83,20 @@ func InitDb(path string) error {
 	}
 	defer db.Close()
 	// Create tables.
-	log.Println("Creating tables...")
-	for _, statement := range createStatements {
-		stmt, err := db.Prepare(statement)
-		if err != nil {
-			log.Println("Error preparing DB statement: ", statement)
-			return err
-		}
-		defer stmt.Close()
-		if _, err = stmt.Exec(); err != nil {
-			log.Println("Error creating database table: ", err)
-			return err
-		}
-	}
-	log.Println("Tables created successfully!")
+	// log.Println("Creating tables...")
+	// for _, statement := range createStatements {
+	// 	stmt, err := db.Prepare(statement)
+	// 	if err != nil {
+	// 		log.Println("Error preparing DB statement: ", statement)
+	// 		return err
+	// 	}
+	// 	defer stmt.Close()
+	// 	if _, err = stmt.Exec(); err != nil {
+	// 		log.Println("Error creating database table: ", err)
+	// 		return err
+	// 	}
+	// }
+	// log.Println("Tables created successfully!")
 	return nil
 }
 
