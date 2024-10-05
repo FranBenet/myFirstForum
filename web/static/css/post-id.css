@@ -243,6 +243,8 @@
     border: none;
     margin: auto;
     outline: none;
+    /* background-color: red; */
+    width: 85%;
 }
 
 .submit {

@@ -20,7 +20,7 @@
                         
                         <div class="form-categories-01">
                             <div class="form-category-box">
-                                <input type="text" name="category1" list="category1" class="form-categories-area" placeholder="Add Category or Double click" title="Write a category or double click to see a list of available categories">
+                                <input type="text" name="category1" list="category1" class="form-categories-area" maxlength="20" placeholder="Add Category or Double click" title="Write a category or double click to see a list of available categories">
                                 <datalist id="category1" name="category1" >
                                     <option value="" disabled selected > <p>Choose Category:</p></option>
                                     {{range .Categories}}
@@ -31,7 +31,7 @@
                         </div>
                         <div class="form-categories-02">
                             <div class="form-category-box">
-                                <input type="text" name="category2" list="category2" class="form-categories-area" placeholder="Add Category or Double click" title="Write a category or double click to see a list of available categories">
+                                <input type="text" name="category2" list="category2" class="form-categories-area" maxlength="20" placeholder="Add Category or Double click" title="Write a category or double click to see a list of available categories">
                                 <datalist id="category2" name="category2">
                                     <option value="" disabled selected > <p>Choose Category:</p></option>
                                     {{range .Categories}}
@@ -42,7 +42,7 @@
                         </div>
                         <div class="form-categories-03">
                             <div class="form-category-box">
-                                <input type="text" name="category3" list="category3" class="form-categories-area" placeholder="Add Category or Double click" title="Write a category or double click to see a list of available categories">
+                                <input type="text" name="category3" list="category3" class="form-categories-area" maxlength="20" placeholder="Add Category or Double click" title="Write a category or double click to see a list of available categories">
                                 <datalist id="category3" name="category3">
                                     <option value="" disabled selected > <p>Choose Category:</p></option>
                                     {{range .Categories}}
