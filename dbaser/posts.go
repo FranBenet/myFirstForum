@@ -200,7 +200,12 @@ func Search(db *sql.DB, query string) ([]models.Post, error) {
 	for _, post := range posts {
 		title := strings.ToLower(post.Title)
 		content := strings.ToLower(post.Content)
-		if strings.Contains(title, query) || strings.Contains(content, query) {
+		author, err := UserById(db, post.UserId)
+		if err != nil {
+			return result, err
+		}
+		username := strings.ToLower(author.Name)
+		if strings.Contains(title, query) || strings.Contains(content, query) || strings.Contains(username, query) {
 			result = append(result, post)
 		}
 	}
