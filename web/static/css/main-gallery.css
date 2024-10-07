@@ -83,7 +83,7 @@
 
 .post-content {
     display: flex;
-    flex-flow: column nowrap;
+    flex-flow: column wrap;
     align-items: start;
     margin-top: 68px;
 }
@@ -92,20 +92,22 @@
     margin:0px;
     margin-bottom: 32px;
     font-family: "Ubuntu", sans-serif;
-    font-weight: 700 ;
+    font-weight: 700;
     font-size: 48px;
     line-height: 1.2em;
     max-width: 40ch;
+    word-wrap: anywhere;
 }
 
 .post-description{
     margin:0px;
     margin-bottom: 35px;
     font-family: "Ubuntu", sans-serif;
-    font-weight: 400 ;
+    font-weight: 400;
     font-size: 16px;
     line-height: 2em;
     max-width: 100ch;
+    word-wrap: anywhere;
 
     /* Limit of lines for the box. After the limit, it shows ... */
     display: -webkit-box;
