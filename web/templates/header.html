@@ -48,13 +48,13 @@
                        
             <form action="/register" method="post" class="form-modal-content-register">
                 <label class="register-form-username-txt" for="username">Username:</label>
-                <input class="register-form-username" type="text" id="username" name="username" required>
+                <input class="register-form-username" type="text" id="username" name="username" maxlength="30" required>
                 
                 <label class="register-form-email-txt" for="email">Email:</label>
-                <input class="register-form-email" type="email" id="email" name="email" required>
+                <input class="register-form-email" type="email" id="email" name="email" maxlength="30" required>
                 
                 <label class="register-form-password-txt" for="password">Password:</label>
-                <input class="register-form-password" type="password" id="password" name="password" required>
+                <input class="register-form-password" type="password" id="password" name="password" maxlength="30" required>
                 <div class="submit-button">
                     <input type="submit" value="Register" class="register-form-button">
                 </div>
@@ -79,10 +79,10 @@
             
             <form action="/login" method="post" class="form-modal-content-login">
                 <label class="register-form-email-txt" for="email">Email:</label>
-                <input class="register-form-email" type="email" id="email" name="email" required>
+                <input class="register-form-email" type="email" id="email" name="email" maxlength="30" required>
                 
                 <label class="register-form-password-txt" for="password">Password:</label>
-                <input class="register-form-password" type="password" id="password" name="password" required>
+                <input class="register-form-password" type="password" id="password" name="password" maxlength="30" required>
                 <div class="submit-button">
                     <input type="submit" value="Log in" class="register-form-button">
                 </div>
